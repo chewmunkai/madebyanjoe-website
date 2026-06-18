@@ -1,0 +1,11 @@
+/* ANJOE — Webfonts
+   Type direction "Contemporary":
+   - Cinzel            → the Trajan wordmark voice (logo, brand seals). UPPERCASE, tracked.
+   - Instrument Serif  → tall, characterful high-contrast display. Headlines,
+                         product names, pull quotes. Of-the-moment, high-fashion.
+                         (Regular + italic only — no bold; that's by design.)
+   - Schibsted Grotesk → crisp modern grotesque for all UI, body copy, navigation.
+   - Spline Sans Mono  → clinical "lab-grade" mono for spec labels, eyebrows, data.
+   Google Fonts substitutes for the brand's licensed faces — see readme
+   "Type substitution" and replace if the true font files are provided. */
+@import url('https://fonts.googleapis.com/css2?family=Cinzel:wght@400;500;600;700&family=Instrument+Serif:ital@0;1&family=Schibsted+Grotesk:wght@400;500;600;700&family=Spline+Sans+Mono:wght@400;500&display=swap');

@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>ANJOE — Raw Beauté</title>
+
+<link rel="stylesheet" href="../_ds/anjoe-design-system-15a866f9-401f-44c1-82f9-e7dd4283f821/tokens/fonts.css">
+<link rel="stylesheet" href="../_ds/anjoe-design-system-15a866f9-401f-44c1-82f9-e7dd4283f821/tokens/colors.css">
+<link rel="stylesheet" href="../_ds/anjoe-design-system-15a866f9-401f-44c1-82f9-e7dd4283f821/tokens/typography.css">
+<link rel="stylesheet" href="../_ds/anjoe-design-system-15a866f9-401f-44c1-82f9-e7dd4283f821/tokens/spacing.css">
+<link rel="stylesheet" href="../_ds/anjoe-design-system-15a866f9-401f-44c1-82f9-e7dd4283f821/styles.css">
+
+<style>
+  * { box-sizing: border-box; }
+  html { scroll-behavior: smooth; }
+  body {
+    margin: 0; background: var(--paper); color: var(--text-body);
+    font-family: var(--font-ui); -webkit-font-smoothing: antialiased;
+    overflow-x: hidden;
+  }
+  :root { --hero-wash: radial-gradient(120% 90% at 70% 18%, #C9E7F2 0%, #F2F8FB 38%, #FBFAF8 62%, #F7DCE4 100%); }
+  a { color: inherit; }
+  ::selection { background: var(--blush-200); }
+  img { max-width: 100%; }
+
+  /* hero wash backdrop */
+  .hero-wash {
+    position: absolute; inset: 0; z-index: 0;
+    background: var(--hero-wash);
+    transition: background 600ms var(--ease-standard);
+  }
+  .hero-wash::after {
+    content: ''; position: absolute; inset: 0;
+    background: radial-gradient(60% 50% at 50% 120%, rgba(251,250,248,0.9), transparent 70%);
+  }
+
+  /* scroll reveal — entrance is driven by a manual rAF tween in JS (CSS timelines freeze in preview iframes) */
+  .reveal { opacity: 0; }
+  @media (prefers-reduced-motion: reduce) { .reveal { opacity: 1; } }
+
+  /* nav + links */
+  .navlink { font-family: var(--font-ui); font-size: 13px; letter-spacing: 0.06em; text-transform: uppercase; text-decoration: none; color: var(--ink-700); transition: opacity var(--dur-fast); }
+  .navlink:hover { opacity: 0.6; }
+  .textlink { font-family: var(--font-ui); font-size: 13px; letter-spacing: 0.08em; text-transform: uppercase; text-decoration: none; color: var(--ink-900); display: inline-flex; align-items: center; gap: 8px; border-bottom: 1px solid var(--ink-900); padding-bottom: 4px; transition: gap var(--dur-normal) var(--ease-out); }
+  .textlink:hover { gap: 14px; }
+  .footlink { font-family: var(--font-ui); font-size: 14px; text-decoration: none; color: rgba(242,246,248,0.65); transition: color var(--dur-fast); }
+  .footlink:hover { color: var(--text-on-dark); }
+
+  /* scroll cue */
+  .scroll-line { width: 1px; height: 42px; background: linear-gradient(var(--ink-400), transparent); position: relative; overflow: hidden; }
+  .scroll-line::after { content: ''; position: absolute; top: -50%; left: 0; width: 1px; height: 50%; background: var(--ink-700); animation: scrolldrop 2.2s var(--ease-standard) infinite; }
+  @keyframes scrolldrop { 0% { top: -50%; } 60%,100% { top: 100%; } }
+
+  /* marquee */
+  .marquee { display: inline-flex; white-space: nowrap; animation: marquee 34s linear infinite; }
+  @keyframes marquee { from { transform: translateX(0); } to { transform: translateX(-50%); } }
+  @media (prefers-reduced-motion: reduce) { .marquee { animation: none; } }
+
+  /* ritual media */
+  .ritual-media { position: relative; border-radius: var(--radius-xl); overflow: hidden; aspect-ratio: 4 / 5; box-shadow: var(--shadow-md); }
+  .ritual-tag { position: absolute; left: 20px; bottom: 20px; background: rgba(251,250,248,0.92); backdrop-filter: blur(8px); border-radius: var(--radius-md); padding: 14px 18px; display: flex; flex-direction: column; gap: 2px; box-shadow: var(--shadow-sm); }
+
+  /* whale */
+  .whale-media { border-radius: var(--radius-xl); overflow: hidden; aspect-ratio: 4 / 5; box-shadow: var(--shadow-lg); }
+  .whale-glow { position: absolute; top: -10%; right: -5%; width: 60%; height: 80%; background: radial-gradient(circle, rgba(166,199,216,0.22), transparent 65%); filter: blur(20px); z-index: 1; }
+
+  /* type-feel tweak overrides (target only big display headings h1/h2) */
+  body[data-type="classic"] h1, body[data-type="classic"] h2 {
+    font-family: var(--font-wordmark) !important; text-transform: uppercase;
+    letter-spacing: 0.02em; font-weight: 600; line-height: 1.08;
+    font-size: clamp(30px, 4.4vw, 60px) !important;
+  }
+  body[data-type="classic"] h1 em, body[data-type="classic"] h2 em { font-style: normal; }
+  body[data-type="modern"] h1, body[data-type="modern"] h2 {
+    font-family: var(--font-ui) !important; font-weight: 600; letter-spacing: -0.02em;
+  }
+  body[data-type="modern"] h1 em, body[data-type="modern"] h2 em { font-style: normal; }
+
+  /* responsive */
+  @media (max-width: 980px) {
+    section#top > div[style*="grid"], #ritual > div, section .whale-media ~ *,
+    body > div { }
+    #top .reveal, #top h1 { }
+  }
+  @media (max-width: 900px) {
+    section#top [style*="grid-template-columns"] { grid-template-columns: 1fr !important; }
+    #ritual [style*="grid-template-columns"] { grid-template-columns: 1fr !important; }
+    section [style*="grid-template-columns: 1fr 1fr"] { grid-template-columns: 1fr !important; }
+    footer [style*="grid-template-columns"] { grid-template-columns: 1fr 1fr !important; }
+    .ritual-media, .whale-media { aspect-ratio: 16 / 11; }
+  }
+  @media (max-width: 560px) {
+    footer [style*="grid-template-columns"] { grid-template-columns: 1fr !important; }
+    header nav:first-child { display: none !important; }
+  }
+</style>
+
+<template id="__bundler_thumbnail">
+  <svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
+    <rect width="100" height="100" fill="#C9E7F2"/>
+    <text x="50" y="58" font-family="serif" font-size="34" fill="#2C3A49" text-anchor="middle" letter-spacing="3">A</text>
+  </svg>
+</template>
+
+<script src="https://unpkg.com/react@18.3.1/umd/react.development.js" integrity="sha384-hD6/rw4ppMLGNu3tX5cjIb+uRZ7UkRJ6BPkLpg4hAu/6onKUg4lLsHAs9EBPT82L" crossorigin="anonymous"></script>
+<script src="https://unpkg.com/react-dom@18.3.1/umd/react-dom.development.js" integrity="sha384-u6aeetuaXnQ38mYT8rp6sbXaQe3NL9t+IBXmnYxwkUI2Hw4bsp2Wvmx4yRQF1uAm" crossorigin="anonymous"></script>
+<script src="https://unpkg.com/@babel/standalone@7.29.0/babel.min.js" integrity="sha384-m08KidiNqLdpJqLq95G/LEi8Qvjl/xUYll3QILypMoQ65QorJ9Lvtp2RXYGBFj1y" crossorigin="anonymous"></script>
+<script src="https://unpkg.com/lucide@latest/dist/umd/lucide.min.js"></script>
+<script src="https://unpkg.com/three@0.137.0/build/three.min.js"></script>
+<script src="../_ds/anjoe-design-system-15a866f9-401f-44c1-82f9-e7dd4283f821/_ds_bundle.js"></script>
+<script src="three-hero.js"></script>
+</head>
+<body data-type="editorial">
+<div id="root"></div>
+
+<script type="text/babel" src="tweaks-panel.jsx"></script>
+<script type="text/babel" src="sections.jsx"></script>
+<script type="text/babel" src="app.jsx"></script>
+</body>
+</html>
