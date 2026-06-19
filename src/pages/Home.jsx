@@ -1,4 +1,5 @@
 import { Link } from 'react-router-dom'
+import WaterDropHero from '../hero/WaterDropHero.jsx'
 import ProductCard from '../components/ProductCard.jsx'
 import { useCart } from '../store/cart.js'
 import { getFeatured, getProduct, formatPrice } from '../data/products.js'
@@ -25,41 +26,8 @@ export default function Home() {
 
   return (
     <>
-      {/* HERO — placeholder. Wave 2 replaces this block with the WebGL
-          water-drop scroll-scrub experience. */}
-      <section className="home-hero" id="hero">
-        <div className="home-hero__wash" />
-        <div className="container home-hero__inner">
-          <div className="home-hero__copy">
-            <span className="eyebrow">Raw Beauté · Made in Malaysia</span>
-            <h1>
-              Hydration,
-              <br />
-              <em>engineered.</em>
-            </h1>
-            <p className="lede">
-              Plant-based, probiotic skincare that floods the skin with moisture
-              and rebuilds the barrier — clinically gentle, visibly dewy.
-            </p>
-            <div className="home-hero__cta">
-              <Link to="/shop" className="btn">
-                Shop the ritual
-              </Link>
-              <Link to="/about" className="textlink">
-                Our science →
-              </Link>
-            </div>
-          </div>
-          <div className="home-hero__product">
-            <div className="home-hero__halo" />
-            <img src={flagship.img} alt={flagship.name} />
-          </div>
-        </div>
-        <div className="home-hero__scroll">
-          <span className="home-hero__line" />
-          Scroll
-        </div>
-      </section>
+      {/* HERO — WebGL water-drop scroll-scrub (Wave 2) */}
+      <WaterDropHero />
 
       {/* MARQUEE */}
       <div className="marquee">

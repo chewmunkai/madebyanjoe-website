@@ -901,3 +901,113 @@
     grid-template-columns: 1fr;
   }
 }
+
+/* ============ WATER-DROP HERO ============ */
+.dh {
+  position: relative;
+  height: 220svh;
+}
+.dh__sticky {
+  position: sticky;
+  top: 0;
+  height: 100svh;
+  overflow: hidden;
+}
+.dh__wash {
+  position: absolute;
+  inset: 0;
+  background: var(--hero-wash);
+  z-index: 0;
+}
+.dh__wash::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(60% 50% at 50% 120%, rgba(251, 250, 248, 0.9), transparent 70%);
+}
+.dh__canvas {
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+}
+.dh__canvas canvas {
+  display: block;
+}
+.dh__copy {
+  position: absolute;
+  inset: 0;
+  z-index: 2;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  padding-top: var(--header-h);
+  max-width: var(--container-max);
+  transform: translateY(calc(var(--p, 0) * -42px));
+  pointer-events: none;
+}
+.dh__copy .eyebrow,
+.dh__copy .btn,
+.dh__copy .textlink {
+  pointer-events: auto;
+}
+.dh__copy h1 {
+  margin: 18px 0 24px;
+}
+.dh__cta {
+  display: flex;
+  align-items: center;
+  gap: 28px;
+  margin-top: 36px;
+  flex-wrap: wrap;
+}
+.dh__scroll {
+  position: absolute;
+  left: 50%;
+  bottom: 26px;
+  transform: translateX(-50%);
+  z-index: 2;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 10px;
+  font-family: var(--font-mono);
+  font-size: 11px;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: var(--ink-500);
+  opacity: clamp(0, calc(1 - var(--p, 0) * 2.5), 1);
+}
+.dh__line {
+  width: 1px;
+  height: 44px;
+  background: linear-gradient(var(--ink-400), transparent);
+  position: relative;
+  overflow: hidden;
+}
+.dh__line::after {
+  content: '';
+  position: absolute;
+  inset: -50% 0 auto 0;
+  height: 50%;
+  background: var(--ink-700);
+  animation: drop 2.2s var(--ease-standard) infinite;
+}
+@media (max-width: 880px) {
+  .dh__copy {
+    justify-content: flex-end;
+    padding-bottom: 14vh;
+    text-align: center;
+    align-items: center;
+  }
+  .dh__copy .lede {
+    margin-inline: auto;
+  }
+  .dh__cta {
+    justify-content: center;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .dh__line::after {
+    animation: none;
+  }
+}
