@@ -1,0 +1,19 @@
+import { defineConfig } from 'vite'
+import react from '@vitejs/plugin-react'
+
+// Single-page app. WebGL/scroll-heavy, so we keep three/drei in a vendor chunk.
+export default defineConfig({
+  plugins: [react()],
+  server: { port: 5173, strictPort: true, host: true },
+  build: {
+    target: 'es2020',
+    rollupOptions: {
+      output: {
+        manualChunks: {
+          three: ['three', '@react-three/fiber', '@react-three/drei'],
+          motion: ['gsap', 'lenis'],
+        },
+      },
+    },
+  },
+})
