@@ -1,31 +1,28 @@
-import { useEffect, useRef } from 'react'
+import { useEffect, useMemo, useRef } from 'react'
 import { Link } from 'react-router-dom'
 import { Canvas, useFrame } from '@react-three/fiber'
 import { MeshTransmissionMaterial, Environment, Lightformer, GradientTexture } from '@react-three/drei'
 import * as THREE from 'three'
 import { ScrollTrigger } from 'gsap/ScrollTrigger'
+import { useCart } from '../store/cart.js'
+import { getProduct, formatPrice } from '../data/products.js'
 
-/* Refractive water droplet. Falls + elongates as scroll progresses, with a
-   gentle idle wobble. `progress` is a ref (0..1) from ScrollTrigger; the fall is
-   re-mapped to finish before the sticky hero unsticks. */
+const flagship = getProduct('probiotic-amino-cleanser')
+
+/* Main refractive droplet — falls + elongates on scroll, with idle wobble. */
 function Droplet({ progress }) {
   const mesh = useRef()
-
   useFrame((state) => {
     const m = mesh.current
     if (!m) return
     const p = Math.min(1, progress.current / 0.55)
     const t = state.clock.elapsedTime
-
     m.position.x = 1.05
     m.position.y = THREE.MathUtils.lerp(0.55, -1.2, p) + Math.sin(t * 0.6) * 0.05
-    const stretch = 1 + p * 0.3
-    const squash = 1 / (1 + p * 0.08)
-    m.scale.set(squash, stretch, squash)
+    m.scale.set(1 / (1 + p * 0.08), (1 + p * 0.3) * (1 - p * 0.18), 1 / (1 + p * 0.08))
     m.rotation.y = t * 0.1
     m.rotation.z = Math.sin(t * 0.3) * 0.05
   })
-
   return (
     <mesh ref={mesh} position={[1.05, 0.55, 0]}>
       <sphereGeometry args={[1.3, 128, 128]} />
@@ -51,12 +48,69 @@ function Droplet({ progress }) {
   )
 }
 
-/* Bright, enveloping environment built from the brand wash (blue top, blush
-   bottom, warm paper backdrop) so the glass refracts light, not black. */
+/* Lightweight glass micro-droplets (env-refraction only — no scene buffer pass,
+   so they're cheap). They drift and parallax up as you scroll. */
+function MicroDrop({ pos, r, sp, progress }) {
+  const ref = useRef()
+  useFrame((state) => {
+    const m = ref.current
+    if (!m) return
+    const t = state.clock.elapsedTime
+    m.position.x = pos[0] + Math.cos(t * sp * 0.7) * 0.08
+    m.position.y = pos[1] + Math.sin(t * sp + pos[0]) * 0.16 - progress.current * 0.6
+  })
+  return (
+    <mesh ref={ref} position={pos}>
+      <sphereGeometry args={[r, 48, 48]} />
+      <meshPhysicalMaterial
+        transmission={1}
+        thickness={0.4}
+        roughness={0.04}
+        ior={1.33}
+        metalness={0}
+        clearcoat={1}
+        transparent
+      />
+    </mesh>
+  )
+}
+
+function MicroDrops({ progress }) {
+  const drops = useMemo(
+    () => [
+      { pos: [-1.7, 1.25, 0.6], r: 0.17, sp: 0.8 },
+      { pos: [2.5, -0.5, 0.9], r: 0.11, sp: 1.1 },
+      { pos: [-0.5, -1.45, 1.0], r: 0.14, sp: 0.6 },
+      { pos: [2.1, 1.7, -0.4], r: 0.09, sp: 1.3 },
+      { pos: [-2.3, -0.1, -0.3], r: 0.12, sp: 0.95 },
+    ],
+    []
+  )
+  return drops.map((d, i) => <MicroDrop key={i} {...d} progress={progress} />)
+}
+
+/* A soft halo "ripple" that expands + fades as the drop falls. */
+function Ripple({ progress }) {
+  const ref = useRef()
+  useFrame(() => {
+    const m = ref.current
+    if (!m) return
+    const p = progress.current
+    const grow = THREE.MathUtils.clamp((p - 0.28) / 0.35, 0, 1)
+    m.scale.setScalar(0.4 + grow * 2.2)
+    m.material.opacity = Math.sin(grow * Math.PI) * 0.5
+  })
+  return (
+    <mesh ref={ref} position={[1.05, -1.25, 0.2]}>
+      <ringGeometry args={[0.7, 0.78, 64]} />
+      <meshBasicMaterial color="#bfe1ef" transparent opacity={0} toneMapped={false} side={THREE.DoubleSide} />
+    </mesh>
+  )
+}
+
 function DropEnvironment() {
   return (
     <Environment resolution={256}>
-      {/* full enveloping fill so there is no black anywhere to refract */}
       <mesh scale={60}>
         <sphereGeometry args={[1, 32, 32]} />
         <meshBasicMaterial color="#eaf2f6" side={THREE.BackSide} />
@@ -72,11 +126,10 @@ function DropEnvironment() {
 export default function WaterDropHero() {
   const root = useRef()
   const progress = useRef(0)
+  const add = useCart((s) => s.add)
 
   useEffect(() => {
     const reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches
-
-    // Insurance: nudge R3F to (re)measure the canvas after first paint.
     const r1 = requestAnimationFrame(() => window.dispatchEvent(new Event('resize')))
     const r2 = setTimeout(() => window.dispatchEvent(new Event('resize')), 200)
 
@@ -90,10 +143,10 @@ export default function WaterDropHero() {
         onUpdate: (self) => {
           progress.current = self.progress
           root.current?.style.setProperty('--p', self.progress.toFixed(3))
+          root.current?.classList.toggle('dh--revealed', self.progress > 0.34)
         },
       })
     }
-
     const r3 = setTimeout(() => ScrollTrigger.refresh(), 320)
     return () => {
       cancelAnimationFrame(r1)
@@ -116,24 +169,21 @@ export default function WaterDropHero() {
           >
             <ambientLight intensity={0.5} />
             <directionalLight position={[3, 4, 5]} intensity={0.8} />
-            {/* Brand-wash gradient behind the drop: this is what the glass
-                refracts (transmission samples the rendered scene), and it doubles
-                as the canvas background. */}
+            {/* brand-wash gradient the glass refracts + canvas backdrop */}
             <mesh position={[0, 0, -4]} scale={[46, 28, 1]}>
               <planeGeometry />
               <meshBasicMaterial toneMapped={false}>
-                <GradientTexture
-                  stops={[0, 0.4, 0.6, 1]}
-                  colors={['#bfe1ef', '#e2f0f7', '#f6e7ef', '#f3cedb']}
-                  size={1024}
-                />
+                <GradientTexture stops={[0, 0.4, 0.6, 1]} colors={['#bfe1ef', '#e2f0f7', '#f6e7ef', '#f3cedb']} size={1024} />
               </meshBasicMaterial>
             </mesh>
             <Droplet progress={progress} />
+            <MicroDrops progress={progress} />
+            <Ripple progress={progress} />
             <DropEnvironment />
           </Canvas>
         </div>
 
+        {/* Intro copy — fades out as you scroll into the product reveal */}
         <div className="container dh__copy">
           <span className="eyebrow">Raw Beauté · Made in Malaysia</span>
           <h1>
@@ -152,6 +202,27 @@ export default function WaterDropHero() {
             <Link to="/about" className="textlink">
               Our science →
             </Link>
+          </div>
+        </div>
+
+        {/* Product reveal — emerges on scroll. (Swap the image for a clean
+            transparent bottle / frame sequence once provided.) */}
+        <div className="container dh__reveal">
+          <div className="dh__reveal-media">
+            <img src={flagship.img} alt={flagship.name} />
+          </div>
+          <div className="dh__reveal-info">
+            <span className="eyebrow">{flagship.eyebrow}</span>
+            <h2>{flagship.name}</h2>
+            <p>The everyday first step — low-pH amino cleanse, probiotic ferment.</p>
+            <div className="dh__reveal-cta">
+              <button className="btn" onClick={() => add(flagship)}>
+                Add to bag — {formatPrice(flagship.price)}
+              </button>
+              <Link to={`/product/${flagship.slug}`} className="textlink">
+                Details →
+              </Link>
+            </div>
           </div>
         </div>
 
