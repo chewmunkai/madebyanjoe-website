@@ -60,6 +60,17 @@
   color: var(--blush-500);
   vertical-align: middle;
 }
+/* Mobile: the credentials wrap one-per-line, leaving the ✦ floating at the far
+   right of each row (reads like a bug). Stack them cleanly without separators. */
+@media (max-width: 600px) {
+  .pressbar__row {
+    flex-direction: column;
+    gap: 10px;
+  }
+  .pressbar__row li:not(:last-child)::after {
+    display: none;
+  }
+}
 
 /* ============ CLINICAL RESULTS ============ */
 .cr {
@@ -273,7 +284,9 @@
 }
 @media (max-width: 900px) {
   .dis {
-    height: 420vh;
+    /* was 420vh ≈ 4 screens of pinned scroll before any product — trim the
+       dead scroll while the scrub still maps all 4 chapters (floor(p*N)) */
+    height: 300vh;
   }
   .dis__inner {
     grid-template-columns: 1fr;
@@ -285,7 +298,8 @@
     grid-row: 2;
   }
   .dis__visual img {
-    width: clamp(170px, 44vw, 240px);
+    /* larger focal product so each pinned screen reads as one clear idea */
+    width: clamp(200px, 52vw, 280px);
   }
   .dis__chapters {
     grid-column: 1;
@@ -328,6 +342,9 @@
 /* ============ BESTSELLER DRAG-CAROUSEL ============ */
 .bc {
   padding-block: clamp(72px, 11vw, 150px);
+  /* contain the full-bleed track's negative-margin bleed so it can't push the
+     document wider than the viewport (was causing 32px of horizontal overflow) */
+  overflow-x: clip;
 }
 .bc__head {
   display: flex;
@@ -348,6 +365,9 @@
 .bc__arrow {
   width: 48px;
   height: 48px;
+  flex: 0 0 auto;
+  min-width: 44px;
+  min-height: 44px;
   border-radius: 50%;
   border: 1px solid var(--ink-900);
   background: transparent;
@@ -438,6 +458,14 @@
   opacity: 1;
   transform: none;
 }
+/* Touch devices never hover — keep the in-card quick-add permanently visible. */
+@media (hover: none), (pointer: coarse) {
+  .bc__add {
+    opacity: 1;
+    transform: none;
+    min-height: 44px;
+  }
+}
 .bc__info {
   padding-top: 16px;
 }
@@ -499,6 +527,40 @@
   font-size: 15px;
   color: var(--text-muted);
   text-decoration: line-through;
+}
+/* Mobile: stack the heading and controls so "View all" can't clip off the edge,
+   and let the full-bleed track sit inside the gutter (no horizontal overflow). */
+@media (max-width: 600px) {
+  .bc__head {
+    flex-wrap: wrap;
+  }
+  .bc__head > div:first-child {
+    flex: 1 1 100%;
+    min-width: 0;
+  }
+  .bc__nav {
+    width: 100%;
+    justify-content: space-between;
+  }
+  .bc__all {
+    margin-left: auto;
+  }
+  .bc__track {
+    margin-inline: 0;
+    padding-inline: var(--container-pad);
+    gap: 16px;
+    /* snap each card to the gutter (not the screen edge) so card 1 keeps its
+       left margin and the next-product peek lands in the 50–70% range */
+    scroll-padding-left: var(--container-pad);
+  }
+  /* size each card so ~60% of the next product peeks in (was ~24%), signalling
+     swipe and showing more of the range per screen */
+  .bc__card {
+    flex: 0 0 54vw;
+  }
+  .bc__name {
+    font-size: 18px;
+  }
 }
 
 /* ============ REELS GALLERY ============ */

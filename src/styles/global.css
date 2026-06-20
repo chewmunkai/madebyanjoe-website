@@ -187,9 +187,22 @@ p {
   border-bottom: 1px solid var(--ink-900);
   padding-bottom: 4px;
   transition: gap var(--dur-normal) var(--ease-out);
+  position: relative;
 }
 .textlink:hover {
   gap: 14px;
+}
+/* invisible 44px-tall hit area so the underline visual stays put but the
+   tappable zone meets the touch-target minimum (Fitts's law) */
+.textlink::after {
+  content: '';
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: 50%;
+  transform: translateY(-50%);
+  height: 44px;
+  min-width: 44px;
 }
 
 /* ---------- Scroll reveal ---------- */
@@ -294,6 +307,15 @@ p {
 .pcard:hover .pcard__add {
   opacity: 1;
   transform: none;
+}
+/* Touch devices never fire :hover — keep the quick-add visible so the fastest
+   add-to-cart path isn't permanently hidden on phones/tablets. */
+@media (hover: none), (pointer: coarse) {
+  .pcard__add {
+    opacity: 1;
+    transform: none;
+    min-height: 44px;
+  }
 }
 .pcard__cat {
   font-family: var(--font-mono);

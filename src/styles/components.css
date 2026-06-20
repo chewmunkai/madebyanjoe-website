@@ -48,6 +48,12 @@
   text-transform: uppercase;
   color: var(--ink-700);
   transition: opacity var(--dur-fast);
+  /* grow the touch target to ~44px without altering the 80px header rhythm */
+  display: inline-flex;
+  align-items: center;
+  min-height: 44px;
+  padding-block: 12px;
+  margin-block: -12px;
 }
 .navlink:hover {
   opacity: 0.55;
@@ -63,6 +69,10 @@
   letter-spacing: var(--ls-label);
   text-transform: uppercase;
   color: var(--ink-900);
+  /* the Bag is the gateway to checkout — guarantee a full 44px tap target */
+  min-height: 44px;
+  padding: 12px 8px;
+  margin: -12px -8px;
 }
 .nav__count {
   min-width: 20px;
@@ -87,7 +97,7 @@
     display: none;
   }
   .nav__group {
-    gap: 18px;
+    gap: 22px;
   }
 }
 

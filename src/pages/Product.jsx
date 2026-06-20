@@ -15,7 +15,9 @@ export default function Product() {
   const add = useCart((s) => s.add)
   const [qty, setQty] = useState(1)
   const [active, setActive] = useState(0)
+  const [showBar, setShowBar] = useState(false)
   const root = useRef(null)
+  const buyRef = useRef(null)
 
   const gallery = product ? getGallery(slug, product.img) : []
   const go = (i) => {
@@ -28,6 +30,20 @@ export default function Product() {
     setActive(0)
     setQty(1)
   }, [slug])
+
+  // Mobile: show a sticky add-to-cart bar whenever the inline buy deck (which
+  // drops far below the full-bleed gallery on phones) is out of view, so price
+  // + CTA stay in the thumb zone. Hidden while the real deck is on screen.
+  useEffect(() => {
+    const el = buyRef.current
+    if (!el) return
+    const io = new IntersectionObserver(
+      ([entry]) => setShowBar(!entry.isIntersecting),
+      { threshold: 0 }
+    )
+    io.observe(el)
+    return () => io.disconnect()
+  }, [slug, product])
 
   // Editorial parallax: drift the giant faded numeral + float the bottle as the
   // gallery scrolls. Centralised ScrollTrigger registration (SmoothScroll.jsx).
@@ -205,7 +221,7 @@ export default function Product() {
               <span>KKM-NPRA certified</span>
             </div>
 
-            <div className="pdpx-buy glass glass--strong">
+            <div className="pdpx-buy glass glass--strong" ref={buyRef}>
               <span className="pdpx-buy__label" aria-hidden="true">Quantity</span>
               <div className="qty qty--lg">
                 <button onClick={() => setQty((q) => Math.max(1, q - 1))} aria-label="Decrease quantity">
@@ -315,6 +331,22 @@ export default function Product() {
           </div>
         </section>
       )}
+
+      {/* Sticky mobile buy bar — keeps price + CTA reachable once the inline
+          buy deck scrolls out of view on phones. */}
+      <div className={`pdpx-buybar${showBar ? ' is-visible' : ''}`}>
+        <div className="pdpx-buybar__info">
+          <span className="pdpx-buybar__name">{product.name}</span>
+          <span className="pdpx-buybar__price">{formatPrice(product.price * qty)}</span>
+        </div>
+        <button
+          className="btn pdpx-buybar__add"
+          onClick={() => add(product, qty)}
+          tabIndex={showBar ? 0 : -1}
+        >
+          Add to bag
+        </button>
+      </div>
     </div>
   )
 }

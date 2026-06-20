@@ -572,17 +572,65 @@
 }
 
 @media (max-width: 560px) {
+  /* 2-up product grid on phones — roughly halves the scroll vs the old single
+     column and gives a smoother, more scannable browse. Flagship + zone bands
+     stay full-width since they're a different (stacked) layout. */
   .shopx-grid {
-    grid-template-columns: 1fr;
-    gap: clamp(30px, 9vw, 44px);
+    grid-template-columns: repeat(2, 1fr);
+    gap: clamp(20px, 6vw, 28px) clamp(10px, 3vw, 14px);
   }
-  .shopx-tile--feature,
-  .shopx-tile--flagship {
-    grid-column: 1 / -1;
+  /* featured products join the 2-up rhythm instead of spanning the full row */
+  .shopx-tile--feature {
+    grid-column: span 1;
   }
   .shopx-tile--feature .pcard__media {
     aspect-ratio: 4 / 5;
   }
+  .shopx-tile--flagship,
+  .shopx-zoneband,
+  .shopx-empty {
+    grid-column: 1 / -1;
+  }
+  /* clean rounded-rectangle previews — drop the arched "window" so the 2-up grid
+     reads like modern mobile e-comm (matches the bestseller cards) */
+  .shopx-grid .pcard__media {
+    border-radius: 14px;
+  }
+  .shopx-grid .pcard__name,
+  .shopx-tile--feature .pcard__name {
+    font-size: 16px;
+    line-height: 1.2;
+  }
+  .shopx-grid .pcard__cat {
+    font-size: 10px;
+  }
+  .shopx-grid .pcard__add {
+    font-size: 11px;
+    padding: 11px 8px;
+  }
+
+  /* shorter, tighter filter bar so it eats less vertical space */
+  .shopx-toolbar {
+    top: calc(var(--header-h) - 16px);
+    margin-bottom: clamp(20px, 5vw, 30px);
+  }
+  .shopx-toolbar__inner {
+    padding: 8px 12px;
+    gap: 8px;
+  }
+  .shopx-toolbar__label {
+    display: none;
+  }
+  .shopx-chip {
+    padding: 8px 13px;
+    font-size: 12.5px;
+  }
+  /* drop the redundant total count on phones (each chip already shows its own
+     tally + the zone bands show item counts) so the sticky bar is one row shorter */
+  .shopx-toolbar__count {
+    display: none;
+  }
+
   /* zone band wraps cleanly: numeral + head on one line, count drops below */
   .shopx-zoneband {
     flex-wrap: wrap;
@@ -591,15 +639,6 @@
     margin-left: 0;
     width: 100%;
     align-self: flex-start;
-  }
-  .shopx-toolbar {
-    top: calc(var(--header-h) - 16px);
-  }
-  .shopx-toolbar__count {
-    margin-left: 0;
-    width: 100%;
-    justify-content: flex-start;
-    padding-top: 4px;
   }
 }
 
