@@ -720,21 +720,25 @@ textarea.field__input {
 
 /* ============ REVIEWS — slider + thumbnail preview bar ============ */
 .rv__slider {
-  display: grid;
-  grid-template-columns: auto 1fr auto;
+  display: flex;
   align-items: center;
-  gap: clamp(10px, 2vw, 26px);
+  justify-content: center;
+  gap: clamp(14px, 3vw, 40px);
   margin-top: clamp(24px, 4vw, 48px);
 }
 .rv__stage {
+  flex: 0 1 auto;
   display: grid;
   place-items: center;
-  min-height: clamp(360px, 56vh, 600px);
+  width: 100%;
+  max-width: clamp(320px, 62vw, 740px);
 }
 .rv__active {
-  max-height: clamp(360px, 56vh, 600px);
-  width: auto;
-  max-width: 100%;
+  display: block;
+  width: 100%;
+  aspect-ratio: 3 / 2;
+  height: auto;
+  object-fit: cover;
   border-radius: var(--radius-xl);
   box-shadow: var(--shadow-lg);
   background: var(--white);
@@ -803,8 +807,8 @@ textarea.field__input {
 }
 .rv__thumb {
   flex: 0 0 auto;
-  width: 58px;
-  height: 74px;
+  width: 84px;
+  height: 56px;
   padding: 0;
   border-radius: var(--radius-md);
   overflow: hidden;
@@ -833,10 +837,34 @@ textarea.field__input {
   }
 }
 @media (max-width: 640px) {
+  /* image goes full-width; arrows overlay its edges so the testimonial stays
+     large and readable instead of being squeezed between two buttons */
+  .rv__slider {
+    position: relative;
+    gap: 0;
+  }
+  .rv__stage {
+    max-width: 100%;
+  }
   .rv__arrow {
-    width: 44px;
-    height: 44px;
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+    z-index: 2;
+    width: 40px;
+    height: 40px;
     font-size: 16px;
+    background: rgba(255, 255, 255, 0.86);
+    backdrop-filter: blur(4px);
+  }
+  .rv__arrow--prev {
+    left: 8px;
+  }
+  .rv__arrow--next {
+    right: 8px;
+  }
+  .rv__arrow:active {
+    transform: translateY(-50%) scale(0.94);
   }
 }
 
@@ -1053,6 +1081,12 @@ textarea.field__input {
 @media (max-width: 900px) {
   .eh__trust {
     justify-content: center;
+    /* separators are hidden below — provide real horizontal spacing so wrapped
+       rows don't butt together and no ✦ dangles at the end of a line */
+    gap: 8px 18px;
+  }
+  .eh__trust li:not(:last-child)::after {
+    content: none;
   }
 }
 

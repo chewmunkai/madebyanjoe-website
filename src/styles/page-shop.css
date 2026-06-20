@@ -415,7 +415,8 @@
 /* the price row reads as the anchor value */
 .shopx-flagship__spec-row:last-child dd {
   font-family: var(--font-display);
-  font-size: 16px;
+  font-size: 24px;
+  font-weight: var(--fw-bold);
   color: var(--blush-500);
 }
 .shopx-flagship__notes {

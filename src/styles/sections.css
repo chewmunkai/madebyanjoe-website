@@ -491,11 +491,12 @@
   gap: 10px;
 }
 .bc__now {
-  font-size: 15px;
+  font-size: 20px;
+  font-weight: var(--fw-semibold);
   color: var(--ink-900);
 }
 .bc__was {
-  font-size: 13px;
+  font-size: 15px;
   color: var(--text-muted);
   text-decoration: line-through;
 }

@@ -69,7 +69,7 @@
   /* ---- Type ---- */
   --font-wordmark: 'Fraunces', 'Bodoni Moda', serif;
   --font-display: 'Fraunces', 'Bodoni Moda', 'Georgia', serif;
-  --font-ui: 'Hanken Grotesk', system-ui, -apple-system, 'Segoe UI', sans-serif;
+  --font-ui: 'Manrope', system-ui, -apple-system, 'Segoe UI', sans-serif;
   --font-mono: 'Spline Sans Mono', ui-monospace, 'SFMono-Regular', monospace;
 
   --ls-wordmark: 0.28em;

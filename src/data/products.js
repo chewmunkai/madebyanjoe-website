@@ -115,7 +115,7 @@ export const products = [
     price: 218.0,
     group: 'skincare',
     type: 'Exfoliant',
-    img: IMG + '14298-brightening-face-pads.webp',
+    img: IMG + '14298-brightening-and-refining-pads.webp',
     eyebrow: 'Toner Pads',
     blurb: 'Pre-soaked pads that gently refine texture and even tone in one swipe.',
     notes: ['Brightening', 'Refining', 'Daily'],
