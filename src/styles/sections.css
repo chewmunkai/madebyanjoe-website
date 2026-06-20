@@ -290,7 +290,11 @@
   }
   .dis__inner {
     grid-template-columns: 1fr;
-    grid-template-rows: auto auto 1fr auto;
+    /* content-sized rows centred as one group — a 1fr row here stretched the
+       chapters track and floated the text far below the bottle. Even 18px
+       rhythm + align-content keeps the panel compact and balanced. */
+    grid-template-rows: auto auto auto auto;
+    align-content: center;
     row-gap: 18px;
   }
   .dis__visual {
@@ -304,11 +308,32 @@
   .dis__chapters {
     grid-column: 1;
     grid-row: 3;
-    min-height: 240px;
+    /* chapter content is ~152px; reserve just enough for the absolute stack */
+    min-height: 170px;
     text-align: center;
   }
   .dis__chapter {
     align-items: center;
+  }
+  .dis__cta {
+    /* was inheriting desktop grid-row: 3 → overlapped the chapter text */
+    grid-row: 4;
+    text-align: center;
+  }
+  /* MOBILE PERF: kill the per-frame --p transforms on the filtered layers — the
+     blur(6px) wash (70vmax), the blur(6px) halo, and the drop-shadow product
+     shot. On phones these re-rasterise a blurred/shadowed layer every scroll
+     frame, and the shot's 0.7s transform transition makes the image chase the
+     scroll (the visible lag). Keep only the discrete chapter/image crossfade so
+     the scrub stays smooth — ambient parallax is desktop-only. */
+  .dis__wash::after {
+    transform: translate(-50%, -50%);
+  }
+  .dis__halo {
+    transform: translate(-50%, -50%);
+  }
+  .dis__shot.is-active {
+    transform: translate(-50%, -50%);
   }
   .dis__progress {
     display: none;
@@ -743,6 +768,14 @@
 /* ============ DIVE-IN VISUAL ============ */
 .dis__visual {
   min-height: clamp(320px, 52vh, 560px);
+}
+@media (max-width: 900px) {
+  /* The shots are position:absolute, so this box reserves their height. On
+     phones 52vh (≈420px) dwarfs the ~250px image, leaving a ~90px dead gap
+     under the title. Hug the image instead. (After the rule above so it wins.) */
+  .dis__visual {
+    min-height: clamp(255px, 72vw, 310px);
+  }
 }
 
 /* ============ REVIEWS WALL ============ */
