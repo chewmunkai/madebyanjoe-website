@@ -220,22 +220,24 @@ p {
 }
 .marquee__track {
   display: inline-flex;
-  gap: 48px;
+  gap: 52px;
   align-items: center;
-  animation: marquee 32s linear infinite;
+  animation: marquee 44s linear infinite;
 }
 .marquee__track span {
   font-family: var(--font-display);
-  font-size: clamp(28px, 4vw, 52px);
+  font-style: italic;
+  font-size: clamp(30px, 4.4vw, 60px);
   color: var(--ink-700);
   display: inline-flex;
   align-items: center;
-  gap: 48px;
+  gap: 52px;
 }
 .marquee__track span::after {
-  content: '✺';
-  font-size: 0.5em;
-  color: var(--blush-300);
+  content: '✦';
+  font-style: normal;
+  font-size: 0.32em;
+  color: var(--blush-500);
 }
 @keyframes marquee {
   to {

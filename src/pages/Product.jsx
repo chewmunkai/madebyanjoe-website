@@ -43,6 +43,10 @@ export default function Product() {
               {formatPrice(product.price)}
               {product.size && <span className="pdp__size">/ {product.size}</span>}
             </div>
+            <div className="pdp__rating">
+              <span className="stars">★★★★★</span>
+              <em>Loved by the ANJOE community</em>
+            </div>
             <p className="lede">{product.blurb}</p>
 
             {product.notes && (
@@ -52,6 +56,12 @@ export default function Product() {
                 ))}
               </ul>
             )}
+
+            <div className="pdp__trust">
+              <span>Plant-based</span>
+              <span>Dermatologically tested</span>
+              <span>KKM-NPRA certified</span>
+            </div>
 
             <div className="pdp__buy">
               <div className="qty qty--lg">

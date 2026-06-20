@@ -1,6 +1,8 @@
 import { useEffect } from 'react'
 import { Routes, Route, useLocation } from 'react-router-dom'
 import SmoothScroll from './lib/SmoothScroll.jsx'
+import Preloader from './lib/Preloader.jsx'
+import Cursor from './lib/Cursor.jsx'
 import Nav from './components/Nav.jsx'
 import Footer from './components/Footer.jsx'
 import CartDrawer from './components/CartDrawer.jsx'
@@ -42,6 +44,8 @@ export default function App() {
 
   return (
     <SmoothScroll>
+      <Preloader />
+      <Cursor />
       <Nav />
       <main>
         <Routes>

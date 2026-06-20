@@ -3,8 +3,11 @@ import { Link } from 'react-router-dom'
 import { Canvas, useFrame } from '@react-three/fiber'
 import { MeshTransmissionMaterial, Environment, Lightformer, GradientTexture } from '@react-three/drei'
 import * as THREE from 'three'
+import gsap from 'gsap'
 import { ScrollTrigger } from 'gsap/ScrollTrigger'
 import { useCart } from '../store/cart.js'
+import { useIntro } from '../store/intro.js'
+import Magnetic from '../lib/Magnetic.jsx'
 import { getProduct, formatPrice } from '../data/products.js'
 
 const flagship = getProduct('probiotic-amino-cleanser')
@@ -127,6 +130,33 @@ export default function WaterDropHero() {
   const root = useRef()
   const progress = useRef(0)
   const add = useCart((s) => s.add)
+  const introDone = useIntro((s) => s.done)
+
+  /* Park the intro copy off-screen immediately so it can rise in once the
+     preloader curtain lifts. Skipped entirely under reduced motion. */
+  useEffect(() => {
+    if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return
+    const ctx = gsap.context(() => {
+      gsap.set('.dh__copy .word', { yPercent: 110 })
+      gsap.set(['.dh__copy .eyebrow', '.dh__copy .lede', '.dh__cta'], { autoAlpha: 0, y: 18 })
+    }, root)
+    return () => ctx.revert()
+  }, [])
+
+  /* Choreograph the headline reveal to the moment the curtain finishes. */
+  useEffect(() => {
+    if (!introDone) return
+    if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return
+    const ctx = gsap.context(() => {
+      gsap
+        .timeline({ defaults: { ease: 'power4.out' } })
+        .to('.dh__copy .eyebrow', { autoAlpha: 1, y: 0, duration: 0.6 })
+        .to('.dh__copy .word', { yPercent: 0, duration: 1.1, stagger: 0.12 }, '-=0.25')
+        .to('.dh__copy .lede', { autoAlpha: 1, y: 0, duration: 0.9 }, '-=0.7')
+        .to('.dh__cta', { autoAlpha: 1, y: 0, duration: 0.9 }, '-=0.7')
+    }, root)
+    return () => ctx.revert()
+  }, [introDone])
 
   useEffect(() => {
     const reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches
@@ -186,22 +216,31 @@ export default function WaterDropHero() {
         {/* Intro copy — fades out as you scroll into the product reveal */}
         <div className="container dh__copy">
           <span className="eyebrow">Raw Beauté · Made in Malaysia</span>
-          <h1>
-            Hydration,
-            <br />
-            <em>engineered.</em>
+          <h1 className="dh__title">
+            <span className="line">
+              <span className="word">Hydration,</span>
+            </span>
+            <span className="line">
+              <span className="word">
+                <em>engineered.</em>
+              </span>
+            </span>
           </h1>
           <p className="lede">
             Plant-based, probiotic skincare that floods the skin with moisture and
             rebuilds the barrier — clinically gentle, visibly dewy.
           </p>
           <div className="dh__cta">
-            <Link to="/shop" className="btn">
-              Shop the ritual
-            </Link>
-            <Link to="/about" className="textlink">
-              Our science →
-            </Link>
+            <Magnetic className="dh__magnet">
+              <Link to="/shop" className="btn">
+                Shop the ritual
+              </Link>
+            </Magnetic>
+            <Magnetic className="dh__magnet" strength={0.3}>
+              <Link to="/about" className="textlink">
+                Our science →
+              </Link>
+            </Magnetic>
           </div>
         </div>
 

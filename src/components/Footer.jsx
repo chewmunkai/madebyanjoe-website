@@ -7,7 +7,7 @@ export default function Footer() {
     <footer className="footer">
       <div className="container footer__inner">
         <div className="footer__brand">
-          <div className="wordmark footer__word">ANJOE</div>
+          <img className="footer__logo" src="/anjoe-logo-white.png" alt="ANJOE Raw Beauté" />
           <p className="footer__tag">
             Raw Beauté — plant-based, probiotic skincare engineered for deep
             hydration and a resilient barrier.

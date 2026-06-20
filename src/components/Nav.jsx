@@ -1,9 +1,10 @@
-import { Link, NavLink } from 'react-router-dom'
+import { Link, NavLink, useLocation } from 'react-router-dom'
 import { useEffect, useState } from 'react'
 import { useCart, selectCount } from '../store/cart.js'
 
 export default function Nav() {
   const [scrolled, setScrolled] = useState(false)
+  const { pathname } = useLocation()
   const count = useCart(selectCount)
   const open = useCart((s) => s.open)
 
@@ -14,8 +15,13 @@ export default function Nav() {
     return () => window.removeEventListener('scroll', onScroll)
   }, [])
 
+  const onHome = pathname === '/'
+  /* Light nav over the dark hero film; solid bone nav once scrolled / off-home. */
+  const invert = onHome && !scrolled
+  const solid = scrolled || !onHome
+
   return (
-    <header className={`nav ${scrolled ? 'nav--solid' : ''}`}>
+    <header className={`nav${solid ? ' nav--solid' : ''}${invert ? ' nav--invert' : ''}`}>
       <div className="nav__inner container">
         <nav className="nav__group nav__group--left">
           <NavLink to="/shop" className="navlink">
@@ -26,8 +32,12 @@ export default function Nav() {
           </NavLink>
         </nav>
 
-        <Link to="/" className="nav__brand wordmark" aria-label="ANJOE home">
-          ANJOE
+        <Link to="/" className="nav__brand" aria-label="ANJOE home">
+          <img
+            className="nav__logo"
+            src={invert ? '/anjoe-logo-white.png' : '/anjoe-logo.png'}
+            alt="ANJOE Raw Beauté"
+          />
         </Link>
 
         <div className="nav__group nav__group--right">

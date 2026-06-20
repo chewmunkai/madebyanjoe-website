@@ -24,11 +24,13 @@ export default function Shop() {
       <header className="page-hero">
         <div className="page-hero__wash" />
         <div className="container">
-          <span className="eyebrow">Shop</span>
-          <h1>The Collection</h1>
+          <span className="eyebrow">The collection</span>
+          <h1>
+            Every step of the <em>ritual</em>.
+          </h1>
           <p className="lede">
-            Every formula and tool in the ANJOE ritual — barrier-first,
-            plant-based, made in Malaysia.
+            Barrier-first, plant-based, made in Malaysia — cleansers, serums,
+            masks and the tools to work them in.
           </p>
         </div>
       </header>
