@@ -21,9 +21,10 @@ export default function EditorialHero() {
     if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return
     const ctx = gsap.context(() => {
       gsap.set('.eh__title .word', { yPercent: 115 })
-      gsap.set(['.eh__eyebrow', '.eh__lede', '.eh__cta', '.eh__rail', '.eh__meta > *'], {
-        autoAlpha: 0,
-      })
+      gsap.set(
+        ['.eh__eyebrow', '.eh__lede', '.eh__cta', '.eh__trust', '.eh__rail', '.eh__meta > *'],
+        { autoAlpha: 0 }
+      )
     }, root)
     return () => ctx.revert()
   }, [])
@@ -38,6 +39,7 @@ export default function EditorialHero() {
         .to('.eh__title .word', { yPercent: 0, duration: 1.15, stagger: 0.13 }, '-=0.2')
         .to('.eh__lede', { autoAlpha: 1, duration: 0.8 }, '-=0.55')
         .to('.eh__cta', { autoAlpha: 1, duration: 0.8 }, '-=0.6')
+        .to('.eh__trust', { autoAlpha: 1, duration: 0.8 }, '-=0.5')
         .to(['.eh__rail', '.eh__meta > *'], { autoAlpha: 1, duration: 0.8, stagger: 0.08 }, '-=0.7')
     }, root)
     return () => ctx.revert()
@@ -85,7 +87,7 @@ export default function EditorialHero() {
 
       <div className="container eh__grid">
         <div className="eh__copy">
-          <span className="eyebrow eh__eyebrow">Plant-based · Probiotic · Barrier-first</span>
+          <span className="eyebrow eh__eyebrow">Plant-based probiotic skincare</span>
           <h1 className="eh__title">
             <span className="line">
               <span className="word">Hydration,</span>
@@ -112,6 +114,12 @@ export default function EditorialHero() {
               </Link>
             </Magnetic>
           </div>
+          <ul className="eh__trust" aria-label="Why ANJOE">
+            <li>Pharmacist-founded</li>
+            <li>KKM-NPRA certified</li>
+            <li>Dermatologically tested</li>
+            <li>Ships worldwide from RM7</li>
+          </ul>
         </div>
       </div>
 

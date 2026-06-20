@@ -7,7 +7,7 @@ export default function Footer() {
     <footer className="footer">
       <div className="container footer__inner">
         <div className="footer__brand">
-          <img className="footer__logo" src="/anjoe-logo-white.png" alt="ANJOE Raw Beauté" />
+          <img className="footer__logo" src={`${import.meta.env.BASE_URL}anjoe-logo-white.png`} alt="ANJOE Raw Beauté" />
           <p className="footer__tag">
             Raw Beauté — plant-based, probiotic skincare engineered for deep
             hydration and a resilient barrier.
@@ -40,31 +40,19 @@ export default function Footer() {
         <nav className="footer__col">
           <h4>Company</h4>
           <Link to="/about">About us</Link>
-          <a href="https://www.madebyanjoe.com/pages/careers" target="_blank" rel="noreferrer">
-            Careers
-          </a>
+          <Link to="/careers">Careers</Link>
           <a href="https://www.madebyanjoe.com/blog" target="_blank" rel="noreferrer">
             Journal
           </a>
-          <a href="https://www.madebyanjoe.com/contact" target="_blank" rel="noreferrer">
-            Contact
-          </a>
+          <Link to="/contact">Contact</Link>
         </nav>
 
         <nav className="footer__col">
           <h4>Support</h4>
-          <a href="https://www.madebyanjoe.com/pages/faq" target="_blank" rel="noreferrer">
-            FAQ
-          </a>
-          <a href="https://www.madebyanjoe.com/pages/shipping" target="_blank" rel="noreferrer">
-            Shipping
-          </a>
-          <a href="https://www.madebyanjoe.com/pages/privacy-policy" target="_blank" rel="noreferrer">
-            Privacy
-          </a>
-          <a href="https://www.madebyanjoe.com/pages/terms-of-service" target="_blank" rel="noreferrer">
-            Terms
-          </a>
+          <Link to="/faq">FAQ</Link>
+          <Link to="/shipping">Shipping &amp; returns</Link>
+          <Link to="/privacy">Privacy</Link>
+          <Link to="/terms">Terms</Link>
         </nav>
       </div>
 

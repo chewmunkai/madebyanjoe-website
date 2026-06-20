@@ -1,0 +1,1028 @@
+/* ANJOE — Product detail page (dimensional redesign)
+   Built strictly from existing tokens + the Liquid Editorial language.
+   Scoped under .pdpx so nothing here can leak into other pages.
+   Loaded at the top of src/pages/Product.jsx. */
+
+.pdpx {
+  --pdpx-edge: clamp(20px, 4vw, 44px);
+  position: relative;
+  padding-top: calc(var(--header-h) + clamp(28px, 5vw, 56px));
+}
+
+/* ---------------------------------------------------------------------------
+   BREADCRUMB + top meta rail
+   --------------------------------------------------------------------------- */
+/* breadcrumb is a small frosted-glass toolbar pill — it floats off the bone
+   field so the page opens on a glass note, not a flat mono row. Self-glassed
+   (local recipe) so it can keep its own pill radius + compact padding. */
+.pdpx-crumb {
+  display: inline-flex;
+  align-items: center;
+  gap: 12px;
+  font-family: var(--font-mono);
+  font-size: 12px;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--text-muted);
+  margin-bottom: clamp(28px, 4vw, 44px);
+  position: relative;
+  isolation: isolate;
+  z-index: 2;
+  padding: 9px 18px;
+  border-radius: var(--radius-pill);
+  background: var(--glass-tint);
+  -webkit-backdrop-filter: blur(14px) saturate(1.6);
+  backdrop-filter: blur(14px) saturate(1.6);
+  border: 1px solid rgba(255, 255, 255, 0.5);
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.6),
+    0 10px 26px -18px rgba(30, 27, 22, 0.4);
+}
+.pdpx-crumb a {
+  border-bottom: 1px solid transparent;
+  transition: color var(--dur-fast), border-color var(--dur-fast);
+}
+.pdpx-crumb a:hover {
+  color: var(--ink-900);
+  border-bottom-color: currentColor;
+}
+.pdpx-crumb__sep {
+  color: var(--ink-300);
+}
+.pdpx-crumb__here {
+  color: var(--ink-700);
+}
+
+/* ---------------------------------------------------------------------------
+   MAIN SPLIT — overlapping gallery (left) + sticky editorial buy column (right)
+   Broken grid: the gallery is wider and lifts; the info column floats above a
+   shared atmosphere. Aligned to a 1.08 / 0.92 asymmetry, not a flat 50/50.
+   --------------------------------------------------------------------------- */
+.pdpx-split {
+  display: grid;
+  grid-template-columns: 1.06fr 0.94fr;
+  gap: clamp(32px, 5vw, 80px);
+  align-items: start;
+  position: relative;
+}
+
+/* vertical mono rail running down the left edge of the gallery */
+.pdpx-rail {
+  position: absolute;
+  left: calc(var(--pdpx-edge) * -1 + 4px);
+  top: 12%;
+  z-index: 3;
+  display: inline-flex;
+  align-items: center;
+  gap: 16px;
+  writing-mode: vertical-rl;
+  transform: rotate(180deg);
+  font-family: var(--font-mono);
+  font-size: 11px;
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+  color: var(--text-muted);
+  white-space: nowrap;
+  pointer-events: none;
+}
+/* a short blush hairline leads the rail instead of a dashed/✦ flourish */
+.pdpx-rail::before {
+  content: '';
+  width: 1px;
+  height: 34px;
+  background: linear-gradient(var(--blush-300), transparent);
+}
+
+/* ---- GALLERY (layered depth stack) ------------------------------------- */
+.pdpx-gallery {
+  position: relative;
+  z-index: 1;
+}
+
+/* ENGRAVED ARCHIVAL CIPHER — replaces the overused faded italic-word ghost.
+   A thin vertical plate to the left of the niche: a big engraved catalogue
+   numeral (display serif), a hairline, the product type, and a tiny "ANJOE ·
+   No." footer mark — reading like a museum vitrine label etched into the wall.
+   This is crafted and brand-specific, not the generic ghost-word cliché. */
+.pdpx-gallery__cipher {
+  position: absolute;
+  z-index: 0;
+  top: clamp(-30px, -3.5vw, -14px);
+  left: clamp(-30px, -3.4vw, -10px);
+  display: grid;
+  justify-items: center;
+  gap: 14px;
+  pointer-events: none;
+  user-select: none;
+  will-change: transform;
+}
+.pdpx-gallery__cipher-no {
+  font-family: var(--font-display);
+  font-style: italic;
+  font-size: clamp(92px, 14vw, 188px);
+  line-height: 0.78;
+  letter-spacing: -0.04em;
+  /* an engraved figure: bone fill with an inset ink shadow, not a flat tint */
+  color: transparent;
+  background: linear-gradient(180deg, var(--ink-900) 0%, rgba(30, 27, 22, 0.55) 100%);
+  -webkit-background-clip: text;
+  background-clip: text;
+  opacity: 0.07;
+}
+.pdpx-gallery__cipher-rule {
+  width: 1px;
+  height: clamp(54px, 8vw, 110px);
+  background: linear-gradient(var(--blush-300), transparent);
+}
+.pdpx-gallery__cipher-type {
+  writing-mode: vertical-rl;
+  transform: rotate(180deg);
+  font-family: var(--font-mono);
+  font-size: 11px;
+  letter-spacing: 0.34em;
+  text-transform: uppercase;
+  color: var(--ink-400);
+}
+.pdpx-gallery__cipher-mark {
+  font-family: var(--font-mono);
+  font-size: 9px;
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+  color: var(--ink-300);
+}
+
+/* the washed, arched frame the product floats inside.
+   De-Claude: the niche is no longer a flat bone field — it's a layered tonal
+   well (blush crown → bone body → stone floor) so the arch reads as carved
+   depth, with squircle corners tying it to the glass radius language. */
+.pdpx-stage {
+  position: relative;
+  z-index: 1;
+  aspect-ratio: 4 / 5;
+  border-radius: clamp(120px, 18vw, 220px) clamp(120px, 18vw, 220px)
+    var(--radius-glass) var(--radius-glass);
+  overflow: hidden;
+  display: grid;
+  place-items: center;
+  background:
+    linear-gradient(168deg, rgba(242, 222, 227, 0.55) 0%, transparent 34%),
+    linear-gradient(8deg, rgba(216, 207, 189, 0.6) 0%, transparent 30%),
+    /* per-page signature accent: a soft vitrine light-shaft falling from the
+       crown of the arch onto the object, anchoring the gallery's lit-niche
+       identity (unique to the PDP, not a generic radial wash) */
+    linear-gradient(177deg, rgba(250, 246, 239, 0.55) 0%, transparent 26%),
+    var(--hero-wash);
+  border: 1px solid var(--border-cool);
+  box-shadow: var(--glass-rim), var(--shadow-lg);
+}
+/* inner light + grain so the frame reads as a lit niche, not a flat panel.
+   A soft floor-contact darkening anchors the bottle so it sits IN the niche. */
+.pdpx-stage::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background:
+    radial-gradient(58% 46% at 32% 16%, rgba(250, 246, 239, 0.78), transparent 60%),
+    radial-gradient(72% 60% at 78% 98%, rgba(227, 184, 193, 0.3), transparent 64%),
+    radial-gradient(46% 16% at 50% 99%, rgba(30, 27, 22, 0.12), transparent 70%);
+  pointer-events: none;
+}
+
+/* SIGNATURE MOMENT — a slow specular catch-light that sweeps across the niche
+   like light raking a polished glass shelf. Translated from the 21st.dev
+   liquid-glass fePointLight/feSpecularLighting reference into a pure-CSS
+   diagonal gradient band drifting on a long, calm loop. Pauses on hover so the
+   highlight settles where the eye lands, and is fully removed for reduced
+   motion / reduced transparency. */
+.pdpx-stage__sweep {
+  position: absolute;
+  z-index: 2;
+  inset: -40% -60%;
+  background: linear-gradient(
+    104deg,
+    transparent 38%,
+    rgba(255, 255, 255, 0.5) 47%,
+    rgba(255, 255, 255, 0.82) 50%,
+    rgba(255, 255, 255, 0.5) 53%,
+    transparent 62%
+  );
+  mix-blend-mode: soft-light;
+  pointer-events: none;
+  transform: translateX(-22%);
+  animation: pdpx-sweep 7.5s var(--ease-standard) infinite;
+}
+.pdpx-gallery:hover .pdpx-stage__sweep {
+  animation-play-state: paused;
+}
+@keyframes pdpx-sweep {
+  0%,
+  18% {
+    transform: translateX(-30%);
+    opacity: 0;
+  }
+  42% {
+    opacity: 1;
+  }
+  68% {
+    transform: translateX(30%);
+    opacity: 0;
+  }
+  100% {
+    transform: translateX(30%);
+    opacity: 0;
+  }
+}
+.pdpx-stage::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  opacity: 0.05;
+  pointer-events: none;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='2' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+}
+
+/* SIGNATURE MOMENT — REFRACTIVE GLASS LENS-RIM.
+   A thin glass ring hugging the inside of the niche arch that refracts the
+   wash behind it, so the product reads as sitting inside a real vitrine of
+   curved glass — not pasted onto a flat panel. Translated from the 21st.dev
+   "Liquid Glass" feDisplacementMap + feSpecularLighting reference into a pure
+   backdrop-filter ring: backdrop blur+saturate+contrast bends the field at the
+   lip, an inset specular rim catches the light, and a faint outer-edge magnify
+   gradient simulates the lens curvature. Inherits the niche's arched radius so
+   the curvature is exact, with no mismatched corner. */
+.pdpx-stage__lens {
+  position: absolute;
+  z-index: 2;
+  inset: 0;
+  border-radius: inherit;
+  pointer-events: none;
+  /* the refraction itself — only a hair of blur so it reads as glass, not fog */
+  -webkit-backdrop-filter: blur(2px) saturate(1.25) contrast(1.04);
+  backdrop-filter: blur(2px) saturate(1.25) contrast(1.04);
+  /* mask to a thin band at the very edge so only the rim refracts (lens lip) */
+  -webkit-mask: radial-gradient(140% 120% at 50% 36%, transparent 0 86%, #000 92%);
+  mask: radial-gradient(140% 120% at 50% 36%, transparent 0 86%, #000 92%);
+  /* curved specular edge + inner shadow line = the glass thickness */
+  box-shadow:
+    inset 0 1px 1px rgba(255, 255, 255, 0.85),
+    inset 0 0 0 1px rgba(255, 255, 255, 0.4),
+    inset 0 -10px 24px -10px rgba(30, 27, 22, 0.22);
+}
+
+/* floating accent glow behind the bottle (dimensional halo) */
+.pdpx-stage__halo {
+  position: absolute;
+  z-index: 1;
+  width: 64%;
+  aspect-ratio: 1;
+  border-radius: 50%;
+  background: radial-gradient(circle, rgba(227, 184, 193, 0.55), transparent 66%);
+  filter: blur(30px);
+  pointer-events: none;
+}
+
+/* the product image — foreground, lifted off the niche with a long shadow */
+.pdpx-bottle {
+  position: relative;
+  z-index: 2;
+  max-height: 82%;
+  width: auto;
+  filter: drop-shadow(0 28px 46px rgba(30, 27, 22, 0.26));
+  will-change: transform;
+}
+
+/* the size badge that overlaps the bottom-left edge of the stage.
+   Now liquid glass (.glass) — we only position it + set type here, and pin a
+   pill radius so it stays a lozenge rather than a squircle. The ✦ is gone;
+   a small clay-blush mark stands in as a crafted brand bullet. */
+.pdpx-stage .pdpx-stage__badge {
+  position: absolute;
+  z-index: 3;
+  left: clamp(10px, 2vw, 22px);
+  bottom: clamp(10px, 2vw, 22px);
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  border-radius: var(--radius-pill);
+  padding: 9px 16px;
+  font-family: var(--font-mono);
+  font-size: 11px;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--ink-700);
+}
+/* crafted brand bullet — a small lit clay bead, not a glyph */
+.pdpx-stage__badge-mark {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background:
+    radial-gradient(circle at 32% 30%, #f4e2e7, var(--blush-500) 78%);
+  box-shadow: 0 0 0 3px rgba(201, 139, 151, 0.16);
+  flex: 0 0 auto;
+}
+
+/* SIGNATURE caption — a thin glass spec-strip clipped to the niche's lower-right
+   that reads "<type> — ANJOE" like an engraved museum label. Replaces the old
+   "type · ANJOE" rail motif with something that belongs to the gallery. */
+.pdpx-stage .pdpx-stage__caption {
+  position: absolute;
+  z-index: 3;
+  right: clamp(10px, 2vw, 22px);
+  bottom: clamp(10px, 2vw, 22px);
+  display: inline-flex;
+  align-items: center;
+  gap: 11px;
+  border-radius: var(--radius-pill);
+  padding: 8px 16px;
+  font-family: var(--font-mono);
+  font-size: 10px;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--ink-700);
+}
+.pdpx-stage__caption-no {
+  color: var(--ink-900);
+}
+.pdpx-stage__caption-line {
+  width: 16px;
+  height: 1px;
+  background: var(--blush-300);
+}
+.pdpx-stage__caption-anjoe {
+  color: var(--text-muted);
+  letter-spacing: 0.24em;
+}
+
+/* "exploded" thumbnail-like cards stacked behind/beside the stage for depth.
+   These are decorative facets of the same hero photo — they give the gallery a
+   layered, multi-angle feel without inventing fake photography. */
+.pdpx-facets {
+  position: absolute;
+  z-index: 0;
+  right: clamp(-14px, -1.6vw, -6px);
+  bottom: clamp(-18px, -2.4vw, -10px);
+  display: grid;
+  gap: 12px;
+}
+/* facets are now frosted-glass chips: translucent tint + backdrop blur +
+   specular rim, with the squircle radius so they speak the glass language
+   instead of reading as flat white photo tiles. */
+.pdpx-facet {
+  position: relative;
+  isolation: isolate;
+  width: clamp(78px, 9vw, 116px);
+  aspect-ratio: 4 / 5;
+  border-radius: clamp(16px, 1.4vw, 22px);
+  overflow: hidden;
+  background: var(--glass-tint-strong);
+  -webkit-backdrop-filter: blur(12px) saturate(1.6);
+  backdrop-filter: blur(12px) saturate(1.6);
+  border: 1px solid rgba(255, 255, 255, 0.5);
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.7), var(--shadow-md);
+  display: grid;
+  place-items: center;
+}
+.pdpx-facet::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(
+    133deg,
+    rgba(255, 255, 255, 0.5) 0%,
+    rgba(255, 255, 255, 0.06) 28%,
+    transparent 54%
+  );
+  pointer-events: none;
+}
+.pdpx-facet img {
+  position: relative;
+  max-width: 74%;
+  max-height: 74%;
+  width: auto;
+  filter: drop-shadow(0 6px 12px rgba(30, 27, 22, 0.18));
+}
+.pdpx-facet:nth-child(1) {
+  transform: rotate(-4deg);
+}
+.pdpx-facet:nth-child(2) {
+  transform: translateX(10px) rotate(3deg);
+}
+
+/* ---- INFO (sticky editorial buy column) -------------------------------- */
+.pdpx-info {
+  position: sticky;
+  top: calc(var(--header-h) + 24px);
+  z-index: 2;
+}
+.pdpx-info__eyebrow {
+  margin-bottom: 16px;
+}
+.pdpx-info__title {
+  font-size: clamp(38px, 5vw, 68px);
+  line-height: 1.02;
+  letter-spacing: var(--ls-tight);
+  margin: 0 0 18px;
+}
+.pdpx-info__title em {
+  font-style: italic;
+  color: var(--blush-500);
+}
+
+/* price + rating sit on one editorial line with a hairline under */
+.pdpx-priceline {
+  display: flex;
+  align-items: baseline;
+  flex-wrap: wrap;
+  gap: 10px 22px;
+  padding-bottom: 22px;
+  border-bottom: 1px solid var(--border-subtle);
+}
+.pdpx-price {
+  font-family: var(--font-display);
+  font-size: clamp(26px, 3vw, 34px);
+  color: var(--ink-900);
+  line-height: 1;
+}
+.pdpx-price__size {
+  font-family: var(--font-mono);
+  font-size: 12px;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--text-muted);
+  margin-left: 8px;
+}
+.pdpx-rating {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  margin-left: auto;
+}
+.pdpx-rating__stars {
+  color: var(--blush-500);
+  font-size: 15px;
+  letter-spacing: 2px;
+}
+.pdpx-rating em {
+  font-style: normal;
+  font-family: var(--font-mono);
+  font-size: 11px;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--text-secondary);
+}
+
+.pdpx-lede {
+  margin: 22px 0 0;
+  max-width: 44ch;
+}
+
+/* note chips — frosted glass beads, each led by a tiny lit clay dot (a crafted
+   brand mark, not a ✦). Hover lifts + warms so they feel tactile. */
+.pdpx-notes {
+  list-style: none;
+  padding: 0;
+  margin: 20px 0 0;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+.pdpx-notes li {
+  display: inline-flex;
+  align-items: center;
+  gap: 9px;
+  font-family: var(--font-mono);
+  font-size: 12px;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: var(--ink-700);
+  background: var(--glass-tint);
+  -webkit-backdrop-filter: blur(12px) saturate(1.5);
+  backdrop-filter: blur(12px) saturate(1.5);
+  border: 1px solid rgba(255, 255, 255, 0.5);
+  border-radius: var(--radius-pill);
+  padding: 7px 15px 7px 12px;
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.6), var(--shadow-xs);
+  transition: transform var(--dur-fast) var(--ease-out),
+    box-shadow var(--dur-fast), color var(--dur-fast);
+}
+.pdpx-notes li::before {
+  content: '';
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  flex: 0 0 auto;
+  background: radial-gradient(circle at 32% 30%, #f4e2e7, var(--blush-500) 80%);
+  box-shadow: 0 0 0 2.5px rgba(201, 139, 151, 0.14);
+}
+.pdpx-notes li:hover {
+  transform: translateY(-2px);
+  color: var(--ink-900);
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.7), var(--shadow-sm);
+}
+
+/* trust box — frosted glass plaque. Divider is a tiny clay bead, not a ✦. */
+.pdpx-trust {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: center;
+  gap: 8px 0;
+  margin: 26px 0 0;
+  padding: 14px 18px;
+  font-family: var(--font-mono);
+  font-size: 11px;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--text-secondary);
+}
+.pdpx-trust span {
+  display: inline-flex;
+  align-items: center;
+}
+.pdpx-trust span:not(:last-child)::after {
+  content: '';
+  width: 3px;
+  height: 3px;
+  border-radius: 50%;
+  margin: 0 16px;
+  background: var(--blush-300);
+}
+
+/* buy deck — qty stepper + magnetic add-to-bag held inside a frosted glass tray.
+   Tighter top margin than the surrounding rhythm so the deck reads as the
+   primary action block; the glass lifts it off the page. */
+.pdpx-buy {
+  display: flex;
+  gap: 14px;
+  align-items: stretch;
+  margin: 28px 0 0;
+  padding: 14px 16px 16px;
+  flex-wrap: wrap;
+}
+/* a small engraved header that gives the primary action its own micro-section
+   instead of a row floating without context — crafted rhythm, not a flat tray */
+.pdpx-buy__label {
+  flex: 1 0 100%;
+  font-family: var(--font-mono);
+  font-size: 10px;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: var(--text-muted);
+  margin-bottom: 2px;
+}
+.pdpx-buy .qty--lg {
+  align-self: center;
+}
+.pdpx-buy__mag {
+  flex: 1;
+  min-width: 210px;
+}
+.pdpx-add {
+  width: 100%;
+  padding-block: 18px;
+}
+
+/* reassurance box — frosted glass card. Each line is led by a small lit sage
+   tick bead (a crafted mark) rather than a repeated ✦ glyph. */
+.pdpx-assure {
+  list-style: none;
+  margin: 16px 0 0;
+  padding: 20px 22px;
+  display: grid;
+  gap: 13px;
+}
+.pdpx-assure li {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  font-size: 14px;
+  color: var(--text-secondary);
+}
+.pdpx-assure__ic {
+  width: 16px;
+  height: 16px;
+  flex: 0 0 auto;
+  border-radius: 50%;
+  background: radial-gradient(circle at 34% 30%, #e4ebdc, var(--sage-500) 82%);
+  box-shadow: inset 0 1px 1px rgba(255, 255, 255, 0.6),
+    0 1px 2px rgba(30, 27, 22, 0.14);
+  position: relative;
+}
+/* tiny tick inside the bead */
+.pdpx-assure__ic::after {
+  content: '';
+  position: absolute;
+  left: 5px;
+  top: 4px;
+  width: 4px;
+  height: 7px;
+  border: solid var(--white);
+  border-width: 0 1.4px 1.4px 0;
+  transform: rotate(40deg);
+}
+
+/* accordions — frosted glass card. Consistent squircle corners (one radius
+   language, no mismatched hairline box); rows divided by soft inner hairlines
+   that recede toward the rim, and the open row gets a faint blush wash so the
+   active panel feels lit from within the glass. */
+.pdpx-acc {
+  margin: 30px 0 0;
+  padding: 4px clamp(16px, 2.4vw, 22px);
+}
+.pdpx-acc details {
+  border-bottom: 1px solid rgba(30, 27, 22, 0.08);
+}
+.pdpx-acc details:last-child {
+  border-bottom: 0;
+}
+.pdpx-acc details[open] {
+  background: linear-gradient(180deg, rgba(242, 222, 227, 0.34), transparent 70%);
+  border-radius: var(--radius-md);
+}
+.pdpx-acc summary {
+  cursor: pointer;
+  list-style: none;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  padding: 19px 4px;
+  font-family: var(--font-ui);
+  font-weight: var(--fw-medium);
+  font-size: 15px;
+  color: var(--ink-900);
+  transition: color var(--dur-fast);
+}
+.pdpx-acc summary:hover {
+  color: var(--blush-500);
+}
+.pdpx-acc summary::-webkit-details-marker {
+  display: none;
+}
+.pdpx-acc summary > span {
+  display: inline-flex;
+  align-items: baseline;
+  gap: 14px;
+}
+/* index numeral set in the display serif — a crafted figure, not a mono tag */
+.pdpx-acc__idx {
+  font-family: var(--font-display);
+  font-style: italic;
+  font-size: 16px;
+  letter-spacing: 0;
+  color: var(--blush-500);
+  min-width: 1.4em;
+}
+/* a circular +/− mark that rotates open instead of swapping a glyph */
+.pdpx-acc summary::after {
+  content: '';
+  width: 18px;
+  height: 18px;
+  flex: 0 0 auto;
+  position: relative;
+  border-radius: 50%;
+  border: 1px solid var(--ink-300);
+  transition: transform var(--dur-normal) var(--ease-out),
+    border-color var(--dur-fast);
+  background:
+    linear-gradient(var(--ink-700), var(--ink-700)) center / 8px 1px no-repeat,
+    linear-gradient(var(--ink-700), var(--ink-700)) center / 1px 8px no-repeat;
+}
+.pdpx-acc summary:hover::after {
+  border-color: var(--blush-300);
+}
+.pdpx-acc details[open] summary::after {
+  transform: rotate(135deg);
+}
+.pdpx-acc details p {
+  margin: 0 0 22px;
+  padding-left: calc(1.4em + 14px);
+  color: var(--text-secondary);
+  font-size: 15px;
+  line-height: 1.65;
+  max-width: 56ch;
+}
+
+/* ---------------------------------------------------------------------------
+   COMPLETE THE RITUAL — richer related section, broken editorial grid
+   --------------------------------------------------------------------------- */
+.pdpx-ritual {
+  position: relative;
+  overflow: hidden;
+}
+/* giant faded section word for depth */
+.pdpx-ritual__ghost {
+  position: absolute;
+  z-index: 0;
+  right: -2%;
+  top: clamp(-20px, -3vw, -8px);
+  margin: 0;
+  font-family: var(--font-display);
+  font-style: italic;
+  font-size: clamp(80px, 16vw, 230px);
+  line-height: 0.86;
+  letter-spacing: -0.04em;
+  color: var(--ink-900);
+  opacity: 0.045;
+  pointer-events: none;
+  user-select: none;
+  white-space: nowrap;
+}
+.pdpx-ritual__inner {
+  position: relative;
+  z-index: 1;
+}
+.pdpx-ritual__head {
+  display: grid;
+  grid-template-columns: 1fr auto;
+  align-items: end;
+  gap: 24px;
+  border-top: 1px solid var(--ink-900);
+  padding-top: 26px;
+  margin-bottom: clamp(36px, 5vw, 56px);
+}
+.pdpx-ritual__head h2 {
+  margin-top: 14px;
+  font-size: clamp(34px, 5vw, 60px);
+}
+.pdpx-ritual__head h2 em {
+  font-style: italic;
+  color: var(--blush-500);
+}
+.pdpx-ritual__note {
+  font-family: var(--font-mono);
+  font-size: 12px;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--text-secondary);
+  margin: 0;
+  text-align: right;
+  max-width: 28ch;
+}
+
+/* broken grid: numbered step rows wrapping each related ProductCard,
+   staggered vertically so the trio reads dimensional, not a flat strip */
+.pdpx-ritual__grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: clamp(20px, 3vw, 40px);
+}
+.pdpx-ritual__step {
+  position: relative;
+}
+.pdpx-ritual__step:nth-child(2) {
+  transform: translateY(clamp(16px, 3vw, 40px));
+}
+.pdpx-ritual__step-tag {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 16px;
+  font-family: var(--font-mono);
+  font-size: 11px;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--text-muted);
+}
+.pdpx-ritual__step-num {
+  font-family: var(--font-display);
+  font-style: italic;
+  font-size: clamp(22px, 2.6vw, 30px);
+  color: var(--blush-500);
+  line-height: 1;
+}
+.pdpx-ritual__step-rule {
+  flex: 1;
+  height: 1px;
+  background: var(--border-subtle);
+}
+
+/* lift the related ProductCard media a touch for depth in this section */
+.pdpx-ritual__step .pcard__media {
+  box-shadow: var(--shadow-md);
+  transition: transform var(--dur-normal) var(--ease-out),
+    box-shadow var(--dur-normal);
+}
+.pdpx-ritual__step:hover .pcard__media {
+  transform: translateY(-4px);
+  box-shadow: var(--shadow-lg);
+}
+
+/* ---------------------------------------------------------------------------
+   404 fallback (kept) — lifted onto the same atmosphere
+   --------------------------------------------------------------------------- */
+.pdpx-missing {
+  text-align: center;
+  padding-top: calc(var(--header-h) + clamp(64px, 12vw, 120px));
+  padding-bottom: clamp(64px, 12vw, 120px);
+  position: relative;
+}
+.pdpx-missing__ghost {
+  position: absolute;
+  z-index: 0;
+  left: 50%;
+  top: 30%;
+  transform: translate(-50%, -50%);
+  margin: 0;
+  font-family: var(--font-display);
+  font-style: italic;
+  font-size: clamp(160px, 34vw, 440px);
+  line-height: 0.8;
+  color: var(--ink-900);
+  opacity: 0.05;
+  pointer-events: none;
+  user-select: none;
+}
+.pdpx-missing > * {
+  position: relative;
+  z-index: 1;
+}
+.pdpx-missing h1 {
+  margin: 12px 0 28px;
+}
+
+/* ---------------------------------------------------------------------------
+   RESPONSIVE
+   --------------------------------------------------------------------------- */
+@media (max-width: 980px) {
+  .pdpx-split {
+    grid-template-columns: 1fr;
+    gap: clamp(32px, 6vw, 56px);
+  }
+  .pdpx-info {
+    position: relative;
+    top: 0;
+  }
+  .pdpx-rail {
+    display: none;
+  }
+  .pdpx-facets {
+    right: 0;
+  }
+}
+@media (max-width: 700px) {
+  .pdpx-ritual__head {
+    grid-template-columns: 1fr;
+    align-items: start;
+  }
+  .pdpx-ritual__note {
+    text-align: left;
+  }
+  .pdpx-ritual__grid {
+    grid-template-columns: 1fr;
+    gap: clamp(28px, 8vw, 44px);
+  }
+  .pdpx-ritual__step:nth-child(2) {
+    transform: none;
+  }
+}
+@media (max-width: 520px) {
+  .pdpx-priceline {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 14px;
+  }
+  .pdpx-rating {
+    margin-left: 0;
+  }
+  .pdpx-facets {
+    display: none;
+  }
+}
+
+/* ---------------------------------------------------------------------------
+   REDUCED MOTION — neutralise any JS-driven parallax transforms
+   --------------------------------------------------------------------------- */
+@media (prefers-reduced-motion: reduce) {
+  .pdpx-bottle,
+  .pdpx-gallery__cipher,
+  .pdpx-ritual__ghost {
+    transform: none !important;
+  }
+  /* the cipher type-label keeps its vertical orientation when un-parallaxed */
+  .pdpx-gallery__cipher-type {
+    transform: rotate(180deg) !important;
+  }
+  .pdpx-notes li {
+    transition: none;
+  }
+  /* settle the signature catch-light into one static, unmoving highlight */
+  .pdpx-stage__sweep {
+    animation: none;
+    opacity: 0.35;
+    transform: translateX(-2%);
+  }
+  .pdpx-acc summary::after {
+    transition: none;
+  }
+}
+
+/* ---------------------------------------------------------------------------
+   REDUCED TRANSPARENCY — drop backdrop blur on this page's glass surfaces and
+   fall back to opaque warm tints (glass.css guards globals; these are local).
+   --------------------------------------------------------------------------- */
+@media (prefers-reduced-transparency: reduce) {
+  .pdpx-trust,
+  .pdpx-buy,
+  .pdpx-assure,
+  .pdpx-acc,
+  .pdpx-stage__badge,
+  .pdpx-stage__caption,
+  .pdpx-crumb,
+  .pdpx-notes li,
+  .pdpx-facet {
+    -webkit-backdrop-filter: none;
+    backdrop-filter: none;
+    background: var(--white);
+  }
+  /* the catch-light + refractive lens rely on translucency; remove them */
+  .pdpx-stage__sweep,
+  .pdpx-stage__lens {
+    display: none;
+  }
+}
+
+/* ============================================================
+   IMAGE CAROUSEL — real galleries in the glass niche
+   (the .glass utility supplies the frosted surface on arrows)
+   ============================================================ */
+.pdpx-stage .pdpx-nav {
+  position: absolute;
+  top: 50%;
+  z-index: 6;
+  transform: translateY(-50%);
+  width: 46px;
+  height: 46px;
+  display: grid;
+  place-items: center;
+  border-radius: 50%;
+  font-size: 24px;
+  line-height: 1;
+  padding-bottom: 4px;
+  color: var(--ink-900);
+  cursor: pointer;
+  transition: transform var(--dur-fast) var(--ease-out), box-shadow var(--dur-fast);
+}
+.pdpx-stage .pdpx-nav--prev {
+  left: clamp(6px, 1.2vw, 16px);
+}
+.pdpx-stage .pdpx-nav--next {
+  right: clamp(6px, 1.2vw, 16px);
+}
+.pdpx-stage .pdpx-nav:hover {
+  box-shadow: var(--glass-rim), var(--shadow-md);
+}
+.pdpx-stage .pdpx-nav:active {
+  transform: translateY(-50%) scale(0.92);
+}
+
+.pdpx-thumbs {
+  display: flex;
+  align-items: center;
+  gap: clamp(12px, 1.6vw, 18px);
+  margin-top: clamp(18px, 2.2vw, 28px);
+}
+.pdpx-thumbs__count {
+  flex: 0 0 auto;
+  font-family: var(--font-mono);
+  font-size: 12px;
+  letter-spacing: 0.08em;
+  color: var(--text-secondary);
+  font-variant-numeric: tabular-nums;
+}
+.pdpx-thumbs__rail {
+  display: flex;
+  gap: 10px;
+  overflow-x: auto;
+  padding-bottom: 6px;
+  scrollbar-width: thin;
+  scrollbar-color: var(--ink-300) transparent;
+  -webkit-overflow-scrolling: touch;
+}
+.pdpx-thumb {
+  flex: 0 0 auto;
+  width: clamp(56px, 5.6vw, 74px);
+  aspect-ratio: 1;
+  padding: 6px;
+  border-radius: var(--radius-md);
+  overflow: hidden;
+  background: linear-gradient(160deg, var(--blush-50), var(--sage-50));
+  border: 1px solid var(--border-cool);
+  opacity: 0.62;
+  transition: opacity var(--dur-fast), transform var(--dur-fast) var(--ease-out),
+    box-shadow var(--dur-fast), border-color var(--dur-fast);
+}
+.pdpx-thumb img {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+}
+.pdpx-thumb:hover {
+  opacity: 0.9;
+}
+.pdpx-thumb.is-active {
+  opacity: 1;
+  border-color: var(--ink-900);
+  box-shadow: 0 6px 14px -4px rgba(30, 27, 22, 0.3);
+  transform: translateY(-2px);
+}

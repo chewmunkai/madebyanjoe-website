@@ -1,0 +1,780 @@
+/* ANJOE — FAQ / Help centre · "The Index Desk"
+   ---------------------------------------------------------------------------
+   An asymmetric editorial layout built heavily on the Liquid Glass material.
+   Concept: an oversized title on a tonal blush→bone field; a floating frosted
+   "concierge console" that overlaps the band below; then a sticky Apple-style
+   GLASS SEGMENTED SWITCHER floating over a single stack of group "slabs", each
+   with a sticky topic spine beside a column of glass accordion panels.
+
+   Strictly tokens.css palette/type + glass.css vars. Scoped under .faqx so
+   nothing here leaks to other pages. Loaded at the top of FAQ.jsx.
+   --------------------------------------------------------------------------- */
+
+.faqx {
+  --faqx-edge: clamp(20px, 4vw, 40px);
+  /* the tonal field the glass refracts over (blush plate fading into bone) */
+  --faqx-field: radial-gradient(
+      120% 130% at 92% -6%,
+      rgba(227, 184, 193, 0.34) 0%,
+      rgba(243, 222, 227, 0.16) 30%,
+      rgba(243, 238, 228, 0) 56%
+    ),
+    radial-gradient(
+      90% 110% at 4% 108%,
+      rgba(175, 192, 168, 0.2) 0%,
+      rgba(243, 238, 228, 0) 54%
+    );
+}
+
+/* ---------------------------------------------------------------------------
+   CRAFTED KICKER — an inked diamond mark + optional hairline rule and meta.
+   Deliberately NOT the site-wide dashed-mono eyebrow.
+   --------------------------------------------------------------------------- */
+.faqx-kicker {
+  display: inline-flex;
+  align-items: center;
+  gap: 12px;
+  font-family: var(--font-mono);
+  font-size: 12px;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: var(--ink-700);
+}
+.faqx-kicker--quiet {
+  color: var(--text-muted);
+}
+.faqx-kicker__mark {
+  width: 9px;
+  height: 9px;
+  flex: 0 0 auto;
+  border: 1px solid var(--blush-500);
+  background: var(--blush-300);
+  transform: rotate(45deg);
+  box-shadow: 0 0 0 3px rgba(227, 184, 193, 0.18);
+}
+.faqx-kicker--quiet .faqx-kicker__mark {
+  background: transparent;
+  border-color: var(--ink-400);
+  box-shadow: none;
+}
+.faqx-kicker__rule {
+  width: clamp(28px, 4vw, 56px);
+  height: 1px;
+  background: linear-gradient(90deg, var(--ink-300), transparent);
+}
+.faqx-kicker__meta {
+  font-size: 11px;
+  letter-spacing: 0.16em;
+  color: var(--blush-500);
+  font-variant-numeric: tabular-nums;
+}
+
+/* ===========================================================================
+   HERO — asymmetric stage. Lead copy sits left on the tonal field; the frosted
+   console floats right and is pulled DOWN to overlap the band (depth + layering).
+   =========================================================================== */
+.faqx-hero {
+  position: relative;
+  /* leave room for the console that overhangs into the band below */
+  padding-bottom: clamp(96px, 13vw, 200px);
+}
+.faqx-hero__field {
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  background: var(--faqx-field);
+  pointer-events: none;
+}
+.faqx-hero__grid {
+  position: relative;
+  z-index: 2;
+  display: grid;
+  grid-template-columns: 1.18fr 0.82fr;
+  align-items: center;
+  gap: clamp(32px, 6vw, 96px);
+}
+.faqx-hero__title {
+  margin: 20px 0 24px;
+  font-size: clamp(46px, 8.5vw, 116px);
+  line-height: 0.92;
+  letter-spacing: var(--ls-tight);
+}
+.faqx-hero__lead .lede {
+  max-width: 44ch;
+}
+
+/* SIGNATURE — the "concierge console": a strong frosted glass card carrying a
+   giant tabular tally over a topic dial. .glass supplies tint+blur+rim+radius;
+   we add a second bespoke sheen pass and let it overhang the band edge. */
+.faqx-console {
+  position: relative;
+  /* overhang downward so it layers over the band that follows */
+  margin-bottom: clamp(-110px, -9vw, -64px);
+  padding: clamp(26px, 2.8vw, 38px);
+  overflow: hidden;
+}
+/* higher specificity than glass.css's `.glass > *` so the sheen stays beneath
+   the content layer (z-index 0) instead of being promoted to z-index 1 */
+.faqx-console > .faqx-console__sheen {
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  pointer-events: none;
+  background: radial-gradient(
+    120% 80% at 88% 0%,
+    rgba(227, 184, 193, 0.26),
+    transparent 58%
+  );
+}
+.faqx-console > .faqx-console__head,
+.faqx-console > .faqx-console__dial {
+  position: relative;
+  z-index: 1;
+}
+.faqx-console__head {
+  display: flex;
+  align-items: center;
+  gap: 18px;
+  padding-bottom: 22px;
+  margin-bottom: 8px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.5);
+}
+.faqx-console__tally {
+  font-family: var(--font-display);
+  font-style: italic;
+  font-size: clamp(58px, 6.4vw, 84px);
+  line-height: 0.8;
+  letter-spacing: -0.04em;
+  color: var(--ink-900);
+  font-variant-numeric: tabular-nums;
+}
+.faqx-console__label {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  font-family: var(--font-mono);
+  font-size: 12px;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: var(--ink-700);
+}
+.faqx-console__label i {
+  font-style: normal;
+  letter-spacing: 0.08em;
+  text-transform: none;
+  font-size: 12px;
+  color: var(--text-muted);
+}
+.faqx-console__dial {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+}
+.faqx-console__dial li + li {
+  border-top: 1px solid rgba(255, 255, 255, 0.42);
+}
+.faqx-console__dial a {
+  display: grid;
+  grid-template-columns: auto auto 1fr auto;
+  align-items: center;
+  gap: 14px;
+  padding: 14px 4px;
+  color: var(--ink-900);
+  transition: padding-left var(--dur-normal) var(--ease-out);
+}
+.faqx-console__dial a:hover {
+  padding-left: 8px;
+}
+.faqx-console__num {
+  font-family: var(--font-mono);
+  font-size: 11px;
+  letter-spacing: 0.1em;
+  color: var(--text-muted);
+  font-variant-numeric: tabular-nums;
+}
+.faqx-console__ic {
+  width: 30px;
+  height: auto;
+  filter: drop-shadow(0 5px 11px rgba(30, 27, 22, 0.18));
+}
+.faqx-console__topic {
+  font-family: var(--font-display);
+  font-size: clamp(16px, 1.5vw, 19px);
+  line-height: 1.1;
+}
+.faqx-console__n {
+  font-family: var(--font-mono);
+  font-size: 11px;
+  letter-spacing: 0.08em;
+  color: var(--blush-500);
+  font-variant-numeric: tabular-nums;
+}
+
+/* ===========================================================================
+   BODY — tonal field so the glass switcher + slabs have something to refract.
+   =========================================================================== */
+.faqx-body {
+  position: relative;
+  background: var(--bg-band);
+}
+.faqx-body::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  pointer-events: none;
+  background: var(--faqx-field);
+}
+.faqx-body > .container {
+  position: relative;
+  z-index: 1;
+  /* clear the overhanging console, then the section rhythm */
+  padding-top: clamp(128px, 16vw, 220px);
+  padding-bottom: clamp(72px, 12vw, 150px);
+}
+
+/* ---------------------------------------------------------------------------
+   SIGNATURE CONTROL — sticky Apple-style GLASS SEGMENTED SWITCHER.
+   A frosted track with a sliding blush thumb that scroll-spies the live topic.
+   Re-implemented in vanilla CSS (no Tailwind/shadcn) from the 21st.dev refs.
+   --------------------------------------------------------------------------- */
+.faqx-switch {
+  position: sticky;
+  top: calc(var(--header-h) + 16px);
+  z-index: 6;
+  display: flex;
+  align-items: center;
+  gap: clamp(12px, 2vw, 22px);
+  margin-bottom: clamp(40px, 6vw, 72px);
+  padding: 10px 14px;
+  /* bespoke glass recipe — frosted bar floating over the field */
+  background: var(--glass-tint-strong);
+  -webkit-backdrop-filter: blur(var(--glass-blur)) saturate(1.7);
+  backdrop-filter: blur(var(--glass-blur)) saturate(1.7);
+  border: 1px solid rgba(255, 255, 255, 0.55);
+  border-radius: var(--radius-pill);
+  box-shadow: var(--glass-rim), 0 16px 40px -18px rgba(30, 27, 22, 0.4);
+}
+.faqx-switch__lead {
+  flex: 0 0 auto;
+  padding-left: 8px;
+  font-family: var(--font-mono);
+  font-size: 11px;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: var(--text-muted);
+}
+.faqx-switch__track {
+  position: relative;
+  flex: 1 1 auto;
+  display: grid;
+  grid-auto-flow: column;
+  grid-auto-columns: 1fr;
+  gap: 2px;
+  padding: 3px;
+  border-radius: var(--radius-pill);
+  background: rgba(30, 27, 22, 0.05);
+  box-shadow: inset 0 1px 2px rgba(30, 27, 22, 0.08);
+}
+/* the sliding thumb — translated by segment index via --seg / --segs */
+.faqx-switch__thumb {
+  position: absolute;
+  top: 3px;
+  left: 3px;
+  width: calc((100% - 6px) / var(--segs));
+  height: calc(100% - 6px);
+  border-radius: var(--radius-pill);
+  background: var(--ink-900);
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.18),
+    0 8px 20px -8px rgba(30, 27, 22, 0.55);
+  transform: translateX(calc(var(--seg) * 100%));
+  transition: transform var(--dur-normal) var(--ease-out);
+  pointer-events: none;
+  z-index: 0;
+}
+.faqx-switch__seg {
+  position: relative;
+  z-index: 1;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 9px;
+  padding: 11px 14px;
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  font-family: var(--font-ui);
+  font-size: 13px;
+  font-weight: var(--fw-medium);
+  letter-spacing: 0.04em;
+  color: var(--ink-700);
+  border-radius: var(--radius-pill);
+  transition: color var(--dur-normal);
+}
+.faqx-switch__seg.is-active {
+  color: var(--text-on-dark);
+}
+.faqx-switch__seg-short {
+  white-space: nowrap;
+}
+.faqx-switch__seg-n {
+  font-family: var(--font-mono);
+  font-size: 10px;
+  letter-spacing: 0.06em;
+  color: var(--blush-500);
+  font-variant-numeric: tabular-nums;
+  transition: color var(--dur-normal);
+}
+.faqx-switch__seg.is-active .faqx-switch__seg-n {
+  color: var(--blush-300);
+}
+.faqx-switch__now {
+  flex: 0 0 auto;
+  padding-right: 8px;
+  font-family: var(--font-mono);
+  font-size: 11px;
+  letter-spacing: 0.14em;
+  color: var(--text-muted);
+  font-variant-numeric: tabular-nums;
+}
+
+/* ---------------------------------------------------------------------------
+   STACK — a single editorial column of group "slabs". Each slab is an
+   asymmetric two-column frame: a sticky topic SPINE + a column of accordions.
+   --------------------------------------------------------------------------- */
+.faqx-stack {
+  display: flex;
+  flex-direction: column;
+  gap: clamp(40px, 6vw, 80px);
+}
+.faqx-group {
+  position: relative;
+  display: grid;
+  grid-template-columns: 0.34fr 0.66fr;
+  gap: clamp(28px, 4vw, 64px);
+  align-items: start;
+  scroll-margin-top: calc(var(--header-h) + 96px);
+}
+
+/* --- SPINE — sticky topic identity: a frosted seal (clay icon + numeral)
+   over the topic title + note. Sticks within its slab as you read. --- */
+.faqx-spine {
+  position: sticky;
+  top: calc(var(--header-h) + 96px);
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+.faqx-spine__seal {
+  position: relative;
+  display: grid;
+  place-items: center;
+  width: clamp(68px, 7vw, 92px);
+  height: clamp(68px, 7vw, 92px);
+  margin-bottom: 4px;
+  border-radius: var(--radius-glass);
+  background: rgba(250, 246, 239, 0.5);
+  -webkit-backdrop-filter: blur(10px) saturate(1.5);
+  backdrop-filter: blur(10px) saturate(1.5);
+  border: 1px solid rgba(255, 255, 255, 0.6);
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.72),
+    0 14px 30px -16px rgba(30, 27, 22, 0.42);
+}
+.faqx-spine__ic {
+  width: clamp(36px, 3.8vw, 50px);
+  height: auto;
+  filter: drop-shadow(0 8px 16px rgba(30, 27, 22, 0.16));
+}
+.faqx-spine__num {
+  position: absolute;
+  right: -8px;
+  bottom: -10px;
+  font-family: var(--font-display);
+  font-style: italic;
+  font-size: 24px;
+  line-height: 1;
+  color: var(--blush-500);
+  font-variant-numeric: tabular-nums;
+}
+.faqx-spine__idx {
+  display: inline-flex;
+  align-items: center;
+  gap: 11px;
+  font-family: var(--font-mono);
+  font-size: 11px;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--text-muted);
+}
+.faqx-spine__dot {
+  width: 4px;
+  height: 4px;
+  border-radius: 50%;
+  background: var(--blush-300);
+}
+.faqx-spine__title {
+  margin: 0;
+  font-size: clamp(28px, 3.2vw, 46px);
+  line-height: 1.02;
+  letter-spacing: var(--ls-tight);
+}
+.faqx-spine__note {
+  margin: 0;
+  color: var(--text-secondary);
+  font-size: 15px;
+  line-height: 1.6;
+  max-width: 30ch;
+}
+
+/* ---------------------------------------------------------------------------
+   ACCORDIONS — native <details> as frosted glass panels with a +/- toggle.
+   The open panel brightens to the strong tint and lifts.
+   --------------------------------------------------------------------------- */
+.faqx-acc {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+.faqx-acc details {
+  position: relative;
+  isolation: isolate;
+  overflow: hidden;
+  background: rgba(250, 246, 239, 0.44);
+  -webkit-backdrop-filter: blur(16px) saturate(1.6);
+  backdrop-filter: blur(16px) saturate(1.6);
+  border: 1px solid rgba(255, 255, 255, 0.5);
+  border-radius: var(--radius-glass);
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.62),
+    0 12px 28px -18px rgba(30, 27, 22, 0.34);
+  padding: 2px clamp(18px, 2.2vw, 30px);
+  transition: box-shadow var(--dur-normal),
+    transform var(--dur-normal) var(--ease-out), background var(--dur-normal),
+    border-color var(--dur-fast);
+}
+/* diagonal specular catch-light along the top edge — the "liquid" sheen */
+.faqx-acc details::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  background: linear-gradient(
+    133deg,
+    rgba(255, 255, 255, 0.5) 0%,
+    rgba(255, 255, 255, 0.06) 22%,
+    transparent 46%
+  );
+  opacity: 0.8;
+  pointer-events: none;
+  z-index: 0;
+}
+.faqx-acc summary,
+.faqx-acc__body {
+  position: relative;
+  z-index: 1;
+}
+.faqx-acc details:hover {
+  border-color: rgba(255, 255, 255, 0.72);
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.7),
+    0 18px 34px -18px rgba(30, 27, 22, 0.4);
+}
+.faqx-acc details[open] {
+  background: var(--glass-tint-strong);
+  box-shadow: var(--glass-rim), var(--glass-float);
+  transform: translateY(-1px);
+}
+.faqx-acc summary {
+  cursor: pointer;
+  list-style: none;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 18px;
+  padding: 21px 0;
+}
+.faqx-acc summary::-webkit-details-marker {
+  display: none;
+}
+.faqx-acc__q {
+  display: flex;
+  align-items: baseline;
+  gap: 14px;
+  font-family: var(--font-display);
+  font-size: clamp(17px, 1.8vw, 22px);
+  line-height: 1.25;
+  color: var(--ink-900);
+}
+.faqx-acc__idx {
+  flex: 0 0 auto;
+  font-family: var(--font-mono);
+  font-size: 11px;
+  letter-spacing: 0.1em;
+  color: var(--blush-500);
+  font-variant-numeric: tabular-nums;
+  transform: translateY(-1px);
+}
+/* circular +/- toggle built from pseudo bars so it animates to a minus */
+.faqx-acc__toggle {
+  position: relative;
+  flex: 0 0 auto;
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  border: 1px solid rgba(255, 255, 255, 0.6);
+  background: rgba(250, 246, 239, 0.5);
+  transition: background var(--dur-fast), border-color var(--dur-fast);
+}
+.faqx-acc__toggle::before,
+.faqx-acc__toggle::after {
+  content: '';
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 12px;
+  height: 1.5px;
+  background: var(--ink-700);
+  transform: translate(-50%, -50%);
+  transition: transform var(--dur-normal) var(--ease-out),
+    background var(--dur-fast);
+}
+.faqx-acc__toggle::after {
+  transform: translate(-50%, -50%) rotate(90deg);
+}
+.faqx-acc summary:hover .faqx-acc__toggle {
+  border-color: var(--blush-300);
+}
+.faqx-acc details[open] .faqx-acc__toggle {
+  background: var(--ink-900);
+  border-color: var(--ink-900);
+}
+.faqx-acc details[open] .faqx-acc__toggle::before,
+.faqx-acc details[open] .faqx-acc__toggle::after {
+  background: var(--text-on-dark);
+}
+.faqx-acc details[open] .faqx-acc__toggle::after {
+  transform: translate(-50%, -50%) rotate(0deg);
+}
+.faqx-acc__body {
+  padding: 0 0 24px;
+  padding-left: 28px;
+  max-width: 62ch;
+}
+.faqx-acc__body p {
+  margin: 0 0 12px;
+  color: var(--text-secondary);
+  font-size: 15px;
+  line-height: 1.7;
+}
+.faqx-acc__body p:last-child {
+  margin-bottom: 0;
+}
+
+/* payment-method chips (the real revPAY / Paydibs / Stripe list) */
+.faqx-pay p {
+  margin: 0 0 14px;
+  color: var(--text-secondary);
+  font-size: 15px;
+  line-height: 1.7;
+}
+.faqx-pay ul {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+.faqx-pay li {
+  font-family: var(--font-mono);
+  font-size: 12px;
+  letter-spacing: 0.03em;
+  color: var(--ink-700);
+  background: var(--blush-50);
+  border: 1px solid var(--blush-100);
+  border-radius: var(--radius-pill);
+  padding: 7px 13px;
+}
+
+/* ---------------------------------------------------------------------------
+   STILL-NEED-HELP — a wide frosted callout closing the stack (full bleed of
+   the asymmetric grid). Replaces the old left-rail aside.
+   --------------------------------------------------------------------------- */
+.faqx-still {
+  position: relative;
+  overflow: hidden;
+  display: flex;
+  align-items: center;
+  gap: clamp(20px, 3vw, 40px);
+  margin-top: clamp(8px, 1.5vw, 20px);
+  padding: clamp(26px, 3vw, 40px) clamp(26px, 3.4vw, 48px);
+}
+/* higher specificity than `.glass > *` so the sheen stays at z-index 0 */
+.faqx-still > .faqx-still__sheen {
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  pointer-events: none;
+  background: radial-gradient(
+    90% 120% at 6% 0%,
+    rgba(227, 184, 193, 0.24),
+    transparent 56%
+  );
+}
+.faqx-still > .faqx-still__ic,
+.faqx-still > .faqx-still__copy {
+  position: relative;
+  z-index: 1;
+}
+.faqx-still__ic {
+  flex: 0 0 auto;
+  width: clamp(48px, 5vw, 64px);
+  height: auto;
+  filter: drop-shadow(0 8px 16px rgba(30, 27, 22, 0.16));
+}
+.faqx-still__copy {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+.faqx-still__copy p {
+  margin: 0;
+  font-family: var(--font-display);
+  font-size: clamp(20px, 2.2vw, 28px);
+  line-height: 1.18;
+  color: var(--ink-900);
+  max-width: 34ch;
+}
+
+/* ---------------------------------------------------------------------------
+   FOCUS — keep keyboard affordance crisp on every new glass surface
+   --------------------------------------------------------------------------- */
+.faqx-acc summary:focus-visible,
+.faqx-console__dial a:focus-visible,
+.faqx-switch__seg:focus-visible {
+  outline: 2px solid var(--focus-ring);
+  outline-offset: 4px;
+  border-radius: 10px;
+}
+
+/* ===========================================================================
+   RESPONSIVE
+   =========================================================================== */
+@media (max-width: 1024px) {
+  .faqx-hero__grid {
+    grid-template-columns: 1fr;
+    gap: clamp(36px, 8vw, 56px);
+  }
+  .faqx-hero {
+    padding-bottom: clamp(72px, 12vw, 120px);
+  }
+  .faqx-console {
+    max-width: 540px;
+    /* less overhang when it stacks under the title */
+    margin-bottom: clamp(-72px, -8vw, -48px);
+  }
+  .faqx-body > .container {
+    padding-top: clamp(96px, 14vw, 150px);
+  }
+}
+
+@media (max-width: 860px) {
+  /* slabs collapse to single column; spine becomes a non-sticky header */
+  .faqx-group {
+    grid-template-columns: 1fr;
+    gap: clamp(20px, 5vw, 30px);
+  }
+  .faqx-spine {
+    position: relative;
+    top: 0;
+  }
+  .faqx-spine__note {
+    max-width: 50ch;
+  }
+  /* let the switcher scroll horizontally if topic labels get long */
+  .faqx-switch__lead,
+  .faqx-switch__now {
+    display: none;
+  }
+}
+
+@media (max-width: 560px) {
+  .faqx-switch {
+    padding: 8px 10px;
+  }
+  .faqx-switch__seg {
+    padding: 11px 8px;
+    font-size: 12px;
+  }
+  .faqx-acc__body {
+    padding-left: 0;
+  }
+  .faqx-acc__q {
+    font-size: 17px;
+  }
+  .faqx-still {
+    flex-direction: column;
+    align-items: flex-start;
+    text-align: left;
+  }
+}
+
+/* ===========================================================================
+   REDUCED MOTION — kill transitions; GSAP entrance/parallax tweens are guarded
+   in JS, and the scroll-spy highlight stays (navigation, not decoration).
+   =========================================================================== */
+@media (prefers-reduced-motion: reduce) {
+  .faqx-acc details,
+  .faqx-acc__toggle,
+  .faqx-acc__toggle::before,
+  .faqx-acc__toggle::after,
+  .faqx-switch__thumb,
+  .faqx-switch__seg,
+  .faqx-console__dial a {
+    transition: none;
+  }
+  .faqx-acc details[open] {
+    transform: none;
+  }
+}
+
+/* ===========================================================================
+   REDUCED TRANSPARENCY — drop every backdrop blur and fall back to opaque
+   tints so the page stays legible without the frost.
+   =========================================================================== */
+@media (prefers-reduced-transparency: reduce) {
+  .faqx-console,
+  .faqx-switch,
+  .faqx-spine__seal,
+  .faqx-acc details,
+  .faqx-still {
+    -webkit-backdrop-filter: none;
+    backdrop-filter: none;
+  }
+  .faqx-console,
+  .faqx-switch,
+  .faqx-still {
+    background: var(--white);
+  }
+  .faqx-spine__seal {
+    background: var(--white);
+  }
+  .faqx-acc details {
+    background: var(--white);
+  }
+  .faqx-acc details[open] {
+    background: var(--white);
+  }
+  .faqx-acc details::before,
+  .faqx-console__sheen,
+  .faqx-still__sheen {
+    display: none;
+  }
+  .faqx-acc__toggle {
+    background: var(--white);
+  }
+  /* keep the switcher thumb readable without the frosted track */
+  .faqx-switch__track {
+    background: rgba(30, 27, 22, 0.06);
+  }
+}

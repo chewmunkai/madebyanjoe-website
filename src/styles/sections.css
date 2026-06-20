@@ -19,7 +19,7 @@
 /* ============ PRESS / CREDENTIALS ============ */
 .pressbar {
   border-block: 1px solid var(--border-subtle);
-  padding-block: 26px;
+  padding-block: clamp(30px, 3.2vw, 44px);
   background: var(--bg-page);
 }
 .pressbar__inner {
@@ -798,6 +798,16 @@
     rgba(23, 17, 9, 0.64) 100%
   );
   opacity: calc(0.8 + var(--s, 0) * 0.2);
+}
+/* Resolve the dark film into the bone PressBar below — no hard screenshot seam. */
+.eh--video .eh__scrim::after {
+  content: '';
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  height: 24%;
+  background: linear-gradient(180deg, transparent, var(--paper) 96%);
 }
 .eh--video .eh__wash {
   z-index: 1;

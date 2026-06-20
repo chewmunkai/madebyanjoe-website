@@ -1,0 +1,192 @@
+/* Real product image galleries, scraped from madebyanjoe.com product pages.
+ Maps product slug -> ordered list of image filenames (main image first).
+ Used by the PDP image carousel. Products absent here fall back to product.img. */
+
+const IMG = 'https://img.appolous.com/product/online/98/'
+
+export const galleries = {
+  'probiotic-amino-cleanser': [
+    IMG + '13245-probiotic-amino-face-cleanser-200ml.webp',
+    IMG + '13246-probiotic-amino-face-cleanser-200ml.webp',
+    IMG + '13247-probiotic-amino-face-cleanser-200ml.webp',
+    IMG + '13248-probiotic-amino-face-cleanser-200ml.webp',
+    IMG + '13249-probiotic-amino-face-cleanser-200ml.webp',
+  ],
+  'mugwort-treatment-oil': [
+    IMG + '14278-mugwort-plant-treatment-oil-150ml.webp',
+    IMG + '14280-mugwort-plant-treatment-oil-150ml.webp',
+  ],
+  'barrier-repair-cream': [
+    IMG + '14233-barrier-repair-cream-40ml.webp',
+    IMG + '14234-barrier-repair-cream-40ml.webp',
+    IMG + '14235-barrier-repair-cream-40ml.webp',
+    IMG + '14236-barrier-repair-cream-40ml.webp',
+    IMG + '14237-barrier-repair-cream-40ml.webp',
+    IMG + '14238-barrier-repair-cream-40ml.webp',
+    IMG + '14273-barrier-repair-cream-40ml.webp',
+  ],
+  'ultra-healing-gel': [
+    IMG + '14243-ultra-healing-gel-10g.webp',
+    IMG + '14244-ultra-healing-gel-10g.webp',
+    IMG + '14245-ultra-healing-gel-10g.webp',
+    IMG + '14246-ultra-healing-gel-10g.webp',
+    IMG + '14247-ultra-healing-gel-10g.webp',
+    IMG + '14249-ultra-healing-gel-10g.webp',
+    IMG + '14274-ultra-healing-gel-10g.webp',
+    IMG + '14313-ultra-healing-gel-10g.webp',
+  ],
+  'probiotic-mask': [
+    IMG + '13239-quench-and-glow-probiotic-mask-5pcs.webp',
+    IMG + '13240-quench-and-glow-probiotic-mask-5pcs.webp',
+    IMG + '13241-quench-and-glow-probiotic-mask-5pcs.webp',
+    IMG + '13243-quench-and-glow-probiotic-mask-5pcs.webp',
+    IMG + '13244-quench-and-glow-probiotic-mask-5pcs.webp',
+    IMG + '13259-quench-and-glow-probiotic-mask-5pcs.webp',
+  ],
+  'barrier-repair-combo': [
+    IMG + '14250-barrier-repair-combo.webp',
+    IMG + '14252-barrier-repair-combo.webp',
+    IMG + '14255-barrier-repair-combo.webp',
+    IMG + '14258-barrier-repair-combo.webp',
+    IMG + '14259-barrier-repair-combo.webp',
+    IMG + '14262-barrier-repair-combo.webp',
+    IMG + '14263-barrier-repair-combo.webp',
+    IMG + '14264-barrier-repair-combo.webp',
+    IMG + '14265-barrier-repair-combo.webp',
+    IMG + '14266-barrier-repair-combo.webp',
+    IMG + '14267-barrier-repair-combo.webp',
+    IMG + '14275-barrier-repair-combo.webp',
+  ],
+  'hydraglow-combo': [
+    IMG + '13250-hydraglow-combo.webp',
+    IMG + '13251-hydraglow-combo.webp',
+    IMG + '13252-hydraglow-combo.webp',
+    IMG + '13253-hydraglow-combo.webp',
+    IMG + '13254-hydraglow-combo.webp',
+    IMG + '13255-hydraglow-combo.webp',
+    IMG + '13256-hydraglow-combo.webp',
+    IMG + '14301-hydraglow-combo.webp',
+  ],
+  'confirm-glass-skin': [
+    IMG + '13986-confirm-glass-skin.webp',
+    IMG + '13987-confirm-glass-skin.webp',
+    IMG + '13988-confirm-glass-skin.webp',
+    IMG + '13989-confirm-glass-skin.webp',
+    IMG + '13990-confirm-glass-skin.webp',
+    IMG + '13991-confirm-glass-skin.webp',
+    IMG + '14299-confirm-glass-skin.webp',
+  ],
+  'confirm-glow-skin': [
+    IMG + '14032-confirm-glow-skin.webp',
+    IMG + '14033-confirm-glow-skin.webp',
+    IMG + '14034-confirm-glow-skin.webp',
+    IMG + '14035-confirm-glow-skin.webp',
+    IMG + '14036-confirm-glow-skin.webp',
+    IMG + '14281-confirm-glow-skin.webp',
+  ],
+  'better-me': [
+    IMG + '14196-better-me.webp',
+    IMG + '14198-better-me.webp',
+    IMG + '14200-better-me.webp',
+    IMG + '14282-better-me.webp',
+  ],
+  'royal-family': [
+    IMG + '13398-the-royal-family.webp',
+    IMG + '13399-the-royal-family.webp',
+    IMG + '13400-the-royal-family.webp',
+    IMG + '13401-the-royal-family.webp',
+    IMG + '13402-the-royal-family.webp',
+    IMG + '14310-the-royal-family.webp',
+  ],
+  'house-of-legends': [
+    IMG + '14291-house-of-legends.webp',
+    IMG + '14292-house-of-legends.webp',
+    IMG + '14293-house-of-legends.webp',
+    IMG + '14308-house-of-legends.webp',
+    IMG + '14309-house-of-legends.webp',
+  ],
+  'double-the-radiance': [
+    IMG + '13409-double-the-radiance.webp',
+    IMG + '13410-double-the-radiance.webp',
+    IMG + '13411-double-the-radiance.webp',
+    IMG + '13412-double-the-radiance.webp',
+    IMG + '14286-double-the-radiance.webp',
+  ],
+  'double-the-happiness': [
+    IMG + '13435-double-the-happiness.webp',
+    IMG + '13436-double-the-happiness.webp',
+    IMG + '13437-double-the-happiness.webp',
+    IMG + '13438-double-the-happiness.webp',
+    IMG + '14285-double-the-happiness.webp',
+  ],
+  'outshine-me': [
+    IMG + '13414-outshine-me.webp',
+    IMG + '13415-outshine-me.webp',
+    IMG + '13416-outshine-me.webp',
+    IMG + '13417-outshine-me.webp',
+    IMG + '14297-outshine-me.webp',
+  ],
+  'dewy-guarantee': [
+    IMG + '13404-dewy-guarantee.webp',
+    IMG + '13405-dewy-guarantee.webp',
+    IMG + '13406-dewy-guarantee.webp',
+    IMG + '13407-dewy-guarantee.webp',
+    IMG + '14295-dewy-guarantee.webp',
+  ],
+  'glow-guarantee': [
+    IMG + '13430-glow-guarantee.webp',
+    IMG + '13431-glow-guarantee.webp',
+    IMG + '13432-glow-guarantee.webp',
+    IMG + '13433-glow-guarantee.webp',
+    IMG + '14294-glow-guarantee.webp',
+  ],
+  'glow-starter-kit': [
+    IMG + '13539-glow-guarantee-starter-kit.png',
+    IMG + '13540-glow-guarantee-starter-kit.png',
+    IMG + '13541-glow-guarantee-starter-kit.png',
+    IMG + '13542-glow-guarantee-starter-kit.png',
+    IMG + '13543-glow-guarantee-starter-kit.png',
+  ],
+  'pure-dewy-starter-kit': [
+    IMG + '12479-pure-dewy-starter-kit.webp',
+    IMG + '12480-pure-dewy-starter-kit.webp',
+    IMG + '12482-pure-dewy-starter-kit.webp',
+    IMG + '12483-pure-dewy-starter-kit.webp',
+    IMG + '12485-pure-dewy-starter-kit.webp',
+  ],
+  'dainty-collection': [
+    IMG + '13423-dainty-collection.webp',
+    IMG + '13427-dainty-collection.webp',
+    IMG + '13428-dainty-collection.webp',
+    IMG + '14284-dainty-collection.webp',
+  ],
+  'prescription-box': [
+    IMG + '13444-prescription-box.webp',
+    IMG + '13445-prescription-box.webp',
+    IMG + '13446-prescription-box.webp',
+    IMG + '14283-prescription-box.webp',
+  ],
+  'acne-needle-tool': [
+    IMG + '12581-professional-acne-removel-needle-tool.webp',
+    IMG + '12582-professional-acne-removel-needle-tool.webp',
+    IMG + '12583-professional-acne-removel-needle-tool.webp',
+    IMG + '12584-professional-acne-removel-needle-tool.webp',
+  ],
+  'cotton-pads': [
+    IMG + '12157-stretchable-facial-cotton-pads-100pcspack.jpg',
+    IMG + '12166-stretchable-facial-cotton-pads-100pcspack.jpg',
+    IMG + '12167-stretchable-facial-cotton-pads-100pcspack.jpg',
+    IMG + '12168-stretchable-facial-cotton-pads-100pcspack.jpg',
+    IMG + '12169-stretchable-facial-cotton-pads-100pcspack.jpg',
+    IMG + '12170-stretchable-facial-cotton-pads-100pcspack.jpg',
+    IMG + '12172-stretchable-facial-cotton-pads-100pcspack.jpg',
+    IMG + '12173-stretchable-facial-cotton-pads-100pcspack.jpg',
+    IMG + '12174-stretchable-facial-cotton-pads-100pcspack.jpg',
+  ],
+}
+
+export function getGallery(slug, fallbackImg) {
+  const g = galleries[slug]
+  if (g && g.length) return g
+  return fallbackImg ? [fallbackImg] : []
+}

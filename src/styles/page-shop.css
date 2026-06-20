@@ -1,0 +1,641 @@
+/* ANJOE — Shop / catalog (dimensional redesign)
+   Built strictly from existing tokens + the Liquid Editorial language.
+   Everything is scoped under .shopx so nothing leaks into other pages.
+   Loaded at the very top of src/pages/Shop.jsx.
+
+   Dimensional moves:
+   - Layered hero: giant faded display word, vertical mono rail, KL→ritual route line.
+   - Sticky, elevated filter bar that lifts off the bone field and tightens on stick.
+   - Broken-grid catalog: featured products claim wide/tall tiles, ordinary products
+     sit in a 4-up rhythm, every tile floats on the textured paper via shadow + hover lift,
+     mono index numerals and eyebrow accents thread the whole grid together. */
+
+.shopx {
+  --shopx-edge: clamp(20px, 4vw, 40px);
+}
+
+/* ---------------------------------------------------------------------------
+   HERO — layered editorial framing, oversized faded display word
+   --------------------------------------------------------------------------- */
+.shopx-hero {
+  position: relative;
+}
+.shopx-hero .container {
+  position: relative;
+  z-index: 2;
+}
+/* vertical mono rail (writing-mode), matching the sibling pages */
+.shopx-hero__rail {
+  position: absolute;
+  left: 18px;
+  top: 50%;
+  z-index: 2;
+  writing-mode: vertical-rl;
+  transform: translateY(-50%) rotate(180deg);
+  font-family: var(--font-mono);
+  font-size: 11px;
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+  color: var(--text-muted);
+  white-space: nowrap;
+}
+/* giant faded background word — depth via scale + low opacity, drifts on scroll */
+.shopx-hero__ghost {
+  position: absolute;
+  right: 1.5%;
+  bottom: -8%;
+  z-index: 1;
+  margin: 0;
+  font-family: var(--font-display);
+  font-style: italic;
+  font-size: clamp(78px, 15vw, 230px);
+  line-height: 0.82;
+  letter-spacing: -0.04em;
+  color: var(--ink-900);
+  opacity: 0.06;
+  pointer-events: none;
+  user-select: none;
+  white-space: nowrap;
+}
+/* small meta row above the eyebrow — collection + count, like cr-hero__meta */
+.shopx-hero__meta {
+  display: flex;
+  justify-content: space-between;
+  gap: 16px;
+  max-width: 640px;
+  margin-bottom: clamp(18px, 3vw, 30px);
+  padding-bottom: 14px;
+  border-bottom: 1px solid var(--border-subtle);
+  font-family: var(--font-mono);
+  font-size: 11px;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: var(--text-muted);
+}
+/* route line under the lede: house ✦——→ ritual */
+.shopx-hero__route {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  margin-top: 30px;
+  font-family: var(--font-mono);
+  font-size: 12px;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--ink-700);
+  flex-wrap: wrap;
+  max-width: 560px;
+}
+.shopx-hero__route b {
+  font-weight: var(--fw-medium);
+  color: var(--ink-900);
+}
+.shopx-hero__route i {
+  font-style: normal;
+  color: var(--blush-500);
+}
+.shopx-hero__route-line {
+  flex: 1;
+  min-width: 40px;
+  height: 1px;
+  background: linear-gradient(90deg, var(--ink-400), transparent);
+}
+
+/* ---------------------------------------------------------------------------
+   STICKY FILTER BAR — elevated surface that lifts off the bone, tightens on stick
+   --------------------------------------------------------------------------- */
+.shopx-toolbar {
+  position: sticky;
+  top: calc(var(--header-h) - 8px);
+  z-index: 20;
+  margin-bottom: clamp(34px, 5vw, 56px);
+}
+.shopx-toolbar__inner {
+  display: flex;
+  align-items: center;
+  gap: clamp(10px, 1.4vw, 18px);
+  flex-wrap: wrap;
+  padding: 12px clamp(14px, 1.8vw, 22px);
+  background: rgba(250, 246, 239, 0.82);
+  -webkit-backdrop-filter: blur(14px) saturate(1.1);
+  backdrop-filter: blur(14px) saturate(1.1);
+  border: 1px solid var(--border-cool);
+  border-radius: var(--radius-pill);
+  box-shadow: var(--shadow-md);
+  transition: box-shadow var(--dur-normal) var(--ease-out),
+    border-color var(--dur-normal);
+}
+.shopx-toolbar.is-stuck .shopx-toolbar__inner {
+  box-shadow: var(--shadow-lg);
+  border-color: var(--ink-300);
+}
+.shopx-toolbar__label {
+  font-family: var(--font-mono);
+  font-size: 11px;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--text-muted);
+  padding-left: 6px;
+  white-space: nowrap;
+}
+.shopx-toolbar__chips {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+/* refined chip — layout + behaviour only; the frosted-glass surface is supplied
+   globally by glass.css (.shopx-chip), so we deliberately do NOT set its
+   background/border here. */
+.shopx-chip {
+  position: relative;
+  font-family: var(--font-ui);
+  font-size: 13px;
+  letter-spacing: 0.01em;
+  padding: 9px 18px;
+  border-radius: var(--radius-pill);
+  color: var(--text-secondary);
+  transition: color var(--dur-fast), box-shadow var(--dur-fast),
+    border-color var(--dur-fast), transform var(--dur-fast) var(--ease-out);
+}
+.shopx-chip:hover {
+  color: var(--ink-900);
+}
+.shopx-chip:active {
+  transform: translateY(1px);
+}
+.shopx-chip.is-active {
+  background: var(--ink-900);
+  color: var(--text-on-dark);
+  border-color: var(--ink-900);
+}
+.shopx-chip__n {
+  font-family: var(--font-mono);
+  font-size: 10px;
+  margin-left: 7px;
+  opacity: 0.6;
+  font-variant-numeric: tabular-nums;
+}
+.shopx-toolbar__count {
+  margin-left: auto;
+  display: inline-flex;
+  align-items: baseline;
+  gap: 7px;
+  font-family: var(--font-mono);
+  font-size: 12px;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--text-muted);
+  white-space: nowrap;
+  padding-right: 6px;
+}
+.shopx-toolbar__count b {
+  font-weight: var(--fw-medium);
+  font-size: 14px;
+  color: var(--ink-900);
+  font-variant-numeric: tabular-nums;
+}
+
+/* ---------------------------------------------------------------------------
+   CATALOG GRID — broken 4-col rhythm; featured tiles claim more space
+   --------------------------------------------------------------------------- */
+.shopx-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: clamp(26px, 3vw, 52px) clamp(22px, 2.4vw, 40px);
+  align-items: start;
+}
+
+/* a tile is a positioned wrapper around the untouched <ProductCard/> */
+.shopx-tile {
+  position: relative;
+}
+/* mono index numeral threaded above each card's media — a crafted blush slash
+   replaces the generic floating digit so the grid reads catalogued, not templated */
+.shopx-tile__idx {
+  position: absolute;
+  top: -15px;
+  left: 2px;
+  z-index: 3;
+  display: inline-flex;
+  align-items: baseline;
+  gap: 4px;
+  font-family: var(--font-mono);
+  font-size: 11px;
+  letter-spacing: 0.14em;
+  color: var(--text-muted);
+  font-variant-numeric: tabular-nums;
+  pointer-events: none;
+}
+.shopx-tile__idx-slash {
+  color: var(--blush-500);
+  font-weight: var(--fw-medium);
+}
+
+/* lift the real product media off the bone field + deepen hover */
+.shopx-tile .pcard__media {
+  box-shadow: var(--shadow-md);
+  transition: transform var(--dur-normal) var(--ease-out),
+    box-shadow var(--dur-normal);
+}
+.shopx-tile .pcard:hover .pcard__media {
+  transform: translateY(-6px);
+  box-shadow: var(--shadow-lg);
+}
+
+/* FEATURED tiles — span two columns and read as editorial anchors.
+   The media goes wider (landscape-leaning) so they break the 4-up rhythm. */
+.shopx-tile--feature {
+  grid-column: span 2;
+}
+.shopx-tile--feature .pcard__media {
+  aspect-ratio: 16 / 11;
+  border-radius: var(--radius-xl);
+}
+.shopx-tile--feature .pcard__name {
+  font-size: clamp(24px, 2.4vw, 30px);
+}
+/* a soft blush glow behind featured media for foreground separation */
+.shopx-tile--feature::before {
+  content: '';
+  position: absolute;
+  inset: -22px -10px 10px;
+  z-index: 0;
+  background: radial-gradient(
+    60% 70% at 30% 30%,
+    rgba(227, 184, 193, 0.28),
+    transparent 70%
+  );
+  filter: blur(8px);
+  pointer-events: none;
+  opacity: 0.9;
+}
+.shopx-tile--feature .pcard {
+  position: relative;
+  z-index: 1;
+}
+/* eyebrow ribbon on featured cards — real product.eyebrow copy on a small frosted
+   glass chip (the ✦ bullet is gone; a blush tick mark carries the accent instead).
+   It floats over the top-left of the media as a glass label. */
+.shopx-tile .shopx-tile__ribbon {
+  position: absolute;
+  top: 12px;
+  left: 12px;
+  z-index: 2;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 7px 13px 7px 11px;
+  border-radius: var(--radius-pill);
+  font-family: var(--font-mono);
+  font-size: 10px;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--ink-900);
+}
+/* crafted blush tick instead of a glyph */
+.shopx-tile__ribbon::after {
+  content: '';
+  order: -1;
+  width: 14px;
+  height: 1.5px;
+  border-radius: 2px;
+  background: var(--blush-500);
+}
+/* the glass sheen ::before is already supplied; keep label text above it */
+.shopx-tile__ribbon { isolation: isolate; }
+
+/* FLAGSHIP — the hero product claims a full editorial split row.
+   The untouched <ProductCard/> sits on the left; a frosted Liquid-Glass aside
+   (eyebrow + blurb + spec ledger + notes, all from real product data) sits on the
+   right. The outer panel is a soft tonal slab; the aside is the glass within it —
+   so the page's signature moment is a real product reading on frosted glass. */
+.shopx-tile--flagship {
+  grid-column: 1 / -1;
+  position: relative;
+  display: grid;
+  grid-template-columns: 1.04fr 0.96fr;
+  align-items: stretch;
+  gap: clamp(22px, 4vw, 56px);
+  /* tonal slab (not flat white) so the glass aside has tone to refract */
+  background:
+    linear-gradient(168deg, rgba(255, 255, 255, 0.7), rgba(241, 235, 228, 0.55)),
+    var(--white);
+  border: 1px solid var(--border-cool);
+  border-radius: var(--radius-glass);
+  box-shadow: var(--shadow-md);
+  padding: clamp(18px, 2.4vw, 30px);
+  margin-bottom: clamp(10px, 2.2vw, 26px);
+  transition: box-shadow var(--dur-normal), transform var(--dur-normal) var(--ease-out);
+}
+.shopx-tile--flagship:hover {
+  transform: translateY(-4px);
+  box-shadow: var(--shadow-lg);
+}
+/* the ProductCard's own media already lifts on hover via the shared rule below;
+   inside the flagship panel we keep it flat so the whole panel reads as one plane */
+.shopx-tile--flagship .pcard__media {
+  box-shadow: var(--shadow-sm);
+}
+.shopx-tile--flagship .pcard:hover .pcard__media {
+  transform: none;
+  box-shadow: var(--shadow-sm);
+}
+.shopx-tile--flagship .pcard__name {
+  font-size: clamp(22px, 2.2vw, 28px);
+}
+.shopx-flagship__card {
+  position: relative;
+}
+/* the glass aside — surface comes from .glass.glass--strong; we set the inner
+   rhythm here. Generous, varied spacing so it breathes against the tight grid. */
+.shopx-flagship__aside {
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+  padding: clamp(22px, 2.6vw, 34px) clamp(22px, 2.6vw, 32px);
+}
+/* flagship overline (real eyebrow) + a one-line real blurb, fed from Shop.jsx */
+.shopx-flagship__over {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 16px;
+  font-family: var(--font-mono);
+  font-size: 11px;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: var(--blush-500);
+}
+.shopx-flagship__over::before {
+  content: '';
+  width: 26px;
+  height: 1.5px;
+  border-radius: 2px;
+  background: linear-gradient(90deg, var(--blush-500), var(--blush-300));
+}
+.shopx-flagship__blurb {
+  font-family: var(--font-display);
+  font-size: clamp(19px, 1.9vw, 24px);
+  line-height: 1.42;
+  color: var(--ink-700);
+  max-width: 42ch;
+  margin: 0 0 clamp(20px, 2.4vw, 28px);
+}
+/* SIGNATURE — product-spec ledger: hairline-ruled rows, mono labels left,
+   real values right (type / size / price straight from the product data) */
+.shopx-flagship__spec {
+  margin: 0 0 clamp(18px, 2.2vw, 24px);
+  border-top: 1px solid var(--border-subtle);
+}
+.shopx-flagship__spec-row {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 16px;
+  padding: 11px 0;
+  border-bottom: 1px solid var(--border-subtle);
+}
+.shopx-flagship__spec-row dt {
+  font-family: var(--font-mono);
+  font-size: 10px;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: var(--text-muted);
+}
+.shopx-flagship__spec-row dd {
+  margin: 0;
+  font-family: var(--font-ui);
+  font-size: 13px;
+  font-weight: var(--fw-medium);
+  letter-spacing: 0.01em;
+  color: var(--ink-900);
+  font-variant-numeric: tabular-nums;
+}
+/* the price row reads as the anchor value */
+.shopx-flagship__spec-row:last-child dd {
+  font-family: var(--font-display);
+  font-size: 16px;
+  color: var(--blush-500);
+}
+.shopx-flagship__notes {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+.shopx-flagship__note {
+  font-family: var(--font-mono);
+  font-size: 10px;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--text-secondary);
+  padding: 6px 12px;
+  border: 1px solid rgba(255, 255, 255, 0.5);
+  background: rgba(250, 246, 239, 0.35);
+  border-radius: var(--radius-pill);
+}
+/* the flagship tag — crafted blush bar mark + label, frosted dark glass pill,
+   replacing the old "✦ The flagship" glyph badge */
+.shopx-flagship__tag {
+  position: absolute;
+  top: clamp(16px, 2vw, 24px);
+  left: clamp(16px, 2vw, 24px);
+  z-index: 4;
+  display: inline-flex;
+  align-items: center;
+  gap: 9px;
+  font-family: var(--font-mono);
+  font-size: 10px;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: var(--text-on-dark);
+  background: rgba(23, 17, 9, 0.72);
+  -webkit-backdrop-filter: blur(10px) saturate(1.4);
+  backdrop-filter: blur(10px) saturate(1.4);
+  border: 1px solid rgba(255, 255, 255, 0.14);
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.18), 0 6px 16px -8px rgba(30, 27, 22, 0.6);
+  padding: 8px 14px;
+  border-radius: var(--radius-pill);
+}
+.shopx-flagship__tag-mark {
+  width: 16px;
+  height: 2px;
+  border-radius: 2px;
+  background: var(--blush-300);
+}
+
+/* ---------------------------------------------------------------------------
+   ZONE BAND — a frosted Liquid-Glass callout that breaks the grid into zones.
+   Surface from .glass; an oversized outlined display numeral anchors the left,
+   a crafted micro-label sits over the title, the live count closes the right.
+   --------------------------------------------------------------------------- */
+.shopx-zoneband {
+  grid-column: 1 / -1;
+  display: flex;
+  align-items: center;
+  gap: clamp(16px, 2.4vw, 28px);
+  padding: clamp(16px, 2vw, 22px) clamp(20px, 2.4vw, 30px);
+  margin: clamp(8px, 1.4vw, 16px) 0 clamp(4px, 1vw, 10px);
+}
+/* oversized outlined numeral — the zone's "plate" mark, transparent fill with a
+   blush hairline stroke; reads as a crafted index, not a templated digit */
+.shopx-zoneband__idx {
+  flex: none;
+  font-family: var(--font-display);
+  font-style: italic;
+  font-size: clamp(34px, 4.4vw, 56px);
+  line-height: 0.8;
+  letter-spacing: -0.02em;
+  color: transparent;
+  -webkit-text-stroke: 1px var(--blush-300);
+  font-variant-numeric: tabular-nums;
+}
+.shopx-zoneband__head {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  min-width: 0;
+}
+/* crafted per-zone micro-label replaces the dashed-mono eyebrow */
+.shopx-zoneband__kind {
+  font-family: var(--font-mono);
+  font-size: 10px;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: var(--shopx-accent);
+}
+.shopx-zoneband__title {
+  font-family: var(--font-display);
+  font-size: clamp(24px, 3vw, 38px);
+  line-height: 1;
+  color: var(--ink-900);
+}
+.shopx-zoneband__title em {
+  font-style: italic;
+  color: var(--blush-500);
+}
+.shopx-zoneband__count {
+  margin-left: auto;
+  align-self: flex-end;
+  font-family: var(--font-mono);
+  font-size: 11px;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--text-muted);
+  white-space: nowrap;
+  font-variant-numeric: tabular-nums;
+}
+
+/* empty state (no products in a filter) — never expected with real data,
+   but keeps the layout graceful */
+.shopx-empty {
+  grid-column: 1 / -1;
+  padding: clamp(40px, 8vw, 90px) 0;
+  text-align: center;
+  font-family: var(--font-display);
+  font-style: italic;
+  font-size: clamp(22px, 3vw, 34px);
+  color: var(--text-muted);
+}
+
+/* ---------------------------------------------------------------------------
+   RESPONSIVE
+   --------------------------------------------------------------------------- */
+@media (max-width: 1100px) {
+  .shopx-grid {
+    grid-template-columns: repeat(3, 1fr);
+  }
+  .shopx-tile--feature {
+    grid-column: span 2;
+  }
+}
+
+@media (max-width: 900px) {
+  .shopx-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+  .shopx-tile--feature {
+    grid-column: span 2;
+  }
+  .shopx-tile--feature .pcard__media {
+    aspect-ratio: 16 / 11;
+  }
+  .shopx-tile--flagship {
+    grid-template-columns: 1fr;
+    gap: clamp(18px, 4vw, 28px);
+  }
+  /* stack the flagship card above the glass aside; aside keeps comfortable padding */
+  .shopx-flagship__aside {
+    padding: clamp(20px, 4vw, 28px);
+  }
+}
+
+@media (max-width: 560px) {
+  .shopx-grid {
+    grid-template-columns: 1fr;
+    gap: clamp(30px, 9vw, 44px);
+  }
+  .shopx-tile--feature,
+  .shopx-tile--flagship {
+    grid-column: 1 / -1;
+  }
+  .shopx-tile--feature .pcard__media {
+    aspect-ratio: 4 / 5;
+  }
+  /* zone band wraps cleanly: numeral + head on one line, count drops below */
+  .shopx-zoneband {
+    flex-wrap: wrap;
+  }
+  .shopx-zoneband__count {
+    margin-left: 0;
+    width: 100%;
+    align-self: flex-start;
+  }
+  .shopx-toolbar {
+    top: calc(var(--header-h) - 16px);
+  }
+  .shopx-toolbar__count {
+    margin-left: 0;
+    width: 100%;
+    justify-content: flex-start;
+    padding-top: 4px;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .shopx-tile .pcard__media,
+  .shopx-tile .pcard:hover .pcard__media,
+  .shopx-tile--flagship,
+  .shopx-tile--flagship:hover,
+  .shopx-toolbar__inner,
+  .shopx-chip {
+    transition: none;
+  }
+  .shopx-tile .pcard:hover .pcard__media,
+  .shopx-tile--flagship:hover {
+    transform: none;
+  }
+}
+
+/* Guard the glass blur for users who prefer reduced transparency: fall back to
+   solid tinted surfaces so text stays legible without the backdrop-filter.
+   (glass.css already opts the global chip/nav/drawer out; this covers THIS
+   page's own glass surfaces.) */
+@media (prefers-reduced-transparency: reduce) {
+  .shopx-toolbar__inner,
+  .shopx-flagship__aside,
+  .shopx-tile__ribbon,
+  .shopx-zoneband {
+    -webkit-backdrop-filter: none;
+    backdrop-filter: none;
+    background: var(--glass-tint-strong);
+  }
+  .shopx-flagship__aside {
+    background: var(--white);
+  }
+  .shopx-flagship__tag {
+    -webkit-backdrop-filter: none;
+    backdrop-filter: none;
+    background: var(--ink-900);
+  }
+}

@@ -2,13 +2,14 @@ import { useEffect, useRef } from 'react'
 import gsap from 'gsap'
 import { ScrollTrigger } from 'gsap/ScrollTrigger'
 
-/* Hydration "proof" band — big figures that count up on scroll. Numbers are
-   representative placeholders; swap in real clinical data when available. */
+/* "Proof" band — big figures that count up on scroll. Every figure here is a
+   verifiable brand fact (formulation, certification, founder practice, ritual),
+   not a fabricated clinical percentage. */
 const stats = [
-  { value: 128, prefix: '+', suffix: '%', label: 'Skin moisture, one hour after use' },
-  { value: 94, suffix: '%', label: 'Saw a stronger barrier in four weeks' },
-  { value: 8, suffix: 'h', label: 'Continuous hydration, locked in' },
-  { value: 0, suffix: '%', label: 'Stripping, sulfates or harsh fillers' },
+  { value: 100, suffix: '%', label: 'Plant-based, botanical-first formulas' },
+  { value: 0, suffix: '%', label: 'Sulfates, stripping agents or harsh fillers' },
+  { value: 10, suffix: 'yr', label: 'Of pharmacist-led lymphatic-massage practice' },
+  { value: 4, suffix: '', label: 'Barrier-first steps: cleanse, essence, serum, seal' },
 ]
 
 export default function ClinicalResults() {
@@ -47,9 +48,9 @@ export default function ClinicalResults() {
     <section className="cr" ref={root}>
       <div className="container">
         <div className="cr__head">
-          <span className="eyebrow">The proof</span>
+          <span className="eyebrow">The standard</span>
           <h2 className="reveal">
-            Hydration you can <em>measure</em>.
+            Proof, not <em>promises</em>.
           </h2>
         </div>
         <div className="cr__grid">
@@ -67,7 +68,8 @@ export default function ClinicalResults() {
           ))}
         </div>
         <p className="cr__foot">
-          *Representative consumer-study figures — replace with your verified clinical data.
+          Dermatologically tested · KKM-NPRA certified · Formulated in Malaysia
+          under Medicircle Holding.
         </p>
       </div>
     </section>

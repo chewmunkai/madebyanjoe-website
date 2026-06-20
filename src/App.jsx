@@ -10,6 +10,11 @@ import Home from './pages/Home.jsx'
 import Shop from './pages/Shop.jsx'
 import Product from './pages/Product.jsx'
 import About from './pages/About.jsx'
+import Contact from './pages/Contact.jsx'
+import FAQ from './pages/FAQ.jsx'
+import Shipping from './pages/Shipping.jsx'
+import Careers from './pages/Careers.jsx'
+import Legal from './pages/Legal.jsx'
 
 /* Reveal-on-scroll for any .reveal element. Re-scans on route change. */
 function useScrollReveal(dep) {
@@ -53,6 +58,12 @@ export default function App() {
           <Route path="/shop" element={<Shop />} />
           <Route path="/product/:slug" element={<Product />} />
           <Route path="/about" element={<About />} />
+          <Route path="/contact" element={<Contact />} />
+          <Route path="/faq" element={<FAQ />} />
+          <Route path="/shipping" element={<Shipping />} />
+          <Route path="/careers" element={<Careers />} />
+          <Route path="/privacy" element={<Legal doc="privacy" />} />
+          <Route path="/terms" element={<Legal doc="terms" />} />
         </Routes>
       </main>
       <Footer />

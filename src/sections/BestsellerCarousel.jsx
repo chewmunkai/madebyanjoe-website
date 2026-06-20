@@ -92,12 +92,9 @@ export default function BestsellerCarousel() {
         {BESTSELLERS.map((slug, n) => {
           const p = getProduct(slug)
           const [rating, count] = RATING[slug]
-          const was = Math.round(p.price * 1.15)
-          const off = Math.round((1 - p.price / was) * 100)
           return (
             <article className="bc__card" key={slug}>
               <Link to={`/product/${p.slug}`} className="bc__media" draggable="false">
-                <span className="bc__badge">−{off}%</span>
                 <img src={p.img} alt={p.name} loading="lazy" draggable="false" />
                 <button
                   className="bc__add"
@@ -122,7 +119,6 @@ export default function BestsellerCarousel() {
                 </div>
                 <div className="bc__price">
                   <span className="bc__now">{formatPrice(p.price)}</span>
-                  <span className="bc__was">{formatPrice(was)}</span>
                 </div>
               </div>
             </article>

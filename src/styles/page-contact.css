@@ -1,0 +1,1096 @@
+/* ANJOE — Contact · "The Atelier Console" redesign.
+   Brand tokens + glass vars only. The page is one bold asymmetric composition:
+   a tonal/gradient STAGE field on which the hero copy, a multi-plane Liquid
+   Glass form panel, and a tall glass "dossier" rail OVERLAP — then a CSS-only
+   locator with an SVG-refracting glass lens, and a console row of glass tiles.
+   Heavy liquid glass, layered over tonal fields so it has something to refract.
+   Every class is namespaced `cx-`. Loaded at the top of src/pages/Contact.jsx. */
+
+.cx {
+  --cx-edge: clamp(20px, 4vw, 40px);
+  /* per-page signature accent: a sage→blush meridian used on marks + dividers */
+  --cx-meridian: linear-gradient(90deg, var(--sage-500) 0%, var(--blush-500) 100%);
+}
+
+/* ============================================================
+   SHARED CRAFTED MOTIFS — index marks that replace the site's
+   dashed-mono eyebrow template.
+   ============================================================ */
+.cx-microlabel {
+  display: inline-flex;
+  align-items: baseline;
+  gap: 12px;
+  font-family: var(--font-mono);
+}
+.cx-microlabel__n {
+  font-size: 12px;
+  font-variant-numeric: tabular-nums;
+  letter-spacing: 0.04em;
+  color: var(--blush-500);
+  position: relative;
+  padding-right: 14px;
+}
+.cx-microlabel__n::after {
+  content: '';
+  position: absolute;
+  right: 0;
+  top: 50%;
+  width: 8px;
+  height: 1px;
+  background: currentColor;
+  opacity: 0.7;
+}
+.cx-microlabel__t {
+  font-size: 11px;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: var(--text-muted);
+}
+
+/* a crafted "coordinate stamp" — survey marker, not a dashed eyebrow */
+.cx-coord-stamp {
+  display: inline-flex;
+  align-items: center;
+  gap: 11px;
+  font-family: var(--font-mono);
+  font-size: 12px;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: var(--ink-700);
+}
+.cx-coord-stamp__mark {
+  width: 9px;
+  height: 9px;
+  border-radius: 2px 2px 2px 0;
+  rotate: 45deg;
+  background: var(--cx-meridian);
+  box-shadow: 0 2px 6px rgba(201, 139, 151, 0.45);
+}
+.cx-coord-stamp__t {
+  color: var(--ink-700);
+}
+.cx-coord-stamp__c {
+  display: inline-flex;
+  align-items: center;
+  padding-left: 13px;
+  margin-left: 2px;
+  font-size: 11px;
+  letter-spacing: 0.12em;
+  font-variant-numeric: tabular-nums;
+  color: var(--text-muted);
+  border-left: 1px solid var(--border-cool);
+}
+
+/* ============================================================
+   THE STAGE — the overlapping hero/form/dossier composition.
+   A tonal aurora field + hairline survey grid + a giant kerned
+   wordmark sit behind the floating glass so it has depth to refract.
+   ============================================================ */
+.cx-stage {
+  position: relative;
+  isolation: isolate;
+  overflow: hidden;
+  padding: clamp(96px, 13vh, 168px) 0 clamp(72px, 9vw, 128px);
+}
+/* aurora — soft blush+sage pools that drift behind the glass */
+.cx-stage__aurora {
+  position: absolute;
+  inset: -20% -10% -10%;
+  z-index: 0;
+  pointer-events: none;
+  background:
+    radial-gradient(46% 50% at 18% 14%, rgba(227, 184, 193, 0.5) 0%, transparent 60%),
+    radial-gradient(40% 46% at 88% 28%, rgba(175, 192, 168, 0.42) 0%, transparent 62%),
+    radial-gradient(54% 60% at 70% 92%, rgba(242, 222, 227, 0.55) 0%, transparent 64%),
+    linear-gradient(168deg, var(--sage-50), var(--paper) 60%, var(--blush-50));
+  will-change: transform;
+}
+/* hairline survey grid — gives the glass a fine field to refract */
+.cx-stage__grid {
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  pointer-events: none;
+  background-image:
+    linear-gradient(rgba(30, 27, 22, 0.05) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(30, 27, 22, 0.05) 1px, transparent 1px);
+  background-size: clamp(48px, 6vw, 88px) clamp(48px, 6vw, 88px);
+  -webkit-mask-image: radial-gradient(120% 100% at 50% 30%, #000 30%, transparent 78%);
+  mask-image: radial-gradient(120% 100% at 50% 30%, #000 30%, transparent 78%);
+  opacity: 0.7;
+}
+/* giant kerned greeting word — depth, not a faded "ghost serif" template word */
+.cx-stage__word {
+  position: absolute;
+  left: -2%;
+  bottom: 1%;
+  z-index: 0;
+  margin: 0;
+  font-family: var(--font-display);
+  font-style: italic;
+  font-size: clamp(96px, 21vw, 340px);
+  line-height: 0.78;
+  letter-spacing: -0.04em;
+  color: var(--ink-900);
+  opacity: 0.045;
+  pointer-events: none;
+  user-select: none;
+  white-space: nowrap;
+  will-change: transform;
+}
+
+/* the overlapping grid: intro spans the left, the glass panel sits center and
+   overlaps the dossier rail on the right. Asymmetric + layered. */
+.cx-stage__inner {
+  position: relative;
+  z-index: 2;
+  display: grid;
+  grid-template-columns: minmax(0, 0.92fr) minmax(0, 1.18fr) minmax(0, 0.78fr);
+  grid-template-areas: 'intro panel dossier';
+  align-items: start;
+  column-gap: clamp(12px, 2vw, 28px);
+}
+
+/* --- LEFT intro --- */
+.cx-intro {
+  grid-area: intro;
+  align-self: center;
+  max-width: 30ch;
+  padding-top: clamp(0px, 2vw, 30px);
+}
+.cx-intro__title {
+  margin: 18px 0 18px;
+  font-family: var(--font-display);
+  font-size: clamp(48px, 6.6vw, 104px);
+  line-height: 0.92;
+  letter-spacing: -0.02em;
+  color: var(--ink-900);
+}
+.cx-intro__title em {
+  font-style: italic;
+  color: var(--blush-500);
+}
+.cx-intro__lede {
+  max-width: 34ch;
+  color: var(--text-secondary);
+  font-size: clamp(15px, 1.3vw, 17px);
+  line-height: 1.65;
+}
+.cx-intro__status {
+  margin-top: 24px;
+}
+
+/* --- CENTER: the signature multi-plane Liquid Glass form panel ---
+   Built as a stack of separate glass planes (the 21st.dev liquid-glass
+   recipe, re-implemented in vanilla CSS): a refraction/blur plane, a tonal
+   tint, a diagonal specular sheen, and a discrete inset rim — all behind the
+   content. This goes beyond the shared .glass single-surface so the form reads
+   as the page's signature material. */
+.cx-panel {
+  grid-area: panel;
+  position: relative;
+  isolation: isolate;
+  margin-top: clamp(24px, 5vw, 72px);
+  border-radius: var(--radius-glass);
+  z-index: 3; /* overlaps the dossier rail */
+}
+/* plane 1 — the refraction: tint + heavy backdrop blur/saturate */
+.cx-panel__refract {
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  border-radius: inherit;
+  background: var(--glass-tint-strong);
+  -webkit-backdrop-filter: blur(26px) saturate(1.85) brightness(1.02);
+  backdrop-filter: blur(26px) saturate(1.85) brightness(1.02);
+  border: 1px solid rgba(255, 255, 255, 0.5);
+}
+/* plane 2 — the diagonal specular sheen (the "liquid" catch-light) */
+.cx-panel__sheen {
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  border-radius: inherit;
+  pointer-events: none;
+  background:
+    linear-gradient(
+      133deg,
+      rgba(255, 255, 255, 0.62) 0%,
+      rgba(255, 255, 255, 0.1) 24%,
+      transparent 50%
+    ),
+    radial-gradient(70% 50% at 88% 6%, rgba(227, 184, 193, 0.22), transparent 60%);
+  opacity: 0.92;
+}
+/* plane 3 — a discrete inset specular rim + float, separated from the blur */
+.cx-panel__rim {
+  position: absolute;
+  inset: 0;
+  z-index: 2;
+  border-radius: inherit;
+  pointer-events: none;
+  box-shadow: var(--glass-rim),
+    0 36px 70px -22px rgba(30, 27, 22, 0.42),
+    0 4px 14px rgba(30, 27, 22, 0.08);
+}
+/* a hairline registration tick — editorial crop-mark, top-right */
+.cx-panel__rim::after {
+  content: '';
+  position: absolute;
+  top: 18px;
+  right: 18px;
+  width: 18px;
+  height: 18px;
+  border-top: 1px solid var(--blush-300);
+  border-right: 1px solid var(--blush-300);
+  opacity: 0.7;
+}
+.cx-panel__body {
+  position: relative;
+  z-index: 3;
+  padding: clamp(30px, 3.8vw, 56px);
+}
+.cx-panel__head {
+  margin-bottom: clamp(22px, 3vw, 32px);
+}
+.cx-panel__title {
+  margin-top: 14px;
+  font-family: var(--font-display);
+  font-size: clamp(34px, 4.4vw, 58px);
+  line-height: 0.96;
+  letter-spacing: -0.015em;
+  color: var(--ink-900);
+}
+.cx-panel__title em {
+  font-style: italic;
+  color: var(--blush-500);
+}
+.cx-panel__form {
+  display: block;
+}
+.cx-form__row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 16px;
+}
+.cx-field {
+  display: grid;
+  gap: 8px;
+  margin-bottom: 16px;
+}
+.cx-field__label {
+  font-family: var(--font-ui);
+  font-size: 12px;
+  font-weight: var(--fw-medium);
+  letter-spacing: var(--ls-label);
+  text-transform: uppercase;
+  color: var(--ink-700);
+}
+.cx-field__input {
+  width: 100%;
+  background: rgba(255, 255, 255, 0.52);
+  border: 1px solid rgba(255, 255, 255, 0.62);
+  box-shadow: inset 0 1px 2px rgba(30, 27, 22, 0.05),
+    inset 0 1px 0 rgba(255, 255, 255, 0.7);
+  border-radius: 14px;
+  padding: 14px 16px;
+  font-family: var(--font-ui);
+  font-size: 16px;
+  color: var(--ink-900);
+  transition: border-color var(--dur-fast), box-shadow var(--dur-fast),
+    background var(--dur-fast);
+}
+.cx-field__input::placeholder {
+  color: var(--ink-400);
+}
+.cx-field__input:focus {
+  outline: none;
+  background: rgba(255, 255, 255, 0.88);
+  border-color: var(--ink-900);
+  box-shadow: 0 0 0 3px var(--focus-ring), inset 0 1px 2px rgba(30, 27, 22, 0.05);
+}
+textarea.cx-field__input {
+  resize: vertical;
+  min-height: 132px;
+  line-height: 1.55;
+}
+.cx-panel__send {
+  margin-top: 8px;
+}
+.cx-panel__note {
+  margin: 16px 0 0;
+  font-size: 13px;
+  color: var(--text-secondary);
+}
+.cx-panel__ok {
+  font-family: var(--font-display);
+  font-size: clamp(21px, 2.6vw, 30px);
+  color: var(--ink-900);
+  line-height: 1.4;
+  padding: 8px 0 18px;
+  max-width: 30ch;
+}
+
+/* --- RIGHT: tall glass "dossier" rail (.glass supplies the surface). It tucks
+   UNDER the form panel's right edge so the two glasses layer. --- */
+.cx-dossier {
+  grid-area: dossier;
+  margin-top: clamp(72px, 11vw, 150px);
+  /* glass edges layer by a consistent ~16px seam (not a 64px gulp that eats text) */
+  margin-left: clamp(-44px, -3.4vw, -22px);
+  /* left padding clears the panel seam so no label/value sits under the form glass */
+  padding: clamp(26px, 2.6vw, 38px) clamp(22px, 2.2vw, 32px) clamp(26px, 2.6vw, 34px)
+    clamp(42px, 3.8vw, 58px);
+  align-self: start;
+}
+.cx-dossier__list {
+  margin: 22px 0 0;
+}
+.cx-dossier__row {
+  display: grid;
+  gap: 6px;
+  padding: 16px 0;
+  border-bottom: 1px solid var(--border-subtle);
+}
+.cx-dossier__row:last-child {
+  border-bottom: none;
+}
+.cx-dossier__label {
+  font-family: var(--font-mono);
+  font-size: 11px;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--blush-500);
+}
+.cx-dossier__value {
+  margin: 0;
+  color: var(--ink-900);
+  font-size: clamp(14px, 1.2vw, 16px);
+  line-height: 1.55;
+}
+.cx-dossier__link {
+  border-bottom: 1px solid transparent;
+  transition: border-color var(--dur-fast), color var(--dur-fast);
+}
+.cx-dossier__link:hover {
+  color: var(--blush-500);
+  border-bottom-color: currentColor;
+}
+.cx-dossier__social {
+  margin-top: 22px;
+  padding-top: 20px;
+  border-top: 1px solid var(--border-subtle);
+}
+.cx-dossier__social-label {
+  display: block;
+  font-family: var(--font-mono);
+  font-size: 11px;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--text-muted);
+  margin-bottom: 14px;
+}
+.cx-dossier__social-links {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+.cx-dossier__social-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 9px 15px;
+  border: 1px solid rgba(255, 255, 255, 0.55);
+  border-radius: var(--radius-pill);
+  font-family: var(--font-ui);
+  font-size: 13px;
+  letter-spacing: 0.02em;
+  color: var(--ink-900);
+  background: rgba(255, 255, 255, 0.4);
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.6);
+  transition: transform var(--dur-normal) var(--ease-out),
+    border-color var(--dur-fast), box-shadow var(--dur-normal),
+    background var(--dur-fast);
+}
+.cx-dossier__social-link i {
+  font-style: normal;
+  color: var(--blush-500);
+  transition: transform var(--dur-normal) var(--ease-out);
+}
+.cx-dossier__social-link:hover {
+  transform: translateY(-2px);
+  border-color: rgba(255, 255, 255, 0.8);
+  background: rgba(255, 255, 255, 0.62);
+  box-shadow: var(--shadow-sm), inset 0 1px 0 rgba(255, 255, 255, 0.7);
+}
+.cx-dossier__social-link:hover i {
+  transform: translate(2px, -2px);
+}
+.cx-dossier__handle {
+  margin: 12px 0 0;
+  font-family: var(--font-mono);
+  font-size: 12px;
+  letter-spacing: 0.06em;
+  color: var(--text-muted);
+}
+
+/* ============================================================
+   LIVE STUDIO-STATUS chip — derived from real hours. Frosted pill
+   with a breathing dot. Reused on the intro + the map.
+   ============================================================ */
+.cx-status {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 6px 14px 6px 11px;
+  border-radius: var(--radius-pill);
+  font-family: var(--font-mono);
+  font-size: 11px;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  white-space: nowrap;
+  background: rgba(250, 246, 239, 0.5);
+  border: 1px solid rgba(255, 255, 255, 0.6);
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.65), var(--shadow-sm);
+  -webkit-backdrop-filter: blur(12px) saturate(1.7);
+  backdrop-filter: blur(12px) saturate(1.7);
+}
+.cx-status__sep {
+  color: var(--ink-300);
+}
+.cx-intro__status .cx-status__sep + * {
+  color: var(--text-secondary);
+}
+.cx-status__dot {
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+}
+.cx-status--open {
+  color: var(--success);
+}
+.cx-status--open .cx-status__dot {
+  background: var(--success);
+  box-shadow: 0 0 0 0 rgba(110, 139, 106, 0.5);
+  animation: cx-live 2.4s var(--ease-out) infinite;
+}
+.cx-status--closed {
+  color: var(--text-muted);
+}
+.cx-status--closed .cx-status__dot {
+  background: var(--ink-400);
+}
+@keyframes cx-live {
+  0% {
+    box-shadow: 0 0 0 0 rgba(110, 139, 106, 0.5);
+  }
+  70%,
+  100% {
+    box-shadow: 0 0 0 6px rgba(110, 139, 106, 0);
+  }
+}
+
+/* ============================================================
+   LOCATOR — CSS-only map motif, no third-party script/iframe
+   ============================================================ */
+.cx-locator {
+  position: relative;
+  overflow: hidden;
+}
+.cx-locator__inner {
+  display: grid;
+  grid-template-columns: 0.92fr 1.08fr;
+  gap: clamp(32px, 5vw, 80px);
+  align-items: center;
+}
+.cx-locator__copy {
+  max-width: 46ch;
+}
+.cx-locator__title {
+  margin-top: 14px;
+  font-size: clamp(30px, 4.2vw, 56px);
+}
+.cx-locator__title em {
+  font-style: italic;
+  color: var(--blush-500);
+}
+.cx-locator__lede {
+  color: var(--text-secondary);
+  font-size: clamp(15px, 1.4vw, 17px);
+  line-height: 1.7;
+  margin: 18px 0 28px;
+}
+.cx-coords {
+  position: relative;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 18px 44px;
+  padding: 20px 24px;
+  border-radius: var(--radius-xl);
+  background: linear-gradient(120deg, rgba(250, 246, 239, 0.5), rgba(240, 242, 236, 0.32));
+  border: 1px solid var(--border-cool);
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.6);
+}
+.cx-coords::before {
+  content: '';
+  position: absolute;
+  left: 0;
+  top: 14px;
+  bottom: 14px;
+  width: 2px;
+  border-radius: var(--radius-pill);
+  background: var(--cx-meridian);
+  opacity: 0.7;
+}
+.cx-coords__pair {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+.cx-coords__pair b {
+  font-family: var(--font-mono);
+  font-variant-numeric: tabular-nums;
+  font-size: clamp(18px, 2vw, 24px);
+  font-weight: var(--fw-regular);
+  letter-spacing: -0.01em;
+  color: var(--ink-900);
+}
+.cx-coords__pair small {
+  font-family: var(--font-mono);
+  font-size: 10px;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--text-muted);
+}
+.cx-locator__addr {
+  display: block;
+  font-style: normal;
+  margin-top: 22px;
+  font-size: 14px;
+  line-height: 1.6;
+  color: var(--text-secondary);
+  max-width: 34ch;
+}
+
+/* --- the map canvas (lifted, layered, decorative) --- */
+.cx-map {
+  position: relative;
+  margin: 0;
+  aspect-ratio: 7 / 5;
+  border-radius: var(--radius-glass);
+  overflow: hidden;
+  background:
+    radial-gradient(120% 120% at 64% 22%, var(--blush-50), transparent 56%),
+    linear-gradient(168deg, var(--sage-50), var(--paper) 70%);
+  border: 1px solid rgba(255, 255, 255, 0.5);
+  box-shadow: var(--glass-rim), var(--glass-float);
+  isolation: isolate;
+}
+.cx-map__orbit {
+  position: absolute;
+  left: 64%;
+  top: 50%;
+  transform: translate(-50%, -50%);
+  width: 70%;
+  aspect-ratio: 1;
+  will-change: transform;
+}
+.cx-map__ring {
+  position: absolute;
+  inset: 0;
+  margin: auto;
+  border-radius: 50%;
+  border: 1px solid rgba(126, 145, 115, 0.35);
+}
+.cx-map__ring--1 {
+  width: 38%;
+  aspect-ratio: 1;
+  border-color: rgba(201, 139, 151, 0.45);
+}
+.cx-map__ring--2 {
+  width: 68%;
+  aspect-ratio: 1;
+}
+.cx-map__ring--3 {
+  width: 100%;
+  aspect-ratio: 1;
+  border-style: dashed;
+  border-color: rgba(110, 102, 87, 0.22);
+}
+.cx-map__street {
+  position: absolute;
+  background: rgba(30, 27, 22, 0.1);
+}
+.cx-map__street--h {
+  left: -8%;
+  right: -8%;
+  top: 58%;
+  height: 2px;
+  transform: rotate(-4deg);
+}
+.cx-map__street--v {
+  top: -8%;
+  bottom: -8%;
+  left: 40%;
+  width: 2px;
+  transform: rotate(5deg);
+}
+.cx-map__street--d {
+  left: -10%;
+  right: -10%;
+  top: 30%;
+  height: 1px;
+  transform: rotate(14deg);
+  background: rgba(30, 27, 22, 0.07);
+}
+.cx-map__plot {
+  position: absolute;
+  border-radius: var(--radius-sm);
+  background: rgba(250, 246, 239, 0.5);
+  border: 1px solid rgba(30, 27, 22, 0.06);
+}
+.cx-map__plot--a {
+  left: 10%;
+  top: 16%;
+  width: 18%;
+  height: 22%;
+}
+.cx-map__plot--b {
+  left: 14%;
+  bottom: 14%;
+  width: 22%;
+  height: 20%;
+  transform: rotate(-4deg);
+}
+.cx-map__plot--c {
+  right: 8%;
+  top: 12%;
+  width: 16%;
+  height: 18%;
+  transform: rotate(5deg);
+}
+.cx-map__pin {
+  position: absolute;
+  left: 64%;
+  top: 50%;
+  z-index: 2;
+  width: 22px;
+  height: 22px;
+  transform: translate(-50%, -100%);
+  border-radius: 50% 50% 50% 0;
+  background: var(--blush-500);
+  rotate: -45deg;
+  box-shadow: 0 10px 20px rgba(201, 139, 151, 0.5);
+}
+.cx-map__pin::after {
+  content: '';
+  position: absolute;
+  inset: 6px;
+  border-radius: 50%;
+  background: var(--white);
+}
+.cx-map__pulse {
+  position: absolute;
+  inset: 50%;
+  width: 10px;
+  height: 10px;
+  margin: -5px 0 0 -5px;
+  border-radius: 50%;
+  background: rgba(201, 139, 151, 0.35);
+  animation: cx-pulse 2.8s var(--ease-out) infinite;
+}
+@keyframes cx-pulse {
+  0% {
+    transform: scale(1);
+    opacity: 0.6;
+  }
+  70%,
+  100% {
+    transform: scale(6.5);
+    opacity: 0;
+  }
+}
+.cx-map__cap {
+  position: absolute;
+  z-index: 3;
+  left: 16px;
+  bottom: 16px;
+  font-family: var(--font-mono);
+  font-size: 11px;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--ink-700);
+  background: rgba(250, 246, 239, 0.55);
+  -webkit-backdrop-filter: blur(10px) saturate(1.6);
+  backdrop-filter: blur(10px) saturate(1.6);
+  border: 1px solid rgba(255, 255, 255, 0.55);
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.6);
+  padding: 7px 13px;
+  border-radius: var(--radius-pill);
+}
+.cx-map__status {
+  position: absolute;
+  z-index: 3;
+  right: 16px;
+  top: 16px;
+}
+
+/* ------------------------------------------------------------
+   SIGNATURE MOMENT — the refractive glass LENS over the pin.
+   Now built on the 21st.dev liquid-glass recipe in two vanilla planes:
+   (1) a .cx-lens__refract plane that actually WARPS the map field with an
+   SVG feTurbulence + feDisplacementMap filter (true Apple-style liquid
+   distortion, not a flat blur); (2) the lens shell carrying specular rim,
+   chromatic edge + a precise reticle.
+   ------------------------------------------------------------ */
+.cx-svg-defs {
+  position: absolute;
+  width: 0;
+  height: 0;
+  pointer-events: none;
+}
+.cx-lens {
+  position: absolute;
+  z-index: 4;
+  left: 64%;
+  top: 50%;
+  width: clamp(100px, 16vw, 146px);
+  aspect-ratio: 1;
+  transform: translate(-50%, -50%);
+  border-radius: 50%;
+  background:
+    radial-gradient(circle at 34% 30%, rgba(255, 255, 255, 0.5) 0%, rgba(255, 255, 255, 0.08) 24%, transparent 48%),
+    radial-gradient(circle at 68% 80%, rgba(201, 139, 151, 0.16), transparent 52%);
+  border: 1px solid rgba(255, 255, 255, 0.65);
+  box-shadow:
+    inset 0 2px 4px rgba(255, 255, 255, 0.7),
+    inset 0 -6px 14px rgba(30, 27, 22, 0.14),
+    inset 0 0 0 6px rgba(255, 255, 255, 0.06),
+    0 18px 32px -10px rgba(30, 27, 22, 0.4);
+  pointer-events: none;
+  animation: cx-lens-breathe 7s var(--ease-standard) infinite;
+}
+/* the refraction plane — magnify + liquid-warp the field beneath the lens */
+.cx-lens__refract {
+  position: absolute;
+  inset: 0;
+  border-radius: 50%;
+  -webkit-backdrop-filter: blur(1px) saturate(1.9) brightness(1.05) url(#cx-glass-warp);
+  backdrop-filter: blur(1px) saturate(1.9) brightness(1.05) url(#cx-glass-warp);
+}
+/* a faint chromatic meridian ring at the rim — the brand accent */
+.cx-lens::before {
+  content: '';
+  position: absolute;
+  inset: -1px;
+  border-radius: 50%;
+  padding: 1px;
+  background: var(--cx-meridian);
+  -webkit-mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0);
+  -webkit-mask-composite: xor;
+  mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0);
+  mask-composite: exclude;
+  opacity: 0.4;
+}
+.cx-lens__crosshair {
+  position: absolute;
+  inset: 0;
+  border-radius: 50%;
+}
+.cx-lens__crosshair::before,
+.cx-lens__crosshair::after {
+  content: '';
+  position: absolute;
+  background: rgba(30, 27, 22, 0.28);
+}
+.cx-lens__crosshair::before {
+  left: 50%;
+  top: 18%;
+  bottom: 18%;
+  width: 1px;
+  transform: translateX(-0.5px);
+}
+.cx-lens__crosshair::after {
+  top: 50%;
+  left: 18%;
+  right: 18%;
+  height: 1px;
+  transform: translateY(-0.5px);
+}
+@keyframes cx-lens-breathe {
+  0%,
+  100% {
+    transform: translate(-50%, -50%) scale(1);
+  }
+  50% {
+    transform: translate(-50%, -52%) scale(1.05);
+  }
+}
+
+/* ============================================================
+   CONSOLE — a row of glass channel tiles over its own tonal band
+   ============================================================ */
+.cx-console {
+  position: relative;
+  isolation: isolate;
+  overflow: hidden;
+}
+/* tonal field behind the glass tiles so they refract over colour, not bone */
+.cx-console__field {
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  pointer-events: none;
+  background:
+    radial-gradient(48% 70% at 12% 0%, rgba(175, 192, 168, 0.34), transparent 60%),
+    radial-gradient(50% 80% at 92% 100%, rgba(227, 184, 193, 0.34), transparent 62%),
+    linear-gradient(180deg, var(--paper), var(--paper-2));
+}
+.cx-console__inner {
+  position: relative;
+  z-index: 1;
+}
+.cx-console__head {
+  border-top: 1px solid var(--ink-900);
+  padding-top: 24px;
+  margin-bottom: clamp(36px, 5vw, 56px);
+  max-width: 760px;
+}
+.cx-console__title {
+  margin-top: 14px;
+  font-size: clamp(34px, 5vw, 64px);
+}
+.cx-console__title em {
+  font-style: italic;
+  color: var(--blush-500);
+}
+.cx-tiles {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: clamp(18px, 2.4vw, 30px);
+}
+/* tiles are LIQUID GLASS (.glass supplies tint/blur/rim/float/squircle) */
+.cx-tile {
+  padding: clamp(26px, 2.8vw, 38px);
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  transition: transform var(--dur-normal) var(--ease-out), box-shadow var(--dur-normal);
+}
+/* stagger the middle tile up so the row reads dimensional, not a flat strip */
+.cx-tiles .cx-tile:nth-child(2) {
+  transform: translateY(clamp(14px, 2.4vw, 32px));
+}
+.cx-tile:hover {
+  transform: translateY(-4px);
+  box-shadow: var(--glass-rim), 0 30px 56px -16px rgba(30, 27, 22, 0.36),
+    0 2px 10px rgba(30, 27, 22, 0.08);
+}
+.cx-tiles .cx-tile:nth-child(2):hover {
+  transform: translateY(clamp(10px, 2vw, 28px));
+}
+.cx-tile__top {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+.cx-tile__ic {
+  width: clamp(44px, 4.6vw, 58px);
+  height: auto;
+  filter: drop-shadow(0 8px 16px rgba(30, 27, 22, 0.14));
+}
+.cx-tile__idx {
+  font-family: var(--font-mono);
+  font-size: 12px;
+  letter-spacing: 0.14em;
+  color: var(--blush-500);
+}
+.cx-tile__label {
+  font-family: var(--font-mono);
+  font-size: 11px;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--text-muted);
+}
+.cx-tile__title {
+  font-family: var(--font-display);
+  font-size: clamp(21px, 2.4vw, 28px);
+  line-height: 1.1;
+  color: var(--ink-900);
+}
+.cx-tile__lines {
+  list-style: none;
+  margin: 4px 0 0;
+  padding: 14px 0 0;
+  border-top: 1px solid var(--border-subtle);
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+.cx-tile__lines li {
+  font-size: 14px;
+  line-height: 1.5;
+  color: var(--text-secondary);
+}
+.cx-tile__cta {
+  margin-top: auto;
+  padding-top: 14px;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  font-family: var(--font-mono);
+  font-size: 12px;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--ink-900);
+}
+.cx-tile__cta i {
+  font-style: normal;
+  color: var(--blush-500);
+  transition: transform var(--dur-normal) var(--ease-out);
+}
+.cx-tile__cta:hover i {
+  transform: translateX(4px);
+}
+
+/* ============================================================
+   CTA legal line
+   ============================================================ */
+.cx-cta__legal {
+  margin: 26px 0 0;
+  font-family: var(--font-mono);
+  font-size: 11px;
+  letter-spacing: 0.06em;
+  color: rgba(243, 236, 221, 0.5);
+}
+
+/* ============================================================
+   RESPONSIVE
+   ============================================================ */
+@media (max-width: 1100px) {
+  /* collapse the 3-way overlap to: intro on top, panel + dossier side-by-side */
+  .cx-stage__inner {
+    grid-template-columns: minmax(0, 1.2fr) minmax(0, 0.85fr);
+    grid-template-areas:
+      'intro intro'
+      'panel dossier';
+    row-gap: clamp(36px, 6vw, 60px);
+    column-gap: clamp(16px, 2.4vw, 32px);
+  }
+  .cx-intro {
+    max-width: none;
+    align-self: start;
+  }
+  .cx-panel {
+    margin-top: 0;
+  }
+  .cx-dossier {
+    margin-top: clamp(20px, 4vw, 48px);
+    margin-left: 0;
+  }
+}
+
+@media (max-width: 860px) {
+  .cx-stage__inner {
+    grid-template-columns: 1fr;
+    grid-template-areas:
+      'intro'
+      'panel'
+      'dossier';
+    row-gap: clamp(28px, 6vw, 44px);
+  }
+  .cx-dossier {
+    margin-top: 0;
+  }
+  .cx-locator__inner {
+    grid-template-columns: 1fr;
+    gap: clamp(32px, 6vw, 48px);
+  }
+  .cx-tiles {
+    grid-template-columns: 1fr;
+  }
+  .cx-tiles .cx-tile:nth-child(2) {
+    transform: none;
+  }
+  .cx-tiles .cx-tile:nth-child(2):hover {
+    transform: translateY(-4px);
+  }
+}
+
+@media (max-width: 520px) {
+  .cx-form__row {
+    grid-template-columns: 1fr;
+  }
+  .cx-stage__word {
+    font-size: clamp(80px, 30vw, 150px);
+  }
+  .cx-coord-stamp__c {
+    display: none;
+  }
+  .cx-intro__status {
+    flex-wrap: wrap;
+    white-space: normal;
+  }
+}
+
+/* ============================================================
+   REDUCED MOTION
+   ============================================================ */
+@media (prefers-reduced-motion: reduce) {
+  .cx-map__pulse,
+  .cx-lens,
+  .cx-status--open .cx-status__dot {
+    animation: none;
+  }
+  .cx-lens {
+    transform: translate(-50%, -50%);
+  }
+  .cx-tile,
+  .cx-tiles .cx-tile:nth-child(2),
+  .cx-dossier__social-link {
+    transition: none;
+  }
+  .cx-tile:hover,
+  .cx-tiles .cx-tile:nth-child(2):hover,
+  .cx-dossier__social-link:hover {
+    transform: none;
+  }
+  .cx-stage__aurora,
+  .cx-stage__word,
+  .cx-map__orbit {
+    transform: none;
+  }
+}
+
+/* ============================================================
+   REDUCED TRANSPARENCY — drop blur on this page's own frosted bits and
+   fall back to opaque tints. (.glass / .glass--strong are guarded globally
+   in glass.css.) The multi-plane form panel needs explicit fallbacks since
+   it is bespoke glass, not the .glass utility.
+   ============================================================ */
+@media (prefers-reduced-transparency: reduce) {
+  .cx-status,
+  .cx-map__cap {
+    -webkit-backdrop-filter: none;
+    backdrop-filter: none;
+  }
+  .cx-status {
+    background: rgba(250, 246, 239, 0.95);
+  }
+  .cx-map__cap {
+    background: rgba(250, 246, 239, 0.95);
+  }
+  /* the bespoke multi-plane form panel → opaque tint */
+  .cx-panel__refract {
+    -webkit-backdrop-filter: none;
+    backdrop-filter: none;
+    background: rgba(250, 246, 239, 0.97);
+  }
+  /* the refractive lens loses its point without backdrop-filter — soften it
+     to a flat tonal disc so the map still reads cleanly. */
+  .cx-lens__refract {
+    -webkit-backdrop-filter: none;
+    backdrop-filter: none;
+    background: rgba(250, 246, 239, 0.5);
+  }
+}

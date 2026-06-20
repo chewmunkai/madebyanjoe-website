@@ -1,0 +1,869 @@
+/* ANJOE — Shipping & returns (dimensional redesign)
+   Built strictly from existing tokens + the Liquid Editorial language.
+   Scoped under .shipx so nothing here can leak into other pages.
+   Loaded at the top of src/pages/Shipping.jsx. */
+
+.shipx {
+  --shipx-edge: clamp(20px, 4vw, 40px);
+  /* per-page signature accent: a "navigation" meridian — sage compass marks on
+     a warm field. Used on the eyebrow tick, zone seps, globe arcs + compass. */
+  --shipx-meridian: var(--sage-500);
+}
+
+/* ---------------------------------------------------------------------------
+   CRAFTED EYEBROW — replaces the generic dashed-mono eyebrow + ✦ motif.
+   A drawn registration tick (origin dot + hairline) precedes a mono label.
+   --------------------------------------------------------------------------- */
+.shipx-eyebrow {
+  display: inline-flex;
+  align-items: center;
+  gap: 12px;
+  font-family: var(--font-mono);
+  font-size: 11px;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: var(--text-secondary);
+}
+.shipx-eyebrow__mark {
+  position: relative;
+  width: 30px;
+  height: 9px;
+  flex: 0 0 auto;
+}
+.shipx-eyebrow__mark::before {
+  content: '';
+  position: absolute;
+  left: 0;
+  top: 50%;
+  width: 7px;
+  height: 7px;
+  transform: translateY(-50%) rotate(45deg);
+  border: 1.5px solid var(--shipx-meridian);
+  border-radius: 1px;
+}
+.shipx-eyebrow__mark::after {
+  content: '';
+  position: absolute;
+  left: 11px;
+  right: 0;
+  top: 50%;
+  height: 1px;
+  background: linear-gradient(90deg, var(--ink-400), transparent);
+}
+
+/* ---------------------------------------------------------------------------
+   HERO — editorial "KL → world" framing, oversized faded coordinates numeral
+   --------------------------------------------------------------------------- */
+.shipx-hero {
+  position: relative;
+}
+.shipx-hero .container {
+  position: relative;
+  z-index: 2;
+}
+/* vertical mono rail on the hero (writing-mode), like the about/eh rails */
+.shipx-hero__rail {
+  position: absolute;
+  left: 18px;
+  top: 50%;
+  z-index: 2;
+  writing-mode: vertical-rl;
+  transform: translateY(-50%) rotate(180deg);
+  font-family: var(--font-mono);
+  font-size: 11px;
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+  color: var(--text-muted);
+  white-space: nowrap;
+}
+/* giant faded background coordinates — depth via scale + low opacity */
+.shipx-hero__coord {
+  position: absolute;
+  right: 2%;
+  bottom: -6%;
+  z-index: 1;
+  margin: 0;
+  font-family: var(--font-display);
+  font-style: italic;
+  font-size: clamp(70px, 13vw, 200px);
+  line-height: 0.86;
+  letter-spacing: -0.03em;
+  color: var(--ink-900);
+  opacity: 0.06;
+  pointer-events: none;
+  user-select: none;
+  white-space: nowrap;
+}
+/* route line under the lede: KL ●———————● world (a drawn shipping leg) */
+.shipx-hero__route {
+  display: flex;
+  align-items: center;
+  gap: 18px;
+  margin-top: 34px;
+  font-family: var(--font-mono);
+  font-size: 12px;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--ink-700);
+  flex-wrap: wrap;
+}
+.shipx-hero__node {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  line-height: 1.1;
+}
+.shipx-hero__node--end {
+  text-align: right;
+}
+.shipx-hero__node b {
+  font-weight: var(--fw-medium);
+  color: var(--ink-900);
+  letter-spacing: 0.06em;
+}
+.shipx-hero__node small {
+  font-size: 10px;
+  letter-spacing: 0.14em;
+  color: var(--text-muted);
+}
+/* the leg: a hairline with an origin node + a traveling pip that glides to dest */
+.shipx-hero__route-line {
+  flex: 1;
+  min-width: 70px;
+  height: 1px;
+  background: linear-gradient(90deg, var(--ink-400) 0%, var(--ink-300) 60%, transparent);
+  position: relative;
+  align-self: center;
+}
+.shipx-hero__route-line::before {
+  content: '';
+  position: absolute;
+  left: -1px;
+  top: 50%;
+  width: 6px;
+  height: 6px;
+  transform: translateY(-50%);
+  border-radius: 50%;
+  background: var(--shipx-meridian);
+}
+.shipx-hero__route-dot {
+  position: absolute;
+  top: 50%;
+  left: 0;
+  width: 5px;
+  height: 5px;
+  margin-top: -2.5px;
+  border-radius: 50%;
+  background: var(--blush-500);
+  box-shadow: 0 0 0 3px rgba(201, 139, 151, 0.18);
+  animation: shipx-leg 4.2s var(--ease-out) infinite;
+}
+@keyframes shipx-leg {
+  0% { left: 4%; opacity: 0; }
+  12% { opacity: 1; }
+  78% { left: 98%; opacity: 1; }
+  92%, 100% { left: 98%; opacity: 0; }
+}
+
+/* ---------------------------------------------------------------------------
+   DISPATCH FACTS — broken grid of 3 lifted fact cards over the bone field
+   --------------------------------------------------------------------------- */
+.shipx-facts {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  /* intentional asymmetric rhythm: tighter than the section, not a uniform strip */
+  gap: clamp(14px, 1.6vw, 22px);
+}
+/* LIQUID GLASS: .glass supplies tint/blur/specular rim/float/sheen/squircle.
+   We set only geometry + the staggered float + interaction craft here. */
+.shipx-fact {
+  padding: clamp(26px, 2.8vw, 38px) clamp(24px, 2.6vw, 34px) clamp(28px, 2.8vw, 36px);
+  display: flex;
+  flex-direction: column;
+  gap: 13px;
+  transition: transform var(--dur-normal) var(--ease-out),
+    box-shadow var(--dur-normal);
+}
+.shipx-fact:hover {
+  transform: translateY(-5px);
+  box-shadow: var(--glass-rim), 0 30px 60px -18px rgba(30, 27, 22, 0.34),
+    0 3px 12px rgba(30, 27, 22, 0.08);
+}
+/* stagger the cards so the row reads dimensional, not a flat strip */
+.shipx-fact:nth-child(2) {
+  transform: translateY(clamp(16px, 2.6vw, 34px));
+}
+.shipx-fact:nth-child(2):hover {
+  transform: translateY(clamp(11px, 2.1vw, 29px));
+}
+/* lift the last card a touch less than the second — broken, hand-placed grid */
+.shipx-fact:nth-child(3) {
+  transform: translateY(clamp(6px, 1vw, 14px));
+}
+.shipx-fact:nth-child(3):hover {
+  transform: translateY(clamp(1px, 0.5vw, 9px));
+}
+/* crafted step numeral, ghosted in the corner — replaces a flat eyebrow */
+.shipx-fact__step {
+  position: absolute;
+  top: clamp(18px, 2vw, 24px);
+  right: clamp(20px, 2.2vw, 28px);
+  font-family: var(--font-display);
+  font-style: italic;
+  font-size: clamp(34px, 4vw, 52px);
+  line-height: 1;
+  color: var(--ink-900);
+  opacity: 0.08;
+  pointer-events: none;
+}
+.shipx-fact__idx {
+  font-family: var(--font-mono);
+  font-size: 11px;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: var(--shipx-meridian);
+  display: inline-flex;
+  align-items: center;
+  gap: 9px;
+}
+/* a drawn tick before the role label, instead of a dashed mono rule */
+.shipx-fact__idx::before {
+  content: '';
+  width: 16px;
+  height: 1.5px;
+  background: var(--shipx-meridian);
+}
+.shipx-fact__ic {
+  width: clamp(44px, 4.6vw, 58px);
+  height: auto;
+  filter: drop-shadow(0 8px 16px rgba(30, 27, 22, 0.14));
+}
+.shipx-fact__big {
+  font-family: var(--font-display);
+  font-size: clamp(26px, 3vw, 38px);
+  line-height: 1.05;
+  color: var(--ink-900);
+}
+.shipx-fact__big em {
+  font-style: italic;
+  color: var(--blush-500);
+}
+.shipx-fact p {
+  margin: 0;
+  color: var(--text-secondary);
+  font-size: 15px;
+  line-height: 1.6;
+}
+
+/* ---------------------------------------------------------------------------
+   RATES — zone-grouped, elevated table surface. Each zone is a lifted card;
+   rows reflow on mobile (data-label fallback). Strong mono price column.
+   --------------------------------------------------------------------------- */
+.shipx-rates-head {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 24px;
+  flex-wrap: wrap;
+  border-top: 1px solid var(--ink-900);
+  padding-top: 24px;
+  margin-bottom: clamp(28px, 4vw, 44px);
+}
+.shipx-rates-head h2 {
+  margin-top: 14px;
+  font-size: clamp(34px, 5vw, 64px);
+}
+.shipx-rates-head h2 em {
+  font-style: italic;
+  color: var(--blush-500);
+}
+.shipx-rates-head__note {
+  font-family: var(--font-mono);
+  font-size: 11px;
+  letter-spacing: 0.06em;
+  color: var(--text-muted);
+  max-width: 26ch;
+  text-align: right;
+}
+
+.shipx-zones {
+  display: grid;
+  gap: clamp(20px, 2.6vw, 32px);
+}
+
+/* LIQUID GLASS zone card — .glass supplies tint/blur/rim/float/sheen/squircle.
+   overflow:hidden clips the internal rows to the same squircle (one corner
+   language). The tonal price-tier spine moves to ::after so glass keeps ::before
+   for its specular sheen. */
+.shipx-zone {
+  overflow: hidden;
+  transition: box-shadow var(--dur-normal), transform var(--dur-normal) var(--ease-out);
+}
+.shipx-zone:hover {
+  box-shadow: var(--glass-rim), 0 30px 64px -18px rgba(30, 27, 22, 0.32),
+    0 3px 12px rgba(30, 27, 22, 0.08);
+  transform: translateY(-3px);
+}
+/* tonal left spine encodes the price tier without inventing new colors.
+   A soft gradient down the inside edge (not a flat bar) — crafted depth. */
+.shipx-zone::after {
+  content: '';
+  position: absolute;
+  left: 0;
+  top: 14px;
+  bottom: 14px;
+  width: 3px;
+  border-radius: 999px;
+  z-index: 2;
+  background: linear-gradient(180deg, var(--blush-300), var(--blush-500));
+}
+.shipx-zone--mid::after {
+  background: linear-gradient(180deg, var(--sage-300), var(--sage-500));
+}
+.shipx-zone--far::after {
+  background: linear-gradient(180deg, var(--blush-500), var(--blush-300));
+}
+
+.shipx-zone__head {
+  display: grid;
+  grid-template-columns: auto 1fr auto;
+  align-items: baseline;
+  gap: 14px 20px;
+  padding: clamp(24px, 2.8vw, 34px) clamp(24px, 2.8vw, 38px) clamp(18px, 2.2vw, 24px);
+}
+/* crafted zone numeral: a large tabular index over a faint "/ 03" denominator —
+   reads like a catalogue spine, not a generic mono eyebrow */
+.shipx-zone__idx {
+  display: inline-flex;
+  align-items: baseline;
+  gap: 4px;
+  font-family: var(--font-mono);
+  font-variant-numeric: tabular-nums;
+}
+.shipx-zone__idx b {
+  font-weight: var(--fw-medium);
+  font-size: 22px;
+  letter-spacing: 0.02em;
+  color: var(--blush-500);
+  line-height: 1;
+}
+.shipx-zone__idx i {
+  font-style: normal;
+  font-size: 11px;
+  letter-spacing: 0.08em;
+  color: var(--text-muted);
+}
+.shipx-zone--mid .shipx-zone__idx b {
+  color: var(--sage-500);
+}
+.shipx-zone__title {
+  font-family: var(--font-display);
+  font-size: clamp(23px, 2.6vw, 32px);
+  line-height: 1.08;
+  color: var(--ink-900);
+  grid-column: 1 / -1;
+}
+.shipx-zone__meta {
+  grid-column: 1 / -1;
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  flex-wrap: wrap;
+  font-family: var(--font-mono);
+  font-size: 11px;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--text-secondary);
+}
+/* crafted divider between range + band: two dots flanking a hairline (a route
+   "leg" mark), replacing the ✦ separator */
+.shipx-zone__sep {
+  position: relative;
+  width: 24px;
+  height: 1px;
+  background: var(--ink-300);
+}
+.shipx-zone__sep::before,
+.shipx-zone__sep::after {
+  content: '';
+  position: absolute;
+  top: 50%;
+  width: 3px;
+  height: 3px;
+  margin-top: -1.5px;
+  border-radius: 50%;
+  background: var(--blush-300);
+}
+.shipx-zone__sep::before { left: -1px; }
+.shipx-zone__sep::after { right: -1px; }
+.shipx-zone--mid .shipx-zone__sep::before,
+.shipx-zone--mid .shipx-zone__sep::after {
+  background: var(--sage-300);
+}
+.shipx-zone__from {
+  font-family: var(--font-mono);
+  font-variant-numeric: tabular-nums;
+  color: var(--ink-900);
+  letter-spacing: 0;
+}
+.shipx-zone__count {
+  font-family: var(--font-mono);
+  font-size: 11px;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--text-muted);
+}
+
+/* the actual rate rows inside each zone — dividers are soft translucent rules so
+   the rows read as one glass body (no heavy opaque ledger lines on the frost) */
+.shipx-grid {
+  border-top: 1px solid rgba(30, 27, 22, 0.1);
+}
+.shipx-row {
+  display: grid;
+  grid-template-columns: 1.6fr 0.7fr 1fr;
+  gap: 16px;
+  align-items: center;
+  padding: 15px clamp(24px, 2.8vw, 38px);
+  border-bottom: 1px solid rgba(30, 27, 22, 0.07);
+  transition: background var(--dur-fast);
+}
+.shipx-row:last-child {
+  border-bottom: none;
+}
+.shipx-row:hover {
+  background: rgba(227, 184, 193, 0.18);
+}
+.shipx-zone--mid .shipx-row:hover {
+  background: rgba(175, 192, 168, 0.2);
+}
+.shipx-row__head {
+  font-family: var(--font-mono);
+  font-size: 10px;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--text-muted);
+  padding-top: 12px;
+  padding-bottom: 12px;
+}
+.shipx-cell {
+  font-size: 15px;
+  color: var(--ink-900);
+}
+.shipx-cell--dest {
+  font-family: var(--font-display);
+  font-size: clamp(17px, 1.5vw, 20px);
+  letter-spacing: var(--ls-tight);
+}
+.shipx-cell--rate {
+  font-family: var(--font-mono);
+  font-variant-numeric: tabular-nums;
+  font-size: 16px;
+  color: var(--ink-900);
+  letter-spacing: 0;
+}
+.shipx-cell--eta {
+  color: var(--text-secondary);
+  font-size: 14px;
+}
+
+.shipx-rates__foot {
+  margin: clamp(22px, 3vw, 32px) 0 0;
+  font-family: var(--font-mono);
+  font-size: 11px;
+  letter-spacing: 0.03em;
+  color: var(--text-muted);
+  max-width: 64ch;
+}
+
+/* ---------------------------------------------------------------------------
+   POLICIES — alternating band section, accordions as lifted surface
+   --------------------------------------------------------------------------- */
+.shipx-policies__head {
+  border-top: 1px solid var(--ink-900);
+  padding-top: 24px;
+  margin-bottom: clamp(28px, 4vw, 44px);
+}
+.shipx-policies__head h2 {
+  margin-top: 14px;
+  font-size: clamp(34px, 5vw, 64px);
+}
+.shipx-policies__head h2 em {
+  font-style: italic;
+  color: var(--blush-500);
+}
+.shipx-policies__grid {
+  display: grid;
+  grid-template-columns: 0.42fr 0.58fr;
+  gap: clamp(28px, 5vw, 72px);
+  align-items: start;
+}
+.shipx-policies__aside {
+  position: sticky;
+  top: calc(var(--header-h) + 28px);
+}
+.shipx-policies__aside .eyebrow {
+  margin-bottom: 16px;
+}
+.shipx-policies__aside p {
+  color: var(--text-secondary);
+  font-size: 15px;
+  line-height: 1.7;
+  max-width: 34ch;
+}
+/* SIGNATURE-adjacent: a drawn compass-rose mark replaces the ✦ numeral.
+   Sage ring + blush needle, in brand tokens only. */
+.shipx-policies__mark {
+  width: clamp(56px, 7vw, 84px);
+  height: auto;
+  margin-bottom: 22px;
+  overflow: visible;
+}
+.shipx-mark__ring {
+  fill: none;
+  stroke: var(--sage-300);
+  stroke-width: 1.3;
+  opacity: 0.7;
+}
+.shipx-mark__ring--in {
+  stroke-dasharray: 3 5;
+  opacity: 0.5;
+}
+.shipx-mark__needle {
+  fill: var(--blush-300);
+  stroke: var(--blush-500);
+  stroke-width: 0.8;
+  stroke-linejoin: round;
+}
+.shipx-mark__cross {
+  stroke: var(--ink-300);
+  stroke-width: 1;
+}
+.shipx-mark__hub {
+  fill: var(--ink-900);
+}
+
+.shipx-acc {
+  display: flex;
+  flex-direction: column;
+  /* graduated rhythm — items breathe slightly more than a uniform stack */
+  gap: clamp(12px, 1.4vw, 16px);
+}
+/* LIQUID GLASS accordions — .glass supplies tint/blur/rim/float/sheen/squircle.
+   We set only padding + interaction; open state deepens the float. */
+.shipx-acc details {
+  padding: 4px clamp(20px, 2.4vw, 28px);
+  border-radius: var(--radius-glass);
+  transition: box-shadow var(--dur-normal), transform var(--dur-normal) var(--ease-out);
+}
+.shipx-acc details:hover {
+  transform: translateY(-2px);
+}
+.shipx-acc details[open] {
+  box-shadow: var(--glass-rim), 0 28px 56px -18px rgba(30, 27, 22, 0.3),
+    0 3px 12px rgba(30, 27, 22, 0.07);
+}
+.shipx-acc summary {
+  cursor: pointer;
+  list-style: none;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 18px;
+  padding: 20px 0;
+  font-family: var(--font-display);
+  font-size: clamp(18px, 1.9vw, 23px);
+  color: var(--ink-900);
+}
+.shipx-acc summary::-webkit-details-marker {
+  display: none;
+}
+.shipx-acc summary::after {
+  content: '+';
+  flex: 0 0 auto;
+  width: 30px;
+  height: 30px;
+  display: grid;
+  place-items: center;
+  border-radius: 50%;
+  border: 1px solid rgba(255, 255, 255, 0.6);
+  background: rgba(250, 246, 239, 0.4);
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.6);
+  font-family: var(--font-ui);
+  font-size: 18px;
+  color: var(--ink-700);
+  transition: transform var(--dur-normal) var(--ease-out),
+    background var(--dur-fast), color var(--dur-fast), border-color var(--dur-fast);
+}
+.shipx-acc summary:hover::after {
+  border-color: var(--shipx-meridian);
+  color: var(--ink-900);
+}
+.shipx-acc details[open] summary::after {
+  content: '−';
+  background: var(--ink-900);
+  color: var(--text-on-dark);
+  border-color: var(--ink-900);
+}
+/* keyboard focus lands on the summary — make the ring obvious on glass */
+.shipx-acc summary:focus-visible {
+  outline: none;
+}
+.shipx-acc summary:focus-visible::after {
+  outline: 2px solid var(--shipx-meridian);
+  outline-offset: 3px;
+}
+.shipx-acc__idx {
+  font-family: var(--font-mono);
+  font-variant-numeric: tabular-nums;
+  font-size: 11px;
+  letter-spacing: 0.12em;
+  color: var(--shipx-meridian);
+  margin-right: 14px;
+}
+.shipx-acc p {
+  margin: 0 0 20px;
+  color: var(--text-secondary);
+  font-size: 15px;
+  line-height: 1.7;
+  max-width: 62ch;
+}
+
+/* ---------------------------------------------------------------------------
+   SIGNATURE MOMENT — "Kuala Lumpur to the world"
+   A frosted great-circle panel: KL origin pulses; arcs draw outward; a light
+   travels one leg to a destination. Re-implemented from the 21st.dev WorldMap
+   concept (curved paths + origin pulse + traveling dot) in pure inline SVG +
+   vanilla CSS — no framer-motion, no dotted-map, no Tailwind.
+   --------------------------------------------------------------------------- */
+.shipx-globe {
+  position: relative;
+  margin-top: clamp(8px, 2vw, 24px);
+  padding: clamp(22px, 3vw, 40px) clamp(22px, 3.4vw, 48px) clamp(18px, 2.4vw, 30px);
+  overflow: hidden;
+  /* tonal gradient field behind the frost — a dusk over the equator */
+  background:
+    radial-gradient(120% 140% at 78% 18%, rgba(227, 184, 193, 0.22), transparent 56%),
+    radial-gradient(120% 120% at 12% 90%, rgba(175, 192, 168, 0.18), transparent 52%),
+    var(--glass-tint);
+}
+.shipx-globe__cap {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  margin: 0 0 clamp(10px, 1.6vw, 18px);
+}
+.shipx-globe__kicker {
+  font-family: var(--font-mono);
+  font-size: 11px;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: var(--shipx-meridian);
+  font-variant-numeric: tabular-nums;
+}
+.shipx-globe__title {
+  font-family: var(--font-display);
+  font-style: italic;
+  font-size: clamp(24px, 3.4vw, 42px);
+  line-height: 1;
+  color: var(--ink-900);
+}
+.shipx-globe__svg {
+  display: block;
+  width: 100%;
+  height: auto;
+}
+.shipx-globe__grid path {
+  fill: none;
+  stroke: var(--ink-900);
+  stroke-width: 1;
+  opacity: 0.07;
+}
+.shipx-arc {
+  fill: none;
+  stroke: var(--shipx-meridian);
+  stroke-width: 1.4;
+  stroke-linecap: round;
+  opacity: 0.4;
+  stroke-dasharray: 520;
+  stroke-dashoffset: 520;
+  animation: shipx-arc-draw 5.4s var(--ease-out) infinite;
+}
+.shipx-arc:nth-child(2) { animation-delay: 0.2s; stroke: var(--blush-500); }
+.shipx-arc:nth-child(3) { animation-delay: 0.4s; }
+.shipx-arc:nth-child(4) { animation-delay: 0.6s; stroke: var(--blush-500); }
+.shipx-arc:nth-child(5) { animation-delay: 0.8s; }
+.shipx-arc:nth-child(6) { animation-delay: 1s; stroke: var(--blush-500); }
+@keyframes shipx-arc-draw {
+  0% { stroke-dashoffset: 520; opacity: 0; }
+  14% { opacity: 0.45; }
+  60% { stroke-dashoffset: 0; opacity: 0.45; }
+  86% { stroke-dashoffset: 0; opacity: 0.45; }
+  100% { stroke-dashoffset: 0; opacity: 0.32; }
+}
+.shipx-globe__dests circle {
+  fill: var(--blush-500);
+  opacity: 0.85;
+}
+.shipx-origin-dot {
+  fill: var(--ink-900);
+}
+.shipx-origin-pulse {
+  fill: none;
+  stroke: var(--shipx-meridian);
+  stroke-width: 1.5;
+  transform-box: fill-box;
+  transform-origin: center;
+  animation: shipx-pulse 4.5s var(--ease-out) infinite;
+}
+@keyframes shipx-pulse {
+  0% { transform: scale(0.5); opacity: 0.9; }
+  70% { transform: scale(3.4); opacity: 0; }
+  100% { transform: scale(3.4); opacity: 0; }
+}
+.shipx-globe__traveler {
+  fill: var(--blush-500);
+  filter: drop-shadow(0 0 4px rgba(201, 139, 151, 0.7));
+}
+.shipx-parallax {
+  will-change: transform;
+}
+
+/* ---------------------------------------------------------------------------
+   RESPONSIVE
+   --------------------------------------------------------------------------- */
+@media (max-width: 900px) {
+  .shipx-facts {
+    grid-template-columns: 1fr;
+  }
+  /* drop the broken-grid stagger once the cards stack */
+  .shipx-fact:nth-child(2),
+  .shipx-fact:nth-child(3) {
+    transform: none;
+  }
+  .shipx-fact:nth-child(2):hover,
+  .shipx-fact:nth-child(3):hover {
+    transform: translateY(-5px);
+  }
+  .shipx-policies__grid {
+    grid-template-columns: 1fr;
+  }
+  .shipx-policies__aside {
+    position: relative;
+    top: 0;
+  }
+  .shipx-hero__rail {
+    display: none;
+  }
+}
+
+@media (max-width: 640px) {
+  /* hero leg stacks: the route reads top-to-bottom, dest right-aligns awkwardly
+     on a narrow column, so left-align it and let the line span full width */
+  .shipx-hero__route {
+    gap: 12px;
+  }
+  .shipx-hero__node--end {
+    text-align: left;
+  }
+  .shipx-hero__route-line {
+    flex-basis: 100%;
+    order: 1;
+  }
+  .shipx-globe {
+    padding: 20px 18px 14px;
+  }
+}
+
+@media (max-width: 600px) {
+  .shipx-row__head {
+    display: none;
+  }
+  .shipx-row {
+    grid-template-columns: 1fr auto;
+    gap: 4px 12px;
+    padding: 16px clamp(18px, 5vw, 24px);
+  }
+  .shipx-cell--dest {
+    grid-column: 1;
+    grid-row: 1;
+  }
+  .shipx-cell--rate {
+    grid-column: 2;
+    grid-row: 1;
+    text-align: right;
+  }
+  .shipx-cell--eta {
+    grid-column: 1 / -1;
+    grid-row: 2;
+  }
+  .shipx-cell--eta::before {
+    content: 'Est. ';
+    font-family: var(--font-mono);
+    font-size: 10px;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    color: var(--text-muted);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .shipx-fact,
+  .shipx-fact:nth-child(2),
+  .shipx-fact:nth-child(3),
+  .shipx-zone,
+  .shipx-acc details {
+    transition: none;
+  }
+  .shipx-parallax {
+    transform: none !important;
+  }
+  /* freeze every page animation: hero leg, globe arcs, pulse + traveler */
+  .shipx-hero__route-dot,
+  .shipx-arc,
+  .shipx-origin-pulse,
+  .shipx-globe__traveler {
+    animation: none;
+  }
+  /* settle the arcs fully drawn so the figure still reads as routes */
+  .shipx-arc {
+    stroke-dashoffset: 0;
+    opacity: 0.4;
+  }
+  .shipx-hero__route-dot {
+    left: 98%;
+    opacity: 1;
+  }
+}
+
+/* Guard the glass blur: drop backdrop-filter to opaque tints where the user
+   asks for reduced transparency (the .glass utility blurs these surfaces). */
+@media (prefers-reduced-transparency: reduce) {
+  .shipx-fact,
+  .shipx-zone,
+  .shipx-acc details {
+    -webkit-backdrop-filter: none;
+    backdrop-filter: none;
+    background: var(--white);
+  }
+  .shipx-fact::before,
+  .shipx-zone::before,
+  .shipx-acc details::before {
+    display: none; /* drop the specular sheen on opaque fallback */
+  }
+  .shipx-globe {
+    -webkit-backdrop-filter: none;
+    backdrop-filter: none;
+    background: var(--white);
+  }
+  .shipx-globe::before {
+    display: none;
+  }
+  /* restore visible hairlines on the now-opaque rate rows */
+  .shipx-grid {
+    border-top-color: var(--border-subtle);
+  }
+  .shipx-row {
+    border-bottom-color: var(--border-subtle);
+  }
+}

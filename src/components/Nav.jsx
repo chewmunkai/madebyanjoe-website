@@ -30,12 +30,24 @@ export default function Nav() {
           <NavLink to="/about" className="navlink">
             About
           </NavLink>
+          <NavLink to="/faq" className="navlink nav__hide-sm">
+            FAQ
+          </NavLink>
+          <NavLink to="/shipping" className="navlink nav__hide-md">
+            Shipping
+          </NavLink>
+          <NavLink to="/careers" className="navlink nav__hide-md">
+            Careers
+          </NavLink>
+          <NavLink to="/contact" className="navlink nav__hide-sm">
+            Contact
+          </NavLink>
         </nav>
 
         <Link to="/" className="nav__brand" aria-label="ANJOE home">
           <img
             className="nav__logo"
-            src={invert ? '/anjoe-logo-white.png' : '/anjoe-logo.png'}
+            src={`${import.meta.env.BASE_URL}${invert ? 'anjoe-logo-white.png' : 'anjoe-logo.png'}`}
             alt="ANJOE Raw Beauté"
           />
         </Link>
