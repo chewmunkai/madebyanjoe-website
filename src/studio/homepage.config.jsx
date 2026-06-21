@@ -1,6 +1,6 @@
 import EditorialHero from '../hero/EditorialHero.jsx'
 import PressBar from '../sections/PressBar.jsx'
-import DiveInScience from '../sections/DiveInScience.jsx'
+import DiveInScience, { DEFAULT_CHAPTERS } from '../sections/DiveInScience.jsx'
 import BestsellerCarousel from '../sections/BestsellerCarousel.jsx'
 import FeatureDuo from '../sections/FeatureDuo.jsx'
 import ReelsGallery from '../sections/ReelsGallery.jsx'
@@ -123,6 +123,17 @@ export const config = {
         ctaText: text('Link text'),
         ctaHref: text('Link URL'),
         animation: onOff('Scroll animation'),
+        chapters: {
+          type: 'array',
+          label: 'Scroll chapters',
+          arrayFields: {
+            i: text('Number'),
+            t: text('Title'),
+            d: area('Description'),
+            slug: text('Product slug'),
+          },
+          getItemSummary: (c) => c?.t || 'Chapter',
+        },
       },
       defaultProps: {
         eyebrow: 'Dive in — the science',
@@ -132,6 +143,7 @@ export const config = {
         ctaText: 'Explore the ritual →',
         ctaHref: '/shop',
         animation: 'on',
+        chapters: DEFAULT_CHAPTERS,
       },
       render: (props) => <DiveInScience {...props} />,
     },

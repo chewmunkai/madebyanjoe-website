@@ -5,16 +5,17 @@ import { ScrollTrigger } from 'gsap/ScrollTrigger'
 import { useCatalog } from '../store/catalog.js'
 
 /* "Dive-In" ingredient scrollytelling — a sticky stage scrubbed by scroll. Each
-   chapter cross-fades to a different product photo as you swipe through the
-   ritual. Pure CSS sticky + GSAP ScrollTrigger scrub (no pin) so it plays nicely
-   with Lenis. Reduced motion falls back to a plain stacked layout. Heading + CTA
-   are editable in /studio; the chapters are managed in slice 4 (nested list). */
-const chapters = [
+   chapter cross-fades to a different product photo as you swipe through the ritual.
+   Pure CSS sticky + GSAP ScrollTrigger scrub (no pin) so it plays nicely with Lenis.
+   Reduced motion falls back to a plain stacked layout. Heading, CTA AND the chapters
+   (which product each scroll-step reveals + its copy) are editable in /studio. */
+const DEFAULT_CHAPTERS = [
   { i: '01', t: 'Probiotic ferment', d: 'Turmeric and rice ferment feed the skin’s own microbiome — calming reactivity at the source, not masking it.', slug: 'probiotic-amino-cleanser' },
   { i: '02', t: 'Amino matrix', d: 'A low-pH amino-acid system cleanses and conditions in one step, never stripping the acid mantle that holds water in.', slug: 'essence-water' },
   { i: '03', t: 'Barrier lipids', d: 'Ceramides and cold-pressed plant oils reseal the wall — the difference between water sitting on skin and water staying in it.', slug: 'barrier-repair-cream' },
   { i: '04', t: 'The dewy finish', d: 'The result is skin that holds its own moisture: visibly dewy, measurably calmer, barrier-first by design.', slug: 'antioxidant-serum' },
 ]
+export { DEFAULT_CHAPTERS }
 
 export default function DiveInScience({
   eyebrow = 'Dive in — the science',
@@ -24,9 +25,11 @@ export default function DiveInScience({
   ctaText = 'Explore the ritual →',
   ctaHref = '/shop',
   animation = 'on',
+  chapters = DEFAULT_CHAPTERS,
 } = {}) {
   const products = useCatalog((s) => s.products)
   const getProduct = (slug) => products.find((p) => p.slug === slug)
+  const chapterList = Array.isArray(chapters) && chapters.length ? chapters : DEFAULT_CHAPTERS
   const root = useRef(null)
   const chapEls = useRef([])
   const imgEls = useRef([])
@@ -39,7 +42,7 @@ export default function DiveInScience({
       imgEls.current[0]?.classList.add('is-active')
       return
     }
-    const N = chapters.length
+    const N = chapterList.length
     let current = -1
     const ctx = gsap.context(() => {
       const st = ScrollTrigger.create({
@@ -62,7 +65,7 @@ export default function DiveInScience({
     }, root)
     requestAnimationFrame(() => ScrollTrigger.refresh())
     return () => ctx.revert()
-  }, [animation])
+  }, [animation, chapters])
 
   return (
     <section className="dis" ref={root}>
@@ -81,9 +84,9 @@ export default function DiveInScience({
 
           <div className="dis__visual" aria-hidden="true">
             <span className="dis__halo" />
-            {chapters.map((c, i) => (
+            {chapterList.map((c, i) => (
               <img
-                key={c.slug}
+                key={(c.slug || '') + i}
                 className="dis__shot"
                 src={getProduct(c.slug)?.img}
                 alt=""
@@ -94,8 +97,8 @@ export default function DiveInScience({
           </div>
 
           <ol className="dis__chapters">
-            {chapters.map((c, i) => (
-              <li className="dis__chapter" key={c.i} ref={(el) => (chapEls.current[i] = el)}>
+            {chapterList.map((c, i) => (
+              <li className="dis__chapter" key={(c.i || '') + i} ref={(el) => (chapEls.current[i] = el)}>
                 <span className="dis__idx">{c.i}</span>
                 <h3>{c.t}</h3>
                 <p>{c.d}</p>
