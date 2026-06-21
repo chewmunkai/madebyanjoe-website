@@ -23,6 +23,8 @@ export default function EditorialHero({
   youtubeId = 'NHoRI6BIun8',
   media = '',
   animation = 'on',
+  introDuration = 1.15,
+  introEase = 'power4.out',
   motionless = false,
 } = {}) {
   const root = useRef()
@@ -51,8 +53,8 @@ export default function EditorialHero({
     if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return
     const ctx = gsap.context(() => {
       gsap
-        .timeline({ defaults: { ease: 'power4.out' } })
-        .to('.eh__title .word', { yPercent: 0, duration: 1.15, stagger: 0.13 })
+        .timeline({ defaults: { ease: introEase } })
+        .to('.eh__title .word', { yPercent: 0, duration: introDuration, stagger: 0.13 })
         .to('.eh__lede', { autoAlpha: 1, duration: 0.8 }, '-=0.55')
         .to('.eh__cta', { autoAlpha: 1, duration: 0.8 }, '-=0.6')
         .to('.eh__trust', { autoAlpha: 1, duration: 0.8 }, '-=0.5')

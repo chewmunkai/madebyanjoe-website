@@ -134,7 +134,8 @@
 /* ============ DIVE-IN SCROLLYTELLING ============ */
 .dis {
   position: relative;
-  height: 440vh;
+  /* editable scroll length (studio "Scroll length" slider); default 440 = unchanged */
+  height: calc(var(--track-vh, 440) * 1vh);
 }
 .dis__stage {
   position: sticky;

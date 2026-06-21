@@ -7,7 +7,8 @@
     "dev": "vite",
     "build": "vite build",
     "preview": "vite preview",
-    "create-design": "node scripts/create-design.mjs"
+    "create-design": "node scripts/create-design.mjs",
+    "test": "vitest run"
   },
   "dependencies": {
     "@measured/puck": "^0.20.2",
@@ -24,6 +25,7 @@
   },
   "devDependencies": {
     "@vitejs/plugin-react": "^4.3.3",
-    "vite": "^5.4.10"
+    "vite": "^5.4.10",
+    "vitest": "^4.1.9"
   }
 }

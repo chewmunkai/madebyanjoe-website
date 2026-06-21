@@ -40,6 +40,10 @@ function compileField(f) {
       return { type: 'textarea', label }
     case 'number':
       return { type: 'number', label }
+    case 'range':
+      return rangeField({ label, min: f.min ?? 0, max: f.max ?? 100, step: f.step ?? 1, unit: f.unit })
+    case 'ease':
+      return easeField(label)
     case 'toggle':
       return { type: 'radio', label, options: ON_OFF }
     case 'select':

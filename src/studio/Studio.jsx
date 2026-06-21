@@ -4,7 +4,7 @@ import '@measured/puck/puck.css'
 import { PAGES, layoutOr } from './pages.js'
 import {
   getAdminToken, adminLogin, clearAdminToken,
-  getDraft, saveDraft, publishLayout, isEmbeddedStudio,
+  getDraft, saveDraft, publishLayout, isEmbeddedStudio, getStudioTicket,
 } from '../lib/builderApi.js'
 
 const FONT = 'Manrope, system-ui, sans-serif'
@@ -68,6 +68,7 @@ export default function Studio() {
             <>
               <PageSwitcher current={pageKey} onSwitch={setPageKey} />
               <SaveDraftButton slug={page.slug} />
+              {embedded && <PreviewDraftButton slug={page.slug} path={page.path} />}
               {children}
             </>
           ),
@@ -116,6 +117,29 @@ function SaveDraftButton({ slug }) {
       style={{ marginRight: 8, padding: '8px 14px', borderRadius: 8, border: '1px solid #ddd', background: '#fff', font: `500 14px ${FONT}`, cursor: 'pointer' }}
     >
       {label}
+    </button>
+  )
+}
+
+/* "Preview draft" saves the working draft, then opens the real page in preview mode
+   (?preview=1 + the studio ticket) so the client sees their edits live before publishing. */
+function PreviewDraftButton({ slug, path }) {
+  const { appState } = usePuck()
+  const [busy, setBusy] = useState(false)
+  return (
+    <button
+      type="button"
+      disabled={busy}
+      onClick={async () => {
+        setBusy(true)
+        try { await saveDraft(slug, appState.data) } catch { /* preview still opens with last-saved draft */ }
+        const ticket = getStudioTicket()
+        window.open(`${path}?preview=1#ticket=${encodeURIComponent(ticket || '')}`, '_blank', 'noopener')
+        setBusy(false)
+      }}
+      style={{ marginRight: 8, padding: '8px 14px', borderRadius: 8, border: '1px solid #ddd', background: '#fff', font: `500 14px ${FONT}`, cursor: 'pointer' }}
+    >
+      {busy ? 'Opening…' : 'Preview draft'}
     </button>
   )
 }

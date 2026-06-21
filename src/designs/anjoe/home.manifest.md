@@ -34,6 +34,8 @@ sections:
       - { name: youtubeId, type: text,  label: 'YouTube video ID' }
       - { name: media,     type: media, label: 'Uploaded image / video' }
       - { name: animation, type: toggle, label: 'Intro animation' }
+      - { name: introDuration, type: range, label: 'Reveal speed', min: 0.4, max: 2.5, step: 0.05, unit: s }
+      - { name: introEase,     type: ease,  label: 'Reveal easing' }
 
   - id: press
     component: PressBar
@@ -61,6 +63,7 @@ sections:
       - { name: ctaText, type: text, label: 'Link text' }
       - { name: ctaHref, type: text, label: 'Link URL' }
       - { name: animation, type: toggle, label: 'Scroll animation' }
+      - { name: trackVh, type: range, label: 'Scroll length', min: 150, max: 700, step: 10, unit: vh }
       - name: chapters
         type: list
         label: 'Scroll chapters'

@@ -65,6 +65,8 @@ export const defaults = {
     youtubeId: 'NHoRI6BIun8',
     media: '',
     animation: 'on',
+    introDuration: 1.15,
+    introEase: 'power4.out',
   },
   PressBar: {
     eyebrow: 'Created by Anjoe Koh — UK-trained pharmacist',
@@ -85,6 +87,7 @@ export const defaults = {
     ctaText: 'Explore the ritual →',
     ctaHref: '/shop',
     animation: 'on',
+    trackVh: 440,
     chapters: DEFAULT_CHAPTERS,
   },
   BestsellerCarousel: {

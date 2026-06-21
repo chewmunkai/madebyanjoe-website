@@ -55,6 +55,26 @@ export async function getPublishedLayout(slug) {
   }
 }
 
+/* Preview mode: a page opened with `?preview=1` + a studio ticket (in the URL hash)
+   renders the DRAFT instead of the published layout, so the client previews their
+   edits on the real page before publishing. Falls back to published on any failure. */
+export function isPreview() {
+  try {
+    return new URLSearchParams(window.location.search).get('preview') === '1' && !!getStudioTicket()
+  } catch { return false }
+}
+
+export async function getLiveLayout(slug) {
+  if (isPreview()) {
+    const ticket = getStudioTicket()
+    try {
+      const r = await storeStudioFetch(`/store/studio/${encodeURIComponent(slug)}?ticket=${encodeURIComponent(ticket)}`)
+      return r?.draft ?? r?.published ?? null
+    } catch { return getPublishedLayout(slug) }
+  }
+  return getPublishedLayout(slug)
+}
+
 /* ── Admin auth ──────────────────────────────────────────────── */
 
 export function getAdminToken() {

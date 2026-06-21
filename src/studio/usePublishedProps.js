@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react'
-import { getPublishedLayout } from '../lib/builderApi.js'
+import { getLiveLayout } from '../lib/builderApi.js'
 
 /* Fetch the published props of a single-block settings slug (e.g. 'site' for the
    header/footer, 'product' for the product template). Returns {} until loaded / if
@@ -10,7 +10,7 @@ export function usePublishedProps(slug) {
   const [props, setProps] = useState(null)
   useEffect(() => {
     let alive = true
-    getPublishedLayout(slug).then((l) => {
+    getLiveLayout(slug).then((l) => {
       if (!alive) return
       const block = l && Array.isArray(l.content) ? l.content[0] : null
       if (block && block.props) {

@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react'
 import { SECTIONS, defaultHomepage, HOME_SLUG, normalizeLayout } from '../studio/homepage.js'
-import { getPublishedLayout } from '../lib/builderApi.js'
+import { getLiveLayout } from '../lib/builderApi.js'
 
 /* Home renders the brand's real section components from the PUBLISHED layout (managed
    in /studio). It paints the in-code default immediately — so there's no blank flash
@@ -11,7 +11,7 @@ export default function Home() {
 
   useEffect(() => {
     let alive = true
-    getPublishedLayout(HOME_SLUG).then((l) => {
+    getLiveLayout(HOME_SLUG).then((l) => {
       if (alive && l) setLayout(normalizeLayout(l))
     })
     return () => { alive = false }

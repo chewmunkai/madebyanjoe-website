@@ -25,6 +25,7 @@ export default function DiveInScience({
   ctaText = 'Explore the ritual →',
   ctaHref = '/shop',
   animation = 'on',
+  trackVh = 440,
   chapters = DEFAULT_CHAPTERS,
 } = {}) {
   const products = useCatalog((s) => s.products)
@@ -65,10 +66,10 @@ export default function DiveInScience({
     }, root)
     requestAnimationFrame(() => ScrollTrigger.refresh())
     return () => ctx.revert()
-  }, [animation, chapters])
+  }, [animation, chapters, trackVh])
 
   return (
-    <section className="dis" ref={root}>
+    <section className="dis" ref={root} style={{ '--track-vh': trackVh }}>
       <div className="dis__stage">
         <div className="dis__wash" aria-hidden="true" />
 

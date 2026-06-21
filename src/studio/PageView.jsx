@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react'
-import { getPublishedLayout } from '../lib/builderApi.js'
+import { getLiveLayout } from '../lib/builderApi.js'
 import { layoutOr } from './pages.js'
 
 /* Renders a page's PUBLISHED layout from the backend using that page's component
@@ -12,7 +12,7 @@ export default function PageView({ page }) {
   useEffect(() => {
     let alive = true
     setLayout(page.defaultLayout)
-    getPublishedLayout(page.slug).then((l) => {
+    getLiveLayout(page.slug).then((l) => {
       if (alive && l) setLayout(layoutOr(l, page.defaultLayout))
     })
     return () => { alive = false }
