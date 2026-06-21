@@ -1,4 +1,4 @@
-import { useEffect } from 'react'
+import { useEffect, lazy, Suspense } from 'react'
 import { Routes, Route, useLocation } from 'react-router-dom'
 import SmoothScroll from './lib/SmoothScroll.jsx'
 import Preloader from './lib/Preloader.jsx'
@@ -15,6 +15,10 @@ import FAQ from './pages/FAQ.jsx'
 import Shipping from './pages/Shipping.jsx'
 import Careers from './pages/Careers.jsx'
 import Legal from './pages/Legal.jsx'
+
+// Visual store editor (demo) — lazy so Puck never bloats the storefront bundle.
+const Studio = lazy(() => import('./studio/Studio.jsx'))
+const StudioPreview = lazy(() => import('./studio/StudioPreview.jsx'))
 
 /* Reveal-on-scroll for any .reveal element. Re-scans on route change. */
 function useScrollReveal(dep) {
@@ -46,6 +50,18 @@ export default function App() {
   }, [pathname])
 
   useScrollReveal(pathname)
+
+  // The studio renders full-screen, outside the store chrome (Nav/Footer/SmoothScroll).
+  if (pathname.startsWith('/studio')) {
+    return (
+      <Suspense fallback={<div style={{ padding: 40, fontFamily: 'Manrope, sans-serif' }}>Loading studio…</div>}>
+        <Routes>
+          <Route path="/studio" element={<Studio />} />
+          <Route path="/studio/preview" element={<StudioPreview />} />
+        </Routes>
+      </Suspense>
+    )
+  }
 
   return (
     <SmoothScroll>
