@@ -12,6 +12,7 @@ import AboutPage from './pages/AboutPage.jsx'
 import PageView from './studio/PageView.jsx'
 import { PAGES } from './studio/pages.js'
 import { usePublishedProps } from './studio/usePublishedProps.js'
+import { useAnalytics } from './lib/analytics.js'
 
 // Visual homepage editor — lazy so Puck never bloats the storefront bundle.
 const Studio = lazy(() => import('./studio/Studio.jsx'))
@@ -39,6 +40,9 @@ function useScrollReveal(dep) {
 
 export default function App() {
   const { pathname } = useLocation()
+
+  // Per-tenant GA4/GTM → makes this store discoverable by Talous (self-skips the editor).
+  useAnalytics()
 
   useEffect(() => {
     window.__lenis?.scrollTo(0, { immediate: true })
