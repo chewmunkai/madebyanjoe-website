@@ -1,10 +1,22 @@
-import { SECTIONS, loadHomepage } from '../studio/homepage.js'
+import { useEffect, useState } from 'react'
+import { SECTIONS, defaultHomepage, HOME_SLUG, normalizeLayout } from '../studio/homepage.js'
+import { getPublishedLayout } from '../lib/builderApi.js'
 
-/* Home renders the brand's real section components DIRECTLY from the studio layout
-   (default = the current composition, in order), so the design + animations stay
-   exactly as designed until you edit them in /studio. No editor wrappers here. */
+/* Home renders the brand's real section components from the PUBLISHED layout (managed
+   in /studio). It paints the in-code default immediately — so there's no blank flash
+   and the design is identical until something is published — then swaps in the
+   published layout if one exists. No editor wrappers → pixel-perfect. */
 export default function Home() {
-  const layout = loadHomepage()
+  const [layout, setLayout] = useState(defaultHomepage)
+
+  useEffect(() => {
+    let alive = true
+    getPublishedLayout(HOME_SLUG).then((l) => {
+      if (alive && l) setLayout(normalizeLayout(l))
+    })
+    return () => { alive = false }
+  }, [])
+
   return (
     <>
       {layout.content.map((block) => {

@@ -8,9 +8,9 @@ import Reviews from '../sections/Reviews.jsx'
 import Newsletter from '../sections/Newsletter.jsx'
 
 /* The homepage is composed from the brand's REAL section components. The live page
-   (Home.jsx) renders them DIRECTLY from this layout — no editor wrappers — so the
-   bespoke design + animations stay pixel-perfect. The /studio editor edits this
-   same layout (order + the hero's content) and publishes it. */
+   (Home.jsx) renders them DIRECTLY from a layout — no editor wrappers — so the bespoke
+   design + animations stay pixel-perfect. /studio edits the same layout and publishes
+   it to the Medusa page_builder module; Home reads the published copy back. */
 
 export const SECTIONS = {
   EditorialHero,
@@ -23,10 +23,12 @@ export const SECTIONS = {
   Newsletter,
 }
 
-export const HOMEPAGE_KEY = 'anjoe-homepage'
+// The page's slug in the page_builder backend.
+export const HOME_SLUG = 'home'
 
-// Default = the current homepage composition, in order. Until you publish a custom
-// layout, the homepage looks exactly as it does today.
+// Default = the current homepage composition, in order. Until a custom layout is
+// published, the homepage looks exactly as it does today — and it stays working even
+// if the backend is briefly unreachable.
 export const defaultHomepage = {
   root: { props: {} },
   content: [
@@ -41,11 +43,7 @@ export const defaultHomepage = {
   ],
 }
 
-export function loadHomepage() {
-  try {
-    const saved = JSON.parse(localStorage.getItem(HOMEPAGE_KEY))
-    return saved && Array.isArray(saved.content) && saved.content.length ? saved : defaultHomepage
-  } catch {
-    return defaultHomepage
-  }
+// Guard against an empty/garbage layout — fall back to the default composition.
+export function normalizeLayout(layout) {
+  return layout && Array.isArray(layout.content) && layout.content.length ? layout : defaultHomepage
 }
