@@ -23,6 +23,7 @@
 
 import { get, post, del, isMedusaConfigured } from './medusa.js'
 import { ensureCart, clearCartId, applyPromotions } from './medusaCart.js'
+import { trackBeginCheckout, trackPurchase, getAttribution } from './analytics.js'
 
 /* Default payment provider. Override per-call via startCheckout(items, opts).
    Known seams: 'pp_system_default' (manual), 'pp_stripe_stripe', 'pp_paydibs'. */
@@ -48,6 +49,12 @@ export async function startCheckout(items, opts = {}) {
 
   const providerId = opts.providerId || DEFAULT_PROVIDER
 
+  // Fire begin_checkout (GA4 + Pixel). Analytics must never block the order.
+  try {
+    const value = items.reduce((s, i) => s + (i.price || 0) * (i.qty || 1), 0)
+    trackBeginCheckout({ value, items: items.map((i) => ({ item_id: i.id, item_name: i.name, price: i.price, quantity: i.qty })) })
+  } catch { /* ignore */ }
+
   // 1) Ensure a server cart, then make sure every SPA item is on it.
   let cart = await ensureCart()
   if (!cart) throw new Error('Could not create a checkout cart.')
@@ -63,6 +70,12 @@ export async function startCheckout(items, opts = {}) {
       throw new Error(`Promo code "${opts.promoCode}" couldn't be applied — ${e.message}`)
     }
   }
+
+  // 1c) Stamp first/last-touch attribution onto the cart (feeds affiliate + analytics).
+  try {
+    const attribution = getAttribution()
+    if (attribution) await post(`/store/carts/${cart.id}/attribution`, { attribution })
+  } catch { /* best-effort — never blocks the order */ }
 
   // 2) Customer email + address. These are required to complete a cart.
   //    Until a checkout form exists we use opts (or safe placeholders) — the
@@ -91,9 +104,13 @@ export async function startCheckout(items, opts = {}) {
     throw new Error(reason)
   }
 
-  // 6) Order confirmed — clear the server cart id and fire the dedup'd pixel.
+  // 6) Order confirmed — clear the server cart id and fire the dedup'd pixel + GA4 purchase.
   clearCartId()
   firePurchasePixel(order)
+  try {
+    const value = order.total ?? order.summary?.current_order_total
+    trackPurchase({ id: order.id, value, currency: (order.currency_code || 'myr').toUpperCase(), coupon: opts.promoCode })
+  } catch { /* analytics must never break confirmation */ }
 
   return order
 }

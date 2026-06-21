@@ -10,6 +10,7 @@ import { useCart } from '../store/cart.js'
 import ProductCard from '../components/ProductCard.jsx'
 import Magnetic from '../lib/Magnetic.jsx'
 import { usePublishedProps } from '../studio/usePublishedProps.js'
+import { trackViewItem } from '../lib/analytics.js'
 
 /* Product detail. Everything product-specific comes live from the catalog; the
    SHARED template copy (rating line, trust badges, assurances, the three info
@@ -67,6 +68,13 @@ export default function Product() {
     setActive(0)
     setQty(1)
   }, [slug])
+
+  // GA4 + Pixel view_item when a product loads.
+  useEffect(() => {
+    if (product) {
+      try { trackViewItem({ id: product.id, name: product.name, price: product.price }) } catch { /* ignore */ }
+    }
+  }, [product])
 
   useEffect(() => {
     const el = buyRef.current

@@ -9,6 +9,7 @@ import {
   clearCartId,
   lineItemToCartItem,
 } from '../lib/medusaCart.js'
+import { trackAddToCart } from '../lib/analytics.js'
 
 /* Cart state — PUBLIC API UNCHANGED.
    State fields:  items, isOpen
@@ -94,6 +95,7 @@ export const useCart = create(
         })
         // --- background sync to Medusa (variantId falls back to id) ---
         sync(set, () => addLineItem(product.variantId || product.id, qty))
+        try { trackAddToCart({ id: product.id, name: product.name, price: product.price, qty }) } catch { /* analytics never blocks the cart */ }
       },
 
       remove: (id) => {
