@@ -15,12 +15,13 @@ export default function CartDrawer() {
 
   const [msg, setMsg] = useState(null)
   const [busy, setBusy] = useState(false)
+  const [promo, setPromo] = useState('')
 
   const checkout = async () => {
     setMsg(null)
     setBusy(true)
     try {
-      await startCheckout(items)
+      await startCheckout(items, promo.trim() ? { promoCode: promo.trim() } : {})
     } catch (e) {
       if (e instanceof CheckoutNotConfiguredError) {
         setMsg("Checkout isn't live yet — payments are being set up. Your bag is saved.")
@@ -89,6 +90,13 @@ export default function CartDrawer() {
                 <span>Subtotal</span>
                 <span>{formatPrice(subtotal)}</span>
               </div>
+              <input
+                className="input drawer__promo"
+                placeholder="Promo code (optional)"
+                value={promo}
+                onChange={(e) => setPromo(e.target.value)}
+                aria-label="Promo code"
+              />
               {msg && <p className="drawer__msg">{msg}</p>}
               <button className="btn drawer__checkout" onClick={checkout} disabled={busy}>
                 {busy ? 'One moment…' : 'Checkout'}

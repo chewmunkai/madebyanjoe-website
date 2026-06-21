@@ -22,7 +22,7 @@
    hand off to it instead of completing inline. */
 
 import { get, post, del, isMedusaConfigured } from './medusa.js'
-import { ensureCart, clearCartId } from './medusaCart.js'
+import { ensureCart, clearCartId, applyPromotions } from './medusaCart.js'
 
 /* Default payment provider. Override per-call via startCheckout(items, opts).
    Known seams: 'pp_system_default' (manual), 'pp_stripe_stripe', 'pp_paydibs'. */
@@ -52,6 +52,17 @@ export async function startCheckout(items, opts = {}) {
   let cart = await ensureCart()
   if (!cart) throw new Error('Could not create a checkout cart.')
   cart = await syncItemsOntoCart(cart, items)
+
+  // 1b) Promo code (optional). Apply BEFORE completing so the order reflects the
+  //     discount; an invalid code throws here so the shopper fixes it, never silently
+  //     pays full price. Stacks with points redemption (added in the loyalty wave).
+  if (opts.promoCode) {
+    try {
+      cart = (await applyPromotions(cart.id, opts.promoCode)) || cart
+    } catch (e) {
+      throw new Error(`Promo code "${opts.promoCode}" couldn't be applied — ${e.message}`)
+    }
+  }
 
   // 2) Customer email + address. These are required to complete a cart.
   //    Until a checkout form exists we use opts (or safe placeholders) — the

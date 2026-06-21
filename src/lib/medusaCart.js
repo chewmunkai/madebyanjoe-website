@@ -122,6 +122,14 @@ export async function retrieveCart() {
   }
 }
 
+/* Apply a promo code to the cart (Medusa v2 Promotions module). Returns the updated
+   cart (with adjusted totals); throws on an invalid/inapplicable code so the UI can
+   tell the shopper honestly. The discount engine + code validation are Medusa core. */
+export async function applyPromotions(cartId, code) {
+  const data = await post(`/store/carts/${cartId}/promotions`, { promo_codes: [code] })
+  return data?.cart || null
+}
+
 /* Expose the persisted id + a way to clear it (used after a completed order). */
 export function getCartId() {
   return readCartId()
