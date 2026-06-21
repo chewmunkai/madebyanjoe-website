@@ -9,6 +9,8 @@ import CartDrawer from './components/CartDrawer.jsx'
 import Home from './pages/Home.jsx'
 import Product from './pages/Product.jsx'
 import AboutPage from './pages/AboutPage.jsx'
+import Login from './pages/Login.jsx'
+import Account from './pages/Account.jsx'
 import PageView from './studio/PageView.jsx'
 import { PAGES } from './studio/pages.js'
 import { usePublishedProps } from './studio/usePublishedProps.js'
@@ -82,6 +84,10 @@ export default function App() {
           <Route path="/careers" element={<PageView page={PAGES.careers} />} />
           <Route path="/privacy" element={<PageView page={PAGES['legal-privacy']} />} />
           <Route path="/terms" element={<PageView page={PAGES['legal-terms']} />} />
+          <Route path="/login" element={<Login />} />
+          <Route path="/account" element={<Account />} />
+          <Route path="/login" element={<Login />} />
+          <Route path="/account" element={<Account />} />
         </Routes>
       </main>
       <Footer {...chrome} />
