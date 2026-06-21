@@ -145,7 +145,7 @@ export const config = {
         animation: 'on',
         chapters: DEFAULT_CHAPTERS,
       },
-      render: (props) => <DiveInScience {...props} />,
+      render: ({ puck, ...props }) => <DiveInScience {...props} animation={puck?.isEditing ? 'off' : props.animation} />,
     },
 
     BestsellerCarousel: {
