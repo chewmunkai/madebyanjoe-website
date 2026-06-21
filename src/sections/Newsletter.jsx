@@ -1,8 +1,17 @@
 import { useState } from 'react'
 
-/* 10%-off capture band (Torriden's newsletter section). Front-end stub — wire
-   `onSubmit` to your ESP/Shopify when ready; nothing is sent yet. */
-export default function Newsletter() {
+/* 10%-off capture band. Front-end stub — wire `onSubmit` to your ESP/Shopify when
+   ready; nothing is sent yet. All copy is editable in /studio (defaults = current). */
+export default function Newsletter({
+  eyebrow = 'Join the ritual',
+  headingA = '10% off your ',
+  headingEm = 'first ritual',
+  headingB = '.',
+  lede = 'Hydration notes, restocks and members-only drops — straight to your inbox.',
+  cta = 'Claim 10%',
+  placeholder = 'Email address',
+  successText = 'You’re in — check your inbox for the code. ✦',
+} = {}) {
   const [email, setEmail] = useState('')
   const [done, setDone] = useState(false)
 
@@ -16,17 +25,17 @@ export default function Newsletter() {
     <section className="news">
       <div className="container news__inner">
         <div className="news__copy">
-          <span className="eyebrow">Join the ritual</span>
+          <span className="eyebrow">{eyebrow}</span>
           <h2>
-            10% off your <em>first ritual</em>.
+            {headingA}
+            <em>{headingEm}</em>
+            {headingB}
           </h2>
-          <p className="lede">
-            Hydration notes, restocks and members-only drops — straight to your inbox.
-          </p>
+          <p className="lede">{lede}</p>
         </div>
 
         {done ? (
-          <p className="news__thanks">You’re in — check your inbox for the code. ✦</p>
+          <p className="news__thanks">{successText}</p>
         ) : (
           <form className="news__form" onSubmit={submit}>
             <input
@@ -34,11 +43,11 @@ export default function Newsletter() {
               required
               value={email}
               onChange={(e) => setEmail(e.target.value)}
-              placeholder="Email address"
+              placeholder={placeholder}
               aria-label="Email address"
             />
             <button className="btn btn--light" type="submit">
-              Claim 10%
+              {cta}
             </button>
           </form>
         )}

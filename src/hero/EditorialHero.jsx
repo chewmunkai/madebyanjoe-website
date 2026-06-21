@@ -5,15 +5,13 @@ import { ScrollTrigger } from 'gsap/ScrollTrigger'
 import { useIntro } from '../store/intro.js'
 import Magnetic from '../lib/Magnetic.jsx'
 
-/* The brand's real video as a muted, looping veil behind the hero. Set to '' to
-   fall back to the type-only editorial hero. */
-const HERO_VIDEO_YT = 'NHoRI6BIun8'
-
-/* Liquid Editorial hero. Copy is now prop-driven (editable in /studio) with the
-   current site copy as defaults. `motionless` skips the GSAP intro/scroll work and
-   renders the copy visible — used inside the visual editor (where the intro never
-   fires, so the copy would otherwise stay hidden). The live homepage passes nothing,
-   so the full animation runs exactly as before. */
+/* Liquid Editorial hero. Copy + background + animation are prop-driven (editable in
+   /studio) with the current site as defaults.
+   - `background`: 'youtube' (default veil) | 'upload' (your own looping video) |
+     'image' (a still) | 'none' (type only). `media` holds the uploaded image/video URL.
+   - `animation`: 'on' | 'off' — off renders the copy static (no GSAP intro/scroll).
+   - `motionless` (editor only) also forces static so the copy shows in the editor,
+     where the page intro never fires. The live homepage passes nothing → full motion. */
 export default function EditorialHero({
   rail = '01 — The hydration ritual',
   titleLine1 = 'Hydration,',
@@ -21,11 +19,22 @@ export default function EditorialHero({
   lede = 'Plant-based, probiotic skincare that floods the skin with moisture and rebuilds the barrier — clinically gentle, visibly dewy.',
   ctaPrimary = 'Shop the ritual',
   ctaSecondary = 'Our science →',
+  background = 'youtube',
+  youtubeId = 'NHoRI6BIun8',
+  media = '',
+  animation = 'on',
   motionless = false,
 } = {}) {
   const root = useRef()
   const introDone = useIntro((s) => s.done)
-  const animate = !motionless
+  const animate = !motionless && animation !== 'off'
+
+  // Resolve the background to render (fall back to type-only if media is missing).
+  const bg =
+    background === 'youtube' && youtubeId ? 'youtube'
+      : background === 'upload' && media ? 'video'
+      : background === 'image' && media ? 'image'
+      : 'none'
 
   useEffect(() => {
     if (!animate) return
@@ -69,15 +78,23 @@ export default function EditorialHero({
   }, [animate])
 
   return (
-    <section className={`eh${HERO_VIDEO_YT ? ' eh--video' : ''}`} ref={root}>
-      {HERO_VIDEO_YT ? (
+    <section className={`eh${bg !== 'none' ? ' eh--video' : ''}`} ref={root}>
+      {bg === 'youtube' ? (
         <div className="eh__bg" aria-hidden="true">
           <iframe
             title="ANJOE film"
-            src={`https://www.youtube.com/embed/${HERO_VIDEO_YT}?autoplay=1&mute=1&loop=1&playlist=${HERO_VIDEO_YT}&controls=0&showinfo=0&modestbranding=1&playsinline=1&rel=0&disablekb=1`}
+            src={`https://www.youtube.com/embed/${youtubeId}?autoplay=1&mute=1&loop=1&playlist=${youtubeId}&controls=0&showinfo=0&modestbranding=1&playsinline=1&rel=0&disablekb=1`}
             allow="autoplay; encrypted-media"
             frameBorder="0"
           />
+        </div>
+      ) : bg === 'video' ? (
+        <div className="eh__bg" aria-hidden="true">
+          <video src={media} autoPlay muted loop playsInline />
+        </div>
+      ) : bg === 'image' ? (
+        <div className="eh__bg" aria-hidden="true">
+          <img src={media} alt="" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
         </div>
       ) : null}
       <div className="eh__wash" aria-hidden="true" />

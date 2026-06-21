@@ -4,23 +4,22 @@ import { useCart } from '../store/cart.js'
 import { useCatalog } from '../store/catalog.js'
 import { formatPrice } from '../data/products.js'
 
-/* @madebyanjoe video gallery. Top tier: shoppable YouTube features (hover
-   reveals the product, like Torriden's UGC). Bottom tier: a rail of the brand's
-   real Instagram reels, embedded straight from instagram.com. */
-const videos = [
+/* @madebyanjoe video gallery. Top tier: shoppable YouTube features (hover reveals
+   the product). Bottom tier: a rail of real Instagram reels. Heading copy, the
+   featured videos, and the Instagram reels are all editable in /studio (add / remove
+   / reorder). Defaults below = the current set. */
+const DEFAULT_VIDEOS = [
   { id: 'NHoRI6BIun8', title: 'HydraGlow Combo', slug: 'hydraglow-combo' },
   { id: 'WnluJXC215Y', title: 'Skin Activating Combo', slug: 'skin-activating-combo' },
   { id: 'bjn2UrUF5Sw', title: 'Lymphatic Drainage Brush', slug: 'cellulite-massager' },
 ]
-
-/* Real reel shortcodes from instagram.com/madebyanjoe */
-const reels = [
-  'DCO2T2LSdOe',
-  'DG5jIfPS6AF',
-  'DE41RXbShg6',
-  'C7MO2Mvxzr4',
-  'C_soITryuE7',
-  'C6bCXXVxh5N',
+const DEFAULT_REELS = [
+  { id: 'DCO2T2LSdOe' },
+  { id: 'DG5jIfPS6AF' },
+  { id: 'DE41RXbShg6' },
+  { id: 'C7MO2Mvxzr4' },
+  { id: 'C_soITryuE7' },
+  { id: 'C6bCXXVxh5N' },
 ]
 
 function VideoCard({ id, title, slug }) {
@@ -89,46 +88,62 @@ function IgReel({ id }) {
   )
 }
 
-export default function ReelsGallery() {
+export default function ReelsGallery({
+  eyebrow = 'Watch the ritual',
+  heading = '@madebyanjoe',
+  followText = 'Follow the ritual →',
+  followHref = 'https://www.instagram.com/madebyanjoe/',
+  igEyebrow = 'On Instagram',
+  igSub = 'Real reels from the @madebyanjoe community — tap any to watch.',
+  reveal = 'on',
+  videos = DEFAULT_VIDEOS,
+  reels = DEFAULT_REELS,
+} = {}) {
+  const vids = Array.isArray(videos) && videos.length ? videos : DEFAULT_VIDEOS
+  const igReels = (Array.isArray(reels) && reels.length ? reels : DEFAULT_REELS)
+    .map((r) => (typeof r === 'string' ? r : r?.id))
+    .filter(Boolean)
+
   return (
     <section className="reels">
       <div className="container reels__head">
-        <span className="eyebrow">Watch the ritual</span>
+        <span className="eyebrow">{eyebrow}</span>
         <div className="reels__row">
-          <h2 className="reveal">@madebyanjoe</h2>
+          <h2 className={reveal !== 'off' ? 'reveal' : undefined}>{heading}</h2>
           <a
             className="textlink"
-            href="https://www.instagram.com/madebyanjoe/"
+            href={followHref}
             target="_blank"
             rel="noreferrer"
           >
-            Follow the ritual →
+            {followText}
           </a>
         </div>
       </div>
 
       {/* Tier 1 — shoppable YouTube features (asymmetric) */}
       <div className="container reels__feature">
-        <div className="reels__main reveal">
-          <VideoCard {...videos[0]} />
+        <div className={'reels__main' + (reveal !== 'off' ? ' reveal' : '')}>
+          {vids[0] && <VideoCard {...vids[0]} />}
         </div>
         <div className="reels__side">
-          <VideoCard {...videos[1]} />
-          <VideoCard {...videos[2]} />
+          {vids.slice(1).map((v, i) => (
+            <VideoCard key={(v.id || '') + i} {...v} />
+          ))}
         </div>
       </div>
 
       {/* Tier 2 — real Instagram reels */}
       <div className="container reels__ig">
         <div className="reels__ig-head">
-          <span className="eyebrow">On Instagram</span>
+          <span className="eyebrow">{igEyebrow}</span>
           <p className="reels__ig-sub">
-            Real reels from the @madebyanjoe community — tap any to watch.
+            {igSub}
           </p>
         </div>
         <div className="reels__ig-rail">
-          {reels.map((id) => (
-            <IgReel key={id} id={id} />
+          {igReels.map((id, i) => (
+            <IgReel key={id + i} id={id} />
           ))}
         </div>
       </div>

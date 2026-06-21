@@ -9,7 +9,7 @@ import CartDrawer from './components/CartDrawer.jsx'
 import Home from './pages/Home.jsx'
 import Shop from './pages/Shop.jsx'
 import Product from './pages/Product.jsx'
-import About from './pages/About.jsx'
+import AboutPage from './pages/AboutPage.jsx'
 import Contact from './pages/Contact.jsx'
 import FAQ from './pages/FAQ.jsx'
 import Shipping from './pages/Shipping.jsx'
@@ -71,7 +71,7 @@ export default function App() {
           <Route path="/" element={<Home />} />
           <Route path="/shop" element={<Shop />} />
           <Route path="/product/:slug" element={<Product />} />
-          <Route path="/about" element={<About />} />
+          <Route path="/about" element={<AboutPage />} />
           <Route path="/contact" element={<Contact />} />
           <Route path="/faq" element={<FAQ />} />
           <Route path="/shipping" element={<Shipping />} />

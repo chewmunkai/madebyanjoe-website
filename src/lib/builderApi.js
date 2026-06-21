@@ -80,3 +80,30 @@ export function saveDraft(slug, layout) {
 export function publishLayout(slug, layout) {
   return adminFetch(`/admin/page-layouts/${encodeURIComponent(slug)}/publish`, { method: 'POST', body: { layout } })
 }
+
+/* Upload an image/video to Medusa's file store (admin-auth) and return its public
+   URL. Used by the studio's image fields so the client uploads their own media.
+   Multipart — let the browser set the Content-Type boundary (don't set it). */
+export async function uploadMedia(file) {
+  const token = getAdminToken()
+  if (!token) { const e = new Error('Not signed in'); e.status = 401; throw e }
+  const fd = new FormData()
+  fd.append('files', file)
+  const res = await fetch(`${MEDUSA_URL}/admin/uploads`, {
+    method: 'POST',
+    headers: { Authorization: `Bearer ${token}` },
+    body: fd,
+  })
+  if (res.status === 401) {
+    clearAdminToken()
+    const e = new Error('Session expired — please sign in again.'); e.status = 401; throw e
+  }
+  const data = await res.json().catch(() => null)
+  if (!res.ok) throw new Error(data?.message || data?.error || `Upload failed (${res.status})`)
+  const url = data?.files?.[0]?.url
+  if (!url) throw new Error('Upload returned no URL')
+  // The local file provider may return its own base host (e.g. localhost in prod);
+  // pin the file to the storefront's configured Medusa origin so it resolves from
+  // any browser. The file is served at the same /static path on that origin.
+  try { return MEDUSA_URL + new URL(url).pathname } catch { return url }
+}

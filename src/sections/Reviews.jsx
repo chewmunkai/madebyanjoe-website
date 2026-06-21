@@ -1,32 +1,46 @@
 import { useState, useEffect, useRef } from 'react'
 
-/* Reviews — the brand's real customer testimonials, shown as received: the
-   screenshot itself is the review (no transcription). Served straight from the
-   live store's CDN. Presented as a slider with a thumbnail preview bar so each
-   message can be read large, one at a time. */
+/* Reviews — real customer testimonials shown as received (the screenshot is the
+   review). Heading copy + the testimonial images are editable in /studio: the
+   images are a list you can add to / remove / reorder (upload your own screenshots
+   or paste URLs). Defaults below = the current set, served from the store CDN. */
 const BASE = 'https://img.appolous.com/themes/_store/anjoe/testimonials/'
-const ids = [
+const DEFAULT_IDS = [
   8, 30, 65, 68, 85, 91, 93, 94, 95, 96, 103, 2, 6, 12, 15, 23, 32, 40, 50, 54, 88,
 ]
+const DEFAULT_TESTIMONIALS = DEFAULT_IDS.map((id) => ({ image: `${BASE}${id}.webp` }))
 
-export default function Reviews() {
+export default function Reviews({
+  eyebrow = 'What you’re saying',
+  title = 'Real words, real skin.',
+  sub = 'Unedited messages from the ANJOE community.',
+  reveal = 'on',
+  testimonials = DEFAULT_TESTIMONIALS,
+} = {}) {
+  const items = (Array.isArray(testimonials) && testimonials.length ? testimonials : DEFAULT_TESTIMONIALS)
+    .map((t) => (typeof t === 'string' ? t : t?.image))
+    .filter(Boolean)
+  const n = items.length
   const [active, setActive] = useState(0)
   const [paused, setPaused] = useState(false)
   const thumbsRef = useRef(null)
-  const n = ids.length
 
   const go = (i) => setActive(((i % n) + n) % n)
 
+  // Keep `active` valid if the list shrinks.
+  useEffect(() => {
+    if (active >= n) setActive(0)
+  }, [n, active])
+
   // gentle autoplay (respects reduced motion, pauses on hover/focus)
   useEffect(() => {
-    if (paused) return
+    if (paused || n <= 1) return
     if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return
     const t = setInterval(() => setActive((a) => (a + 1) % n), 5200)
     return () => clearInterval(t)
   }, [paused, n])
 
-  // keep the active thumbnail centered — scroll only the strip horizontally,
-  // never the page (scrollIntoView would yank the whole viewport).
+  // keep the active thumbnail centered — scroll only the strip horizontally.
   useEffect(() => {
     const bar = thumbsRef.current
     const el = bar?.querySelector('.rv__thumb.is-active')
@@ -45,10 +59,10 @@ export default function Reviews() {
       onBlurCapture={() => setPaused(false)}
     >
       <div className="container rv__head">
-        <span className="eyebrow">What you’re saying</span>
+        <span className="eyebrow">{eyebrow}</span>
         <div className="rv__head-row">
-          <h2 className="reveal">Real words, real skin.</h2>
-          <span className="rv__sub">Unedited messages from the ANJOE community.</span>
+          <h2 className={reveal !== 'off' ? 'reveal' : undefined}>{title}</h2>
+          <span className="rv__sub">{sub}</span>
         </div>
       </div>
 
@@ -58,9 +72,9 @@ export default function Reviews() {
         </button>
         <div className="rv__stage">
           <img
-            key={ids[active]}
+            key={items[active]}
             className="rv__active"
-            src={`${BASE}${ids[active]}.webp`}
+            src={items[active]}
             alt={`Customer testimonial ${active + 1} of ${n}`}
           />
         </div>
@@ -74,15 +88,15 @@ export default function Reviews() {
           {String(active + 1).padStart(2, '0')} <i>/</i> {String(n).padStart(2, '0')}
         </span>
         <div className="rv__thumbs" ref={thumbsRef}>
-          {ids.map((id, i) => (
+          {items.map((src, i) => (
             <button
-              key={id}
+              key={src + i}
               className={`rv__thumb${i === active ? ' is-active' : ''}`}
               onClick={() => go(i)}
               aria-label={`View review ${i + 1}`}
               aria-current={i === active}
             >
-              <img src={`${BASE}${id}.webp`} alt="" loading="lazy" />
+              <img src={src} alt="" loading="lazy" />
             </button>
           ))}
         </div>

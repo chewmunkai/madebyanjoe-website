@@ -7,7 +7,8 @@ import { useCatalog } from '../store/catalog.js'
 /* "Dive-In" ingredient scrollytelling — a sticky stage scrubbed by scroll. Each
    chapter cross-fades to a different product photo as you swipe through the
    ritual. Pure CSS sticky + GSAP ScrollTrigger scrub (no pin) so it plays nicely
-   with Lenis. Reduced motion falls back to a plain stacked layout. */
+   with Lenis. Reduced motion falls back to a plain stacked layout. Heading + CTA
+   are editable in /studio; the chapters are managed in slice 4 (nested list). */
 const chapters = [
   { i: '01', t: 'Probiotic ferment', d: 'Turmeric and rice ferment feed the skin’s own microbiome — calming reactivity at the source, not masking it.', slug: 'probiotic-amino-cleanser' },
   { i: '02', t: 'Amino matrix', d: 'A low-pH amino-acid system cleanses and conditions in one step, never stripping the acid mantle that holds water in.', slug: 'essence-water' },
@@ -15,7 +16,15 @@ const chapters = [
   { i: '04', t: 'The dewy finish', d: 'The result is skin that holds its own moisture: visibly dewy, measurably calmer, barrier-first by design.', slug: 'antioxidant-serum' },
 ]
 
-export default function DiveInScience() {
+export default function DiveInScience({
+  eyebrow = 'Dive in — the science',
+  titleA = 'What hydration ',
+  titleEm = 'actually',
+  titleB = ' needs.',
+  ctaText = 'Explore the ritual →',
+  ctaHref = '/shop',
+  animation = 'on',
+} = {}) {
   const products = useCatalog((s) => s.products)
   const getProduct = (slug) => products.find((p) => p.slug === slug)
   const root = useRef(null)
@@ -23,7 +32,7 @@ export default function DiveInScience() {
   const imgEls = useRef([])
 
   useEffect(() => {
-    const reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches
+    const reduce = animation === 'off' || window.matchMedia('(prefers-reduced-motion: reduce)').matches
     if (reduce) {
       root.current?.classList.add('dis--static')
       chapEls.current.forEach((el) => el?.classList.add('is-active'))
@@ -53,7 +62,7 @@ export default function DiveInScience() {
     }, root)
     requestAnimationFrame(() => ScrollTrigger.refresh())
     return () => ctx.revert()
-  }, [])
+  }, [animation])
 
   return (
     <section className="dis" ref={root}>
@@ -62,9 +71,11 @@ export default function DiveInScience() {
 
         <div className="container dis__inner">
           <div className="dis__lead">
-            <span className="eyebrow">Dive in — the science</span>
+            <span className="eyebrow">{eyebrow}</span>
             <h2 className="dis__title">
-              What hydration <em>actually</em> needs.
+              {titleA}
+              <em>{titleEm}</em>
+              {titleB}
             </h2>
           </div>
 
@@ -74,7 +85,7 @@ export default function DiveInScience() {
               <img
                 key={c.slug}
                 className="dis__shot"
-                src={getProduct(c.slug).img}
+                src={getProduct(c.slug)?.img}
                 alt=""
                 loading="lazy"
                 ref={(el) => (imgEls.current[i] = el)}
@@ -93,8 +104,8 @@ export default function DiveInScience() {
           </ol>
 
           <div className="dis__cta">
-            <Link to="/shop" className="textlink">
-              Explore the ritual →
+            <Link to={ctaHref} className="textlink">
+              {ctaText}
             </Link>
           </div>
         </div>

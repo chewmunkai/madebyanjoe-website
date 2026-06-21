@@ -1,8 +1,7 @@
 import { useEffect, useState } from 'react'
 import { Puck, usePuck } from '@measured/puck'
 import '@measured/puck/puck.css'
-import { config } from './homepage.config.jsx'
-import { defaultHomepage, HOME_SLUG, normalizeLayout } from './homepage.js'
+import { PAGES, layoutOr } from './pages.js'
 import {
   getAdminToken, adminLogin, clearAdminToken,
   getDraft, saveDraft, publishLayout,
@@ -10,40 +9,49 @@ import {
 
 const FONT = 'Manrope, system-ui, sans-serif'
 
-/* Visual homepage editor, gated behind a Medusa admin login. Loads the saved draft,
-   lets you reorder/edit, then Save draft (private) or Publish (live). Everything
-   persists to the Medusa page_builder module — no localStorage. */
+function initialPageKey() {
+  const p = new URLSearchParams(window.location.search).get('page')
+  return PAGES[p] ? p : 'home'
+}
+
+/* Multi-page visual editor, gated behind a Medusa admin login. Switch between pages
+   (Homepage / About), edit content + composition + media + animation, then Save draft
+   (private) or Publish (live). Everything persists to the Medusa page_builder module. */
 export default function Studio() {
   const [token, setToken] = useState(getAdminToken())
-  const [data, setData] = useState(null) // null = still loading the draft
+  const [pageKey, setPageKey] = useState(initialPageKey)
+  const [data, setData] = useState(null) // null = loading this page's draft
   const [note, setNote] = useState('')
+  const page = PAGES[pageKey]
 
   useEffect(() => {
     if (!token) return
     let alive = true
-    getDraft(HOME_SLUG)
-      .then((r) => { if (alive) setData(normalizeLayout(r.draft || r.published)) })
+    setData(null)
+    getDraft(page.slug)
+      .then((r) => { if (alive) setData(layoutOr(r.draft || r.published, page.defaultLayout)) })
       .catch((e) => {
         if (!alive) return
         if (e.status === 401) { clearAdminToken(); setToken(null) }
-        else { setData(defaultHomepage); setNote('Could not load the saved layout — starting from the current homepage.') }
+        else { setData(page.defaultLayout); setNote('Could not load the saved layout — starting from the current page.') }
       })
     return () => { alive = false }
-  }, [token])
+  }, [token, pageKey, page.slug, page.defaultLayout])
 
   if (!token) return <LoginScreen onAuthed={setToken} />
-  if (!data) return <Centered>Loading homepage…</Centered>
+  if (!data) return <Centered>Loading {page.label}…</Centered>
 
   return (
     <div style={{ height: '100vh' }}>
       <Puck
-        config={config}
+        key={pageKey}
+        config={page.config}
         data={data}
-        headerTitle="ANJOE — Edit homepage"
+        headerTitle={`ANJOE — Edit ${page.label}`}
         onPublish={async (d) => {
           try {
-            await publishLayout(HOME_SLUG, d)
-            window.open('/', '_blank')
+            await publishLayout(page.slug, d)
+            window.open(page.path, '_blank')
           } catch (e) {
             alert('Publish failed: ' + e.message)
           }
@@ -51,7 +59,8 @@ export default function Studio() {
         overrides={{
           headerActions: ({ children }) => (
             <>
-              <SaveDraftButton />
+              <PageSwitcher current={pageKey} onSwitch={setPageKey} />
+              <SaveDraftButton slug={page.slug} />
               {children}
             </>
           ),
@@ -62,9 +71,30 @@ export default function Studio() {
   )
 }
 
-/* "Save draft" persists the current editor state privately (it does NOT go live).
-   usePuck() reads exactly what's on screen right now. */
-function SaveDraftButton() {
+function PageSwitcher({ current, onSwitch }) {
+  return (
+    <div style={{ display: 'flex', gap: 4, marginRight: 12 }}>
+      {Object.values(PAGES).map((p) => (
+        <button
+          key={p.key}
+          type="button"
+          onClick={() => onSwitch(p.key)}
+          style={{
+            padding: '6px 12px', borderRadius: 8, cursor: 'pointer', font: `500 13px ${FONT}`,
+            border: '1px solid ' + (current === p.key ? '#111' : '#ddd'),
+            background: current === p.key ? '#111' : '#fff',
+            color: current === p.key ? '#fff' : '#333',
+          }}
+        >
+          {p.label}
+        </button>
+      ))}
+    </div>
+  )
+}
+
+/* "Save draft" persists the current editor state privately (does NOT go live). */
+function SaveDraftButton({ slug }) {
   const { appState } = usePuck()
   const [state, setState] = useState('idle') // idle | saving | saved | error
   const label = state === 'saving' ? 'Saving…' : state === 'saved' ? 'Draft saved ✓' : state === 'error' ? 'Save failed' : 'Save draft'
@@ -73,7 +103,7 @@ function SaveDraftButton() {
       type="button"
       onClick={async () => {
         setState('saving')
-        try { await saveDraft(HOME_SLUG, appState.data); setState('saved'); setTimeout(() => setState('idle'), 2000) }
+        try { await saveDraft(slug, appState.data); setState('saved'); setTimeout(() => setState('idle'), 2000) }
         catch { setState('error'); setTimeout(() => setState('idle'), 2500) }
       }}
       style={{ marginRight: 8, padding: '8px 14px', borderRadius: 8, border: '1px solid #ddd', background: '#fff', font: `500 14px ${FONT}`, cursor: 'pointer' }}
@@ -99,7 +129,7 @@ function LoginScreen({ onAuthed }) {
     <div style={{ minHeight: '100vh', display: 'grid', placeItems: 'center', background: '#faf9f7', font: `400 15px ${FONT}` }}>
       <form onSubmit={submit} style={{ width: 320, padding: 28, background: '#fff', borderRadius: 16, boxShadow: '0 8px 40px rgba(0,0,0,.08)' }}>
         <h1 style={{ margin: '0 0 4px', font: `600 20px ${FONT}` }}>ANJOE Studio</h1>
-        <p style={{ margin: '0 0 20px', color: '#888', fontSize: 13 }}>Sign in to edit your homepage.</p>
+        <p style={{ margin: '0 0 20px', color: '#888', fontSize: 13 }}>Sign in to edit your storefront.</p>
         <label style={lbl}>Email</label>
         <input style={inp} type="email" value={email} onChange={(e) => setEmail(e.target.value)} autoComplete="username" required />
         <label style={lbl}>Password</label>

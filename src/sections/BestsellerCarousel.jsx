@@ -4,17 +4,17 @@ import { useCart } from '../store/cart.js'
 import { useCatalog } from '../store/catalog.js'
 import { formatPrice } from '../data/products.js'
 
-/* Sample social-proof ratings — replace with real review data. */
-const RATING = {
-  'probiotic-amino-cleanser': [4.9, 214],
-  'essence-water': [4.9, 192],
-  'antioxidant-serum': [4.8, 167],
-  'barrier-repair-cream': [4.8, 121],
-  'probiotic-mask': [4.9, 143],
-  'mugwort-treatment-oil': [4.7, 88],
-  'barrier-repair-combo': [4.9, 64],
-}
-const BESTSELLERS = Object.keys(RATING)
+/* The bestseller list is editable in /studio (add/remove/reorder products + set their
+   rating). Each item links to a real product by slug; defaults below = the current set. */
+const DEFAULT_PRODUCTS = [
+  { slug: 'probiotic-amino-cleanser', rating: 4.9, count: 214 },
+  { slug: 'essence-water', rating: 4.9, count: 192 },
+  { slug: 'antioxidant-serum', rating: 4.8, count: 167 },
+  { slug: 'barrier-repair-cream', rating: 4.8, count: 121 },
+  { slug: 'probiotic-mask', rating: 4.9, count: 143 },
+  { slug: 'mugwort-treatment-oil', rating: 4.7, count: 88 },
+  { slug: 'barrier-repair-combo', rating: 4.9, count: 64 },
+]
 
 function Stars({ value }) {
   return (
@@ -27,11 +27,19 @@ function Stars({ value }) {
   )
 }
 
-export default function BestsellerCarousel() {
+export default function BestsellerCarousel({
+  eyebrow = 'Loved & repurchased',
+  title = 'The bestsellers.',
+  viewAllText = 'View all →',
+  viewAllHref = '/shop',
+  reveal = 'on',
+  products: items = DEFAULT_PRODUCTS,
+} = {}) {
   const track = useRef(null)
   const add = useCart((s) => s.add)
   const products = useCatalog((s) => s.products)
   const getProduct = (slug) => products.find((p) => p.slug === slug)
+  const list = Array.isArray(items) && items.length ? items : DEFAULT_PRODUCTS
   const drag = useRef({ down: false, startX: 0, startScroll: 0, moved: 0 })
 
   const onDown = (e) => {
@@ -67,8 +75,8 @@ export default function BestsellerCarousel() {
     <section className="bc">
       <div className="container bc__head">
         <div>
-          <span className="eyebrow">Loved & repurchased</span>
-          <h2 className="reveal">The bestsellers.</h2>
+          <span className="eyebrow">{eyebrow}</span>
+          <h2 className={reveal !== 'off' ? 'reveal' : undefined}>{title}</h2>
         </div>
         <div className="bc__nav">
           <button className="bc__arrow" aria-label="Previous" onClick={() => nudge(-1)}>
@@ -77,8 +85,8 @@ export default function BestsellerCarousel() {
           <button className="bc__arrow" aria-label="Next" onClick={() => nudge(1)}>
             →
           </button>
-          <Link to="/shop" className="textlink bc__all">
-            View all →
+          <Link to={viewAllHref} className="textlink bc__all">
+            {viewAllText}
           </Link>
         </div>
       </div>
@@ -92,11 +100,13 @@ export default function BestsellerCarousel() {
         onPointerLeave={onUp}
         onClickCapture={onClickCapture}
       >
-        {BESTSELLERS.map((slug, n) => {
-          const p = getProduct(slug)
-          const [rating, count] = RATING[slug]
+        {list.map((item, n) => {
+          const p = getProduct(item.slug)
+          if (!p) return null
+          const rating = Number(item.rating) || 0
+          const count = item.count
           return (
-            <article className="bc__card" key={slug}>
+            <article className="bc__card" key={item.slug + n}>
               <Link to={`/product/${p.slug}`} className="bc__media" draggable="false">
                 <img src={p.img} alt={p.name} loading="lazy" draggable="false" />
                 <button
