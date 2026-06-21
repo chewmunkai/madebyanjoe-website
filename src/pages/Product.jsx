@@ -3,7 +3,8 @@ import { useState, useEffect, useRef } from 'react'
 import { useParams, Link } from 'react-router-dom'
 import gsap from 'gsap'
 import { ScrollTrigger } from 'gsap/ScrollTrigger'
-import { getProduct, getRelated, formatPrice } from '../data/products.js'
+import { useCatalog } from '../store/catalog.js'
+import { formatPrice } from '../data/products.js'
 import { getGallery } from '../data/galleries.js'
 import { useCart } from '../store/cart.js'
 import ProductCard from '../components/ProductCard.jsx'
@@ -11,7 +12,8 @@ import Magnetic from '../lib/Magnetic.jsx'
 
 export default function Product() {
   const { slug } = useParams()
-  const product = getProduct(slug)
+  const products = useCatalog((s) => s.products)
+  const product = products.find((p) => p.slug === slug)
   const add = useCart((s) => s.add)
   const [qty, setQty] = useState(1)
   const [active, setActive] = useState(0)
@@ -99,7 +101,7 @@ export default function Product() {
     )
   }
 
-  const related = getRelated(slug, 3)
+  const related = products.filter((p) => p.slug !== slug && p.group === product.group).slice(0, 3)
 
   return (
     <div className="pdpx" ref={root}>

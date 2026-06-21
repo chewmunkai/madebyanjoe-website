@@ -2,7 +2,7 @@ import { useEffect, useRef } from 'react'
 import { Link } from 'react-router-dom'
 import gsap from 'gsap'
 import { ScrollTrigger } from 'gsap/ScrollTrigger'
-import { getProduct } from '../data/products.js'
+import { useCatalog } from '../store/catalog.js'
 
 /* "Dive-In" ingredient scrollytelling — a sticky stage scrubbed by scroll. Each
    chapter cross-fades to a different product photo as you swipe through the
@@ -16,6 +16,8 @@ const chapters = [
 ]
 
 export default function DiveInScience() {
+  const products = useCatalog((s) => s.products)
+  const getProduct = (slug) => products.find((p) => p.slug === slug)
   const root = useRef(null)
   const chapEls = useRef([])
   const imgEls = useRef([])

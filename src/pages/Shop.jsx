@@ -1,11 +1,8 @@
 import '../styles/page-shop.css'
 import { useState, useEffect, useRef } from 'react'
 import ProductCard from '../components/ProductCard.jsx'
-import { products, groups, formatPrice } from '../data/products.js'
-
-/* Count per group so the filter chips carry a real, live tally. */
-const countFor = (key) =>
-  key === 'all' ? products.length : products.filter((p) => p.group === key).length
+import { useCatalog } from '../store/catalog.js'
+import { groups, formatPrice } from '../data/products.js'
 
 /* Presentation-only labels for the zone dividers when "All" is shown — these map
    1:1 to the real `group` keys; no product is invented, hidden or reordered out
@@ -22,6 +19,10 @@ export default function Shop() {
   const [filter, setFilter] = useState('all')
   const first = useRef(true)
   const toolbarRef = useRef(null)
+
+  const products = useCatalog((s) => s.products)
+  const countFor = (key) =>
+    key === 'all' ? products.length : products.filter((p) => p.group === key).length
 
   const list = filter === 'all' ? products : products.filter((p) => p.group === filter)
 

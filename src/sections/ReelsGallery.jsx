@@ -1,7 +1,8 @@
 import { useState } from 'react'
 import { Link } from 'react-router-dom'
 import { useCart } from '../store/cart.js'
-import { getProduct, formatPrice } from '../data/products.js'
+import { useCatalog } from '../store/catalog.js'
+import { formatPrice } from '../data/products.js'
 
 /* @madebyanjoe video gallery. Top tier: shoppable YouTube features (hover
    reveals the product, like Torriden's UGC). Bottom tier: a rail of the brand's
@@ -25,7 +26,8 @@ const reels = [
 function VideoCard({ id, title, slug }) {
   const [play, setPlay] = useState(false)
   const add = useCart((s) => s.add)
-  const product = getProduct(slug)
+  const products = useCatalog((s) => s.products)
+  const product = products.find((p) => p.slug === slug)
 
   return (
     <article className="reel">

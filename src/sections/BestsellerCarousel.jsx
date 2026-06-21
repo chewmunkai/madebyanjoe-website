@@ -1,7 +1,8 @@
 import { useRef } from 'react'
 import { Link } from 'react-router-dom'
 import { useCart } from '../store/cart.js'
-import { getProduct, formatPrice } from '../data/products.js'
+import { useCatalog } from '../store/catalog.js'
+import { formatPrice } from '../data/products.js'
 
 /* Sample social-proof ratings — replace with real review data. */
 const RATING = {
@@ -29,6 +30,8 @@ function Stars({ value }) {
 export default function BestsellerCarousel() {
   const track = useRef(null)
   const add = useCart((s) => s.add)
+  const products = useCatalog((s) => s.products)
+  const getProduct = (slug) => products.find((p) => p.slug === slug)
   const drag = useRef({ down: false, startX: 0, startScroll: 0, moved: 0 })
 
   const onDown = (e) => {

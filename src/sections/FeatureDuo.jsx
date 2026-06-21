@@ -1,5 +1,5 @@
 import { Link } from 'react-router-dom'
-import { getProduct } from '../data/products.js'
+import { useCatalog } from '../store/catalog.js'
 
 /* Product spotlight duo — Torriden's staggered two-up: the left feature leads
    with its image, the right leads with copy and drops its image lower, so the
@@ -10,6 +10,8 @@ const features = [
 ]
 
 export default function FeatureDuo() {
+  const products = useCatalog((s) => s.products)
+  const getProduct = (slug) => products.find((p) => p.slug === slug)
   return (
     <section className="fd">
       <div className="container fd__grid">
