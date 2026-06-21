@@ -16,9 +16,8 @@ import Shipping from './pages/Shipping.jsx'
 import Careers from './pages/Careers.jsx'
 import Legal from './pages/Legal.jsx'
 
-// Visual store editor (demo) — lazy so Puck never bloats the storefront bundle.
+// Visual homepage editor — lazy so Puck never bloats the storefront bundle.
 const Studio = lazy(() => import('./studio/Studio.jsx'))
-const StudioPreview = lazy(() => import('./studio/StudioPreview.jsx'))
 
 /* Reveal-on-scroll for any .reveal element. Re-scans on route change. */
 function useScrollReveal(dep) {
@@ -57,7 +56,6 @@ export default function App() {
       <Suspense fallback={<div style={{ padding: 40, fontFamily: 'Manrope, sans-serif' }}>Loading studio…</div>}>
         <Routes>
           <Route path="/studio" element={<Studio />} />
-          <Route path="/studio/preview" element={<StudioPreview />} />
         </Routes>
       </Suspense>
     )

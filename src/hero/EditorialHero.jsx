@@ -6,28 +6,39 @@ import { useIntro } from '../store/intro.js'
 import Magnetic from '../lib/Magnetic.jsx'
 
 /* The brand's real video as a muted, looping veil behind the hero. Set to '' to
-   fall back to the type-only editorial hero. Swap the id for a different reel,
-   or point at a self-hosted /video/hero.mp4 by switching to a <video> tag. */
+   fall back to the type-only editorial hero. */
 const HERO_VIDEO_YT = 'NHoRI6BIun8'
 
-/* Liquid Editorial hero — a giant italic-serif headline over the brand film.
-   As you scroll, the film scales and deepens while the headline parallaxes and
-   fades away. Reuses the shared intro store so copy rises on curtain-lift. */
-export default function EditorialHero() {
+/* Liquid Editorial hero. Copy is now prop-driven (editable in /studio) with the
+   current site copy as defaults. `motionless` skips the GSAP intro/scroll work and
+   renders the copy visible — used inside the visual editor (where the intro never
+   fires, so the copy would otherwise stay hidden). The live homepage passes nothing,
+   so the full animation runs exactly as before. */
+export default function EditorialHero({
+  rail = '01 — The hydration ritual',
+  titleLine1 = 'Hydration,',
+  titleLine2 = 'engineered.',
+  lede = 'Plant-based, probiotic skincare that floods the skin with moisture and rebuilds the barrier — clinically gentle, visibly dewy.',
+  ctaPrimary = 'Shop the ritual',
+  ctaSecondary = 'Our science →',
+  motionless = false,
+} = {}) {
   const root = useRef()
   const introDone = useIntro((s) => s.done)
+  const animate = !motionless
 
   useEffect(() => {
+    if (!animate) return
     if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return
     const ctx = gsap.context(() => {
       gsap.set('.eh__title .word', { yPercent: 115 })
       gsap.set(['.eh__lede', '.eh__cta', '.eh__trust', '.eh__rail'], { autoAlpha: 0 })
     }, root)
     return () => ctx.revert()
-  }, [])
+  }, [animate])
 
   useEffect(() => {
-    if (!introDone) return
+    if (!animate || !introDone) return
     if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return
     const ctx = gsap.context(() => {
       gsap
@@ -39,10 +50,10 @@ export default function EditorialHero() {
         .to('.eh__rail', { autoAlpha: 1, duration: 0.8 }, '-=0.7')
     }, root)
     return () => ctx.revert()
-  }, [introDone])
+  }, [introDone, animate])
 
-  /* Scroll veil — drives --s for the film scale, scrim depth and copy parallax. */
   useEffect(() => {
+    if (!animate) return
     if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return
     const ctx = gsap.context(() => {
       const st = ScrollTrigger.create({
@@ -55,7 +66,7 @@ export default function EditorialHero() {
       return () => st.kill()
     }, root)
     return () => ctx.revert()
-  }, [])
+  }, [animate])
 
   return (
     <section className={`eh${HERO_VIDEO_YT ? ' eh--video' : ''}`} ref={root}>
@@ -73,34 +84,31 @@ export default function EditorialHero() {
       <div className="eh__scrim" aria-hidden="true" />
 
       <span className="eh__rail" aria-hidden="true">
-        01 — The hydration ritual
+        {rail}
       </span>
 
       <div className="container eh__grid">
         <div className="eh__copy">
           <h1 className="eh__title">
             <span className="line">
-              <span className="word">Hydration,</span>
+              <span className="word">{titleLine1}</span>
             </span>
             <span className="line">
               <span className="word">
-                <em>engineered.</em>
+                <em>{titleLine2}</em>
               </span>
             </span>
           </h1>
-          <p className="lede eh__lede">
-            Plant-based, probiotic skincare that floods the skin with moisture and
-            rebuilds the barrier — clinically gentle, visibly dewy.
-          </p>
+          <p className="lede eh__lede">{lede}</p>
           <div className="eh__cta">
             <Magnetic>
               <Link to="/shop" className="btn">
-                Shop the ritual
+                {ctaPrimary}
               </Link>
             </Magnetic>
             <Magnetic strength={0.3}>
               <Link to="/about" className="textlink">
-                Our science →
+                {ctaSecondary}
               </Link>
             </Magnetic>
           </div>
