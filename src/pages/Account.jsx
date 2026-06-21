@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
-import { getCustomer, getOrders, logout, isLoggedIn } from '../lib/customerApi.js'
+import { getCustomer, getOrders, getPoints, logout, isLoggedIn } from '../lib/customerApi.js'
 
 /* Member account — profile + order history. Points + affiliate sections are stubbed
    here and filled in by Wave 2 (loyalty) and Wave 3 (affiliate). Light styling for now. */
@@ -8,6 +8,7 @@ export default function Account() {
   const navigate = useNavigate()
   const [customer, setCustomer] = useState(null)
   const [orders, setOrders] = useState([])
+  const [points, setPoints] = useState(null)
   const [loading, setLoading] = useState(true)
 
   useEffect(() => {
@@ -18,7 +19,8 @@ export default function Account() {
         const c = await getCustomer()
         if (!c) { navigate('/login'); return }
         const o = await getOrders().catch(() => [])
-        if (alive) { setCustomer(c); setOrders(o) }
+        const pts = await getPoints().catch(() => null)
+        if (alive) { setCustomer(c); setOrders(o); setPoints(pts) }
       } finally {
         if (alive) setLoading(false)
       }
@@ -40,8 +42,9 @@ export default function Account() {
 
       <div style={grid}>
         <Card label="Email">{customer.email}</Card>
-        {/* Wave 2 fills this from the loyalty ledger */}
-        <Card label="Points balance"><span style={{ color: '#999' }}>Coming soon</span></Card>
+        <Card label="Points balance">
+          {points ? `${points.balance} pts` : <span style={{ color: '#999' }}>0 pts</span>}
+        </Card>
         {/* Wave 3 fills this from the affiliate module */}
         <Card label="Referral earnings"><span style={{ color: '#999' }}>Coming soon</span></Card>
       </div>

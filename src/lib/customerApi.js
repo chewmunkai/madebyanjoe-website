@@ -94,3 +94,15 @@ export async function getOrders() {
   const d = await call('/store/orders?limit=20&order=-created_at', { token })
   return d?.orders || []
 }
+
+/* The customer's loyalty points: { balance, lifetime_earned, config, transactions }.
+   Returns null if not signed in / the loyalty module isn't live yet. */
+export async function getPoints() {
+  const token = getCustomerToken()
+  if (!token) return null
+  try {
+    return await call('/store/loyalty/me', { token })
+  } catch {
+    return null
+  }
+}
