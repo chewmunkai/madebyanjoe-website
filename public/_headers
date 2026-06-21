@@ -1,0 +1,17 @@
+# Cloudflare Pages response headers.
+#
+# frame-ancestors lets ONLY the Medusa admin embed the storefront's /studio editor
+# (the Shopify-style in-admin Theme Editor) and blocks all other framing (clickjacking).
+# X-Frame-Options is intentionally omitted: it can't express a cross-origin allow-list,
+# and SAMEORIGIN would break the admin iframe.
+#
+# PER-TENANT: replace https://medusa.edgepoint.work with the tenant's Medusa admin
+# origin (e.g. https://eps-store-<tenant>.fly.dev) at onboard time.
+#
+# NOTE: this only takes effect when the storefront is served by Cloudflare Pages.
+# On GitHub Pages custom headers are not supported; on the talos nginx container the
+# equivalent is `add_header Content-Security-Policy "frame-ancestors 'self' https://medusa.edgepoint.work" always;`.
+/*
+  Content-Security-Policy: frame-ancestors 'self' https://medusa.edgepoint.work
+  X-Content-Type-Options: nosniff
+  Referrer-Policy: strict-origin-when-cross-origin
