@@ -2,11 +2,25 @@ import { Link, NavLink, useLocation } from 'react-router-dom'
 import { useEffect, useState } from 'react'
 import { useCart, selectCount } from '../store/cart.js'
 
-export default function Nav() {
+/* The nav links + Journal URL are editable as site chrome (in /studio → "Header &
+   footer"). Defaults below = the current header; the scroll/invert behaviour, the
+   brand logo and the bag stay in code. */
+export const DEFAULT_NAV_LINKS = [
+  { label: 'Shop', to: '/shop', hide: '' },
+  { label: 'About', to: '/about', hide: '' },
+  { label: 'FAQ', to: '/faq', hide: 'nav__hide-sm' },
+  { label: 'Shipping', to: '/shipping', hide: 'nav__hide-md' },
+  { label: 'Careers', to: '/careers', hide: 'nav__hide-md' },
+  { label: 'Contact', to: '/contact', hide: 'nav__hide-sm' },
+]
+export const DEFAULT_JOURNAL_URL = 'https://www.madebyanjoe.com/blog'
+
+export default function Nav({ navLinks = DEFAULT_NAV_LINKS, journalUrl = DEFAULT_JOURNAL_URL } = {}) {
   const [scrolled, setScrolled] = useState(false)
   const { pathname } = useLocation()
   const count = useCart(selectCount)
   const open = useCart((s) => s.open)
+  const links = Array.isArray(navLinks) && navLinks.length ? navLinks : DEFAULT_NAV_LINKS
 
   useEffect(() => {
     const onScroll = () => setScrolled(window.scrollY > 12)
@@ -24,24 +38,11 @@ export default function Nav() {
     <header className={`nav${solid ? ' nav--solid' : ''}${invert ? ' nav--invert' : ''}`}>
       <div className="nav__inner container">
         <nav className="nav__group nav__group--left">
-          <NavLink to="/shop" className="navlink">
-            Shop
-          </NavLink>
-          <NavLink to="/about" className="navlink">
-            About
-          </NavLink>
-          <NavLink to="/faq" className="navlink nav__hide-sm">
-            FAQ
-          </NavLink>
-          <NavLink to="/shipping" className="navlink nav__hide-md">
-            Shipping
-          </NavLink>
-          <NavLink to="/careers" className="navlink nav__hide-md">
-            Careers
-          </NavLink>
-          <NavLink to="/contact" className="navlink nav__hide-sm">
-            Contact
-          </NavLink>
+          {links.map((l) => (
+            <NavLink key={l.to + l.label} to={l.to} className={`navlink${l.hide ? ' ' + l.hide : ''}`}>
+              {l.label}
+            </NavLink>
+          ))}
         </nav>
 
         <Link to="/" className="nav__brand" aria-label="ANJOE home">
@@ -53,12 +54,7 @@ export default function Nav() {
         </Link>
 
         <div className="nav__group nav__group--right">
-          <a
-            href="https://www.madebyanjoe.com/blog"
-            target="_blank"
-            rel="noreferrer"
-            className="navlink nav__hide-sm"
-          >
+          <a href={journalUrl} target="_blank" rel="noreferrer" className="navlink nav__hide-sm">
             Journal
           </a>
           <button className="nav__cart" onClick={open} aria-label="Open bag">

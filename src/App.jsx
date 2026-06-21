@@ -7,14 +7,11 @@ import Nav from './components/Nav.jsx'
 import Footer from './components/Footer.jsx'
 import CartDrawer from './components/CartDrawer.jsx'
 import Home from './pages/Home.jsx'
-import Shop from './pages/Shop.jsx'
 import Product from './pages/Product.jsx'
 import AboutPage from './pages/AboutPage.jsx'
-import Contact from './pages/Contact.jsx'
-import FAQ from './pages/FAQ.jsx'
-import Shipping from './pages/Shipping.jsx'
-import Careers from './pages/Careers.jsx'
-import Legal from './pages/Legal.jsx'
+import PageView from './studio/PageView.jsx'
+import { PAGES } from './studio/pages.js'
+import { usePublishedProps } from './studio/usePublishedProps.js'
 
 // Visual homepage editor — lazy so Puck never bloats the storefront bundle.
 const Studio = lazy(() => import('./studio/Studio.jsx'))
@@ -50,6 +47,9 @@ export default function App() {
 
   useScrollReveal(pathname)
 
+  // Global header/footer content is editable site chrome (slug 'site').
+  const chrome = usePublishedProps('site')
+
   // The studio renders full-screen, outside the store chrome (Nav/Footer/SmoothScroll).
   if (pathname.startsWith('/studio')) {
     return (
@@ -65,22 +65,22 @@ export default function App() {
     <SmoothScroll>
       <Preloader />
       <Cursor />
-      <Nav />
+      <Nav {...chrome} />
       <main>
         <Routes>
           <Route path="/" element={<Home />} />
-          <Route path="/shop" element={<Shop />} />
+          <Route path="/shop" element={<PageView page={PAGES.shop} />} />
           <Route path="/product/:slug" element={<Product />} />
           <Route path="/about" element={<AboutPage />} />
-          <Route path="/contact" element={<Contact />} />
-          <Route path="/faq" element={<FAQ />} />
-          <Route path="/shipping" element={<Shipping />} />
-          <Route path="/careers" element={<Careers />} />
-          <Route path="/privacy" element={<Legal doc="privacy" />} />
-          <Route path="/terms" element={<Legal doc="terms" />} />
+          <Route path="/contact" element={<PageView page={PAGES.contact} />} />
+          <Route path="/faq" element={<PageView page={PAGES.faq} />} />
+          <Route path="/shipping" element={<PageView page={PAGES.shipping} />} />
+          <Route path="/careers" element={<PageView page={PAGES.careers} />} />
+          <Route path="/privacy" element={<PageView page={PAGES['legal-privacy']} />} />
+          <Route path="/terms" element={<PageView page={PAGES['legal-terms']} />} />
         </Routes>
       </main>
-      <Footer />
+      <Footer {...chrome} />
       <CartDrawer />
     </SmoothScroll>
   )

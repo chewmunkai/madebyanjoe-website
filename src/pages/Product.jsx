@@ -9,6 +9,38 @@ import { getGallery } from '../data/galleries.js'
 import { useCart } from '../store/cart.js'
 import ProductCard from '../components/ProductCard.jsx'
 import Magnetic from '../lib/Magnetic.jsx'
+import { usePublishedProps } from '../studio/usePublishedProps.js'
+
+/* Product detail. Everything product-specific comes live from the catalog; the
+   SHARED template copy (rating line, trust badges, assurances, the three info
+   accordions, the "ritual" heading and the 404 copy) is editable in /studio →
+   "Product template". Defaults below = the current page. */
+export const DEFAULT_PRODUCT_SETTINGS = {
+  ratingText: 'Loved by the ANJOE community',
+  trust: ['Plant-based', 'Dermatologically tested', 'KKM-NPRA certified'],
+  assurance: [
+    'In stock — ready to ship',
+    'Ships from Kuala Lumpur in 1–2 working days',
+    'Shipping from RM7 · worldwide delivery',
+    'Secure checkout — FPX, cards, Touch ’n Go, GrabPay',
+  ],
+  accordion: [
+    { q: 'How to use', a: 'Apply to clean skin morning and night. Follow with the rest of your ANJOE ritual for best results.' },
+    { q: 'Ingredients & certifications', a: 'Plant-based formula. Dermatologically tested; KKM-NPRA certified where applicable. Free from harsh fillers.' },
+    { q: 'Shipping & returns', a: 'Prepared in 1–2 business days and shipped from Kuala Lumpur via GDEX Express — about 2–3 business days within Malaysia, 7–14 working days internationally. Wrong or defective items can be exchanged within 2 weeks; for hygiene reasons, opened products aren’t refundable.', link: { label: 'Full shipping & returns →', to: '/shipping' } },
+  ],
+  ritualEyebrow: 'Pairs well with',
+  ritualTitleA: 'Complete the ',
+  ritualTitleEm: 'ritual',
+  ritualTitleB: '.',
+  notFoundEyebrow: '404 — not found',
+  notFoundTitle: 'We couldn’t find that.',
+}
+
+const strs = (arr, fallback) => {
+  const out = (Array.isArray(arr) ? arr : []).map((x) => (typeof x === 'string' ? x : x?.label ?? x?.text)).filter(Boolean)
+  return out.length ? out : fallback
+}
 
 export default function Product() {
   const { slug } = useParams()
@@ -20,6 +52,10 @@ export default function Product() {
   const [showBar, setShowBar] = useState(false)
   const root = useRef(null)
   const buyRef = useRef(null)
+  const s = { ...DEFAULT_PRODUCT_SETTINGS, ...usePublishedProps('product') }
+  const trust = strs(s.trust, DEFAULT_PRODUCT_SETTINGS.trust)
+  const assurance = strs(s.assurance, DEFAULT_PRODUCT_SETTINGS.assurance)
+  const accordion = Array.isArray(s.accordion) && s.accordion.length ? s.accordion : DEFAULT_PRODUCT_SETTINGS.accordion
 
   const gallery = product ? getGallery(slug, product.img) : []
   const go = (i) => {
@@ -27,15 +63,11 @@ export default function Product() {
     setActive(((i % n) + n) % n)
   }
 
-  // reset carousel + qty when navigating to another product
   useEffect(() => {
     setActive(0)
     setQty(1)
   }, [slug])
 
-  // Mobile: show a sticky add-to-cart bar whenever the inline buy deck (which
-  // drops far below the full-bleed gallery on phones) is out of view, so price
-  // + CTA stay in the thumb zone. Hidden while the real deck is on screen.
   useEffect(() => {
     const el = buyRef.current
     if (!el) return
@@ -47,9 +79,6 @@ export default function Product() {
     return () => io.disconnect()
   }, [slug, product])
 
-  // Editorial parallax: drift the giant faded numeral + float the bottle as the
-  // gallery scrolls. Centralised ScrollTrigger registration (SmoothScroll.jsx).
-  // Re-run on slug change so a navigated PDP re-binds to the new nodes.
   useEffect(() => {
     if (!product) return
     const reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches
@@ -58,27 +87,15 @@ export default function Product() {
     const ctx = gsap.context(() => {
       const cipher = root.current.querySelector('.pdpx-gallery__cipher')
       if (cipher) {
-        gsap.to(cipher, {
-          yPercent: -22,
-          ease: 'none',
-          scrollTrigger: { trigger: '.pdpx-split', start: 'top top', end: 'bottom top', scrub: true },
-        })
+        gsap.to(cipher, { yPercent: -22, ease: 'none', scrollTrigger: { trigger: '.pdpx-split', start: 'top top', end: 'bottom top', scrub: true } })
       }
       const bottle = root.current.querySelector('.pdpx-bottle')
       if (bottle) {
-        gsap.to(bottle, {
-          yPercent: -7,
-          ease: 'none',
-          scrollTrigger: { trigger: '.pdpx-stage', start: 'top bottom', end: 'bottom top', scrub: true },
-        })
+        gsap.to(bottle, { yPercent: -7, ease: 'none', scrollTrigger: { trigger: '.pdpx-stage', start: 'top bottom', end: 'bottom top', scrub: true } })
       }
       const rghost = root.current.querySelector('.pdpx-ritual__ghost')
       if (rghost) {
-        gsap.to(rghost, {
-          yPercent: -16,
-          ease: 'none',
-          scrollTrigger: { trigger: '.pdpx-ritual', start: 'top bottom', end: 'bottom top', scrub: true },
-        })
+        gsap.to(rghost, { yPercent: -16, ease: 'none', scrollTrigger: { trigger: '.pdpx-ritual', start: 'top bottom', end: 'bottom top', scrub: true } })
       }
     }, root)
 
@@ -92,8 +109,8 @@ export default function Product() {
         <p className="pdpx-missing__ghost" aria-hidden="true">
           404
         </p>
-        <span className="eyebrow">404 — not found</span>
-        <h1>We couldn’t find that.</h1>
+        <span className="eyebrow">{s.notFoundEyebrow}</span>
+        <h1>{s.notFoundTitle}</h1>
         <Link to="/shop" className="textlink">
           Back to the collection →
         </Link>
@@ -115,12 +132,7 @@ export default function Product() {
         <div className="pdpx-split">
           <span className="pdpx-rail">{product.eyebrow || product.type}</span>
 
-          {/* LAYERED GALLERY — washed niche, floating bottle, exploded facets */}
           <div className="pdpx-gallery reveal">
-            {/* De-Claude: the generic faded italic-word ghost is replaced by an
-                engraved archival cipher — the product's catalogue index + type
-                set as a thin vertical plate, the way a vitrine label is etched
-                into the wall beside the object. Crafted, brand-specific depth. */}
             <div className="pdpx-gallery__cipher" aria-hidden="true">
               <span className="pdpx-gallery__cipher-no">
                 {(product.slug.match(/\d+/) || [String(product.name.length).padStart(2, '0')])[0]}
@@ -132,9 +144,7 @@ export default function Product() {
 
             <div className="pdpx-stage">
               <span className="pdpx-stage__halo" aria-hidden="true" />
-              {/* SIGNATURE — a slow specular catch-light that sweeps the niche */}
               <span className="pdpx-stage__sweep" aria-hidden="true" />
-              {/* SIGNATURE — a refractive glass lens-rim hugging the niche lip */}
               <span className="pdpx-stage__lens" aria-hidden="true" />
               <img className="pdpx-bottle" src={gallery[active] || product.img} alt={product.name} />
               <span className="pdpx-stage__badge glass">
@@ -149,18 +159,10 @@ export default function Product() {
 
               {gallery.length > 1 && (
                 <>
-                  <button
-                    className="pdpx-nav pdpx-nav--prev glass"
-                    onClick={() => go(active - 1)}
-                    aria-label="Previous image"
-                  >
+                  <button className="pdpx-nav pdpx-nav--prev glass" onClick={() => go(active - 1)} aria-label="Previous image">
                     ‹
                   </button>
-                  <button
-                    className="pdpx-nav pdpx-nav--next glass"
-                    onClick={() => go(active + 1)}
-                    aria-label="Next image"
-                  >
+                  <button className="pdpx-nav pdpx-nav--next glass" onClick={() => go(active + 1)} aria-label="Next image">
                     ›
                   </button>
                 </>
@@ -189,7 +191,6 @@ export default function Product() {
             )}
           </div>
 
-          {/* STICKY EDITORIAL BUY COLUMN */}
           <div className="pdpx-info">
             <span className="eyebrow pdpx-info__eyebrow">{product.eyebrow || product.type}</span>
             <h1 className="pdpx-info__title">{product.name}</h1>
@@ -203,7 +204,7 @@ export default function Product() {
                 <span className="pdpx-rating__stars" aria-hidden="true">
                   ★★★★★
                 </span>
-                <em>Loved by the ANJOE community</em>
+                <em>{s.ratingText}</em>
               </span>
             </div>
 
@@ -218,9 +219,9 @@ export default function Product() {
             )}
 
             <div className="pdpx-trust glass">
-              <span>Plant-based</span>
-              <span>Dermatologically tested</span>
-              <span>KKM-NPRA certified</span>
+              {trust.map((t) => (
+                <span key={t}>{t}</span>
+              ))}
             </div>
 
             <div className="pdpx-buy glass glass--strong" ref={buyRef}>
@@ -242,59 +243,34 @@ export default function Product() {
             </div>
 
             <ul className="pdpx-assure glass">
-              <li>
-                <span className="pdpx-assure__ic" aria-hidden="true" /> In stock — ready to ship
-              </li>
-              <li>
-                <span className="pdpx-assure__ic" aria-hidden="true" /> Ships from Kuala Lumpur in 1–2 working days
-              </li>
-              <li>
-                <span className="pdpx-assure__ic" aria-hidden="true" /> Shipping from RM7 · worldwide delivery
-              </li>
-              <li>
-                <span className="pdpx-assure__ic" aria-hidden="true" /> Secure checkout — FPX, cards, Touch ’n Go, GrabPay
-              </li>
+              {assurance.map((a) => (
+                <li key={a}>
+                  <span className="pdpx-assure__ic" aria-hidden="true" /> {a}
+                </li>
+              ))}
             </ul>
 
             <div className="pdpx-acc glass">
-              <details>
-                <summary>
-                  <span>
-                    <span className="pdpx-acc__idx">01</span>How to use
-                  </span>
-                </summary>
-                <p>
-                  Apply to clean skin morning and night. Follow with the rest of your ANJOE ritual for
-                  best results.
-                </p>
-              </details>
-              <details>
-                <summary>
-                  <span>
-                    <span className="pdpx-acc__idx">02</span>Ingredients &amp; certifications
-                  </span>
-                </summary>
-                <p>
-                  Plant-based formula. Dermatologically tested; KKM-NPRA certified where applicable. Free
-                  from harsh fillers.
-                </p>
-              </details>
-              <details>
-                <summary>
-                  <span>
-                    <span className="pdpx-acc__idx">03</span>Shipping &amp; returns
-                  </span>
-                </summary>
-                <p>
-                  Prepared in 1–2 business days and shipped from Kuala Lumpur via GDEX Express — about 2–3
-                  business days within Malaysia, 7–14 working days internationally. Wrong or defective
-                  items can be exchanged within 2 weeks; for hygiene reasons, opened products aren’t
-                  refundable.{' '}
-                  <Link className="textlink--inline" to="/shipping">
-                    Full shipping &amp; returns →
-                  </Link>
-                </p>
-              </details>
+              {accordion.map((it, i) => (
+                <details key={it.q}>
+                  <summary>
+                    <span>
+                      <span className="pdpx-acc__idx">{String(i + 1).padStart(2, '0')}</span>{it.q}
+                    </span>
+                  </summary>
+                  <p>
+                    {it.a}
+                    {it.link ? (
+                      <>
+                        {' '}
+                        <Link className="textlink--inline" to={it.link.to}>
+                          {it.link.label}
+                        </Link>
+                      </>
+                    ) : null}
+                  </p>
+                </details>
+              ))}
             </div>
           </div>
         </div>
@@ -308,9 +284,9 @@ export default function Product() {
           <div className="container pdpx-ritual__inner">
             <div className="pdpx-ritual__head reveal">
               <div>
-                <span className="eyebrow">Pairs well with</span>
+                <span className="eyebrow">{s.ritualEyebrow}</span>
                 <h2>
-                  Complete the <em>ritual</em>.
+                  {s.ritualTitleA}<em>{s.ritualTitleEm}</em>{s.ritualTitleB}
                 </h2>
               </div>
               <p className="pdpx-ritual__note">
@@ -334,8 +310,6 @@ export default function Product() {
         </section>
       )}
 
-      {/* Sticky mobile buy bar — keeps price + CTA reachable once the inline
-          buy deck scrolls out of view on phones. */}
       <div className={`pdpx-buybar${showBar ? ' is-visible' : ''}`}>
         <div className="pdpx-buybar__info">
           <span className="pdpx-buybar__name">{product.name}</span>

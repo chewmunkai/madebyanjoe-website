@@ -5,8 +5,10 @@ import { ScrollTrigger } from 'gsap/ScrollTrigger'
 import Icon3D from '../components/Icon3D.jsx'
 import Magnetic from '../lib/Magnetic.jsx'
 
-/* Real roles, verbatim from madebyanjoe.com/pages/careers. */
-const ROLES = [
+/* Careers. Bespoke design stays in code; the hero copy, values, culture creed,
+   open roles and the apply flow are prop-driven (editable in /studio). Defaults =
+   the current page. */
+export const DEFAULT_ROLES = [
   {
     title: 'Operations Executive',
     tags: ['Full time', 'Mont Kiara, KL', 'Mon–Fri 10–7'],
@@ -39,32 +41,13 @@ const ROLES = [
   },
 ]
 
-/* Why-us layer — framed from the real careers brief (open to interns & fresh
-   grads, health/beauty studio, doing small things well). No invented perks. */
-const VALUES = [
-  {
-    icon: 'seedling',
-    title: 'Room to grow',
-    body: 'We welcome interns and fresh graduates. The right attitude matters more here than a long résumé.',
-  },
-  {
-    icon: 'herb',
-    title: 'Plant-based at heart',
-    body: 'A probiotic, plant-based skincare house. You’ll work close to a line built on health and clean formulation.',
-  },
-  {
-    icon: 'sparkles',
-    title: 'The small things, done well',
-    body: 'From a packed parcel to a customer reply — we care about the details most people overlook.',
-  },
+export const DEFAULT_VALUES = [
+  { icon: 'seedling', title: 'Room to grow', body: 'We welcome interns and fresh graduates. The right attitude matters more here than a long résumé.' },
+  { icon: 'herb', title: 'Plant-based at heart', body: 'A probiotic, plant-based skincare house. You’ll work close to a line built on health and clean formulation.' },
+  { icon: 'sparkles', title: 'The small things, done well', body: 'From a packed parcel to a customer reply — we care about the details most people overlook.' },
 ]
 
-const APPLY = 'mailto:hello@madebyanjoe.com?subject=Careers%20%E2%80%94%20Application'
-
-/* Signature "culture creed" — repeated as a slow frosted ticker. Drawn straight
-   from the real brief: plant-based / probiotic house, small things done well,
-   interns welcome. No invented perks, no fabricated benefits. */
-const CREED = [
+export const DEFAULT_CREED = [
   'Plant-based at heart',
   'The small things, done well',
   'Interns & fresh grads welcome',
@@ -72,24 +55,46 @@ const CREED = [
   'Mont Kiara studio',
 ]
 
-export default function Careers() {
+const str = (arr) => (Array.isArray(arr) ? arr.map((x) => (typeof x === 'string' ? x : x?.label ?? x?.text)).filter(Boolean) : [])
+
+export default function Careers({
+  heroCoord = '3°09′N 101°39′E',
+  heroPlace = 'Mont Kiara · KL',
+  heroGhost = 'Now hiring',
+  heroEyebrow = 'Careers',
+  heroTitleA = 'Build the ',
+  heroTitleEm = 'ritual',
+  heroTitleB = ' with us.',
+  heroLede = 'We’re a plant-based, probiotic skincare house in Mont Kiara, Kuala Lumpur. We welcome people — interns and fresh graduates included — who care about health, beauty and doing the small things well.',
+  whyEyebrow = 'Why join',
+  whyTitleA = 'A studio that values ',
+  whyTitleEm = 'care',
+  whyTitleB = '.',
+  values = DEFAULT_VALUES,
+  creed = DEFAULT_CREED,
+  rolesEyebrow = 'Open positions',
+  rolesTitle = 'Find a job you love.',
+  rolesIntro = 'Two roles, both based in our Mont Kiara studio. Read the scope, then apply by email — we read every application.',
+  roles = DEFAULT_ROLES,
+  applyEyebrow = 'How to apply',
+  applyTitle = 'Tell us your story.',
+  email = 'hello@madebyanjoe.com',
+  ctaTitle = 'Don’t see your role?',
+  ctaLede = 'Tell us how you’d help — we’re always listening.',
+  ctaButton = 'Email your resume',
+} = {}) {
   const rolesRef = useRef(null)
+  const roleList = Array.isArray(roles) && roles.length ? roles : DEFAULT_ROLES
+  const valueList = Array.isArray(values) && values.length ? values : DEFAULT_VALUES
+  const creedList = str(creed).length ? str(creed) : DEFAULT_CREED
+  const APPLY = `mailto:${email}?subject=Careers%20%E2%80%94%20Application`
 
   useEffect(() => {
     if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return
     const ctx = gsap.context(() => {
       gsap.utils.toArray('[data-parallax]').forEach((el) => {
         const depth = parseFloat(el.dataset.parallax) || 0.12
-        gsap.to(el, {
-          yPercent: -depth * 100,
-          ease: 'none',
-          scrollTrigger: {
-            trigger: el.closest('[data-parallax-scope]') || el,
-            start: 'top bottom',
-            end: 'bottom top',
-            scrub: true,
-          },
-        })
+        gsap.to(el, { yPercent: -depth * 100, ease: 'none', scrollTrigger: { trigger: el.closest('[data-parallax-scope]') || el, start: 'top bottom', end: 'bottom top', scrub: true } })
       })
     }, rolesRef)
     requestAnimationFrame(() => ScrollTrigger.refresh())
@@ -102,12 +107,12 @@ export default function Careers() {
       <header className="page-hero page-hero--tall cr-hero" data-parallax-scope>
         <div className="page-hero__wash" />
         <span className="cr-hero__rail" aria-hidden="true">
-          <span className="cr-hero__rail-co">3°09′N&nbsp;101°39′E</span>
+          <span className="cr-hero__rail-co">{heroCoord}</span>
           <span className="cr-hero__rail-rule" />
-          Mont&nbsp;Kiara · KL
+          {heroPlace}
         </span>
         <span className="cr-hero__ghost" aria-hidden="true" data-parallax="0.16">
-          Now hiring
+          {heroGhost}
         </span>
 
         <div className="container cr-hero__inner">
@@ -115,18 +120,14 @@ export default function Careers() {
             <span className="cr-hero__meta-mark">Raw&nbsp;Beauté</span>
             <span className="cr-hero__tally">
               Open roles
-              <em>{String(ROLES.length).padStart(2, '0')}</em>
+              <em>{String(roleList.length).padStart(2, '0')}</em>
             </span>
           </div>
-          <span className="eyebrow">Careers</span>
+          <span className="eyebrow">{heroEyebrow}</span>
           <h1 className="cr-hero__title">
-            Build the <em>ritual</em> with us.
+            {heroTitleA}<em>{heroTitleEm}</em>{heroTitleB}
           </h1>
-          <p className="lede cr-hero__lede">
-            We’re a plant-based, probiotic skincare house in Mont Kiara, Kuala
-            Lumpur. We welcome people — interns and fresh graduates included —
-            who care about health, beauty and doing the small things well.
-          </p>
+          <p className="lede cr-hero__lede">{heroLede}</p>
           <ul className="cr-hero__trust" aria-hidden="true">
             <li>Full time</li>
             <li>Mont Kiara studio</li>
@@ -138,13 +139,13 @@ export default function Careers() {
       {/* ---------- WHY US / VALUES ---------- */}
       <section className="section container cr-why">
         <div className="cr-why__head">
-          <span className="eyebrow">Why join</span>
+          <span className="eyebrow">{whyEyebrow}</span>
           <h2 className="cr-why__title">
-            A studio that values <em>care</em>.
+            {whyTitleA}<em>{whyTitleEm}</em>{whyTitleB}
           </h2>
         </div>
         <div className="cr-why__grid">
-          {VALUES.map((v, i) => (
+          {valueList.map((v, i) => (
             <article className="cr-value glass reveal" key={v.title}>
               <span className="cr-value__idx" aria-hidden="true">
                 {String(i + 1).padStart(2, '0')}
@@ -168,7 +169,7 @@ export default function Careers() {
             <div className="cr-creed__track" aria-hidden="true">
               {[0, 1].map((dup) => (
                 <div className="cr-creed__set" key={dup}>
-                  {CREED.map((line) => (
+                  {creedList.map((line) => (
                     <span className="cr-creed__item" key={line}>
                       <span className="cr-creed__seed" />
                       {line}
@@ -186,21 +187,15 @@ export default function Careers() {
         <div className="section container">
           <div className="cr-roles__head">
             <div className="sec-head reveal">
-              <span className="eyebrow">Open positions</span>
-              <h2>Find a job you love.</h2>
+              <span className="eyebrow">{rolesEyebrow}</span>
+              <h2>{rolesTitle}</h2>
             </div>
-            <p className="cr-roles__intro reveal">
-              Two roles, both based in our Mont Kiara studio. Read the scope, then
-              apply by email — we read every application.
-            </p>
+            <p className="cr-roles__intro reveal">{rolesIntro}</p>
           </div>
 
           <div className="cr-roles">
-            {ROLES.map((r, i) => (
-              <article
-                className={`cr-job reveal ${i % 2 ? 'cr-job--right' : 'cr-job--left'}`}
-                key={r.title}
-              >
+            {roleList.map((r, i) => (
+              <article className={`cr-job reveal ${i % 2 ? 'cr-job--right' : 'cr-job--left'}`} key={r.title}>
                 <span className="cr-job__num" aria-hidden="true">
                   {String(i + 1).padStart(2, '0')}
                 </span>
@@ -208,7 +203,7 @@ export default function Careers() {
                   <div className="cr-job__top">
                     <h3 className="cr-job__title">{r.title}</h3>
                     <div className="cr-job__meta">
-                      {r.tags.map((t) => (
+                      {str(r.tags).map((t) => (
                         <span className="chip" key={t}>
                           {t}
                         </span>
@@ -221,16 +216,16 @@ export default function Careers() {
                     <div className="cr-job__col">
                       <h4 className="cr-job__sub">What you’ll do</h4>
                       <ul className="cr-job__list">
-                        {r.scope.map((s) => (
+                        {str(r.scope).map((s) => (
                           <li key={s}>{s}</li>
                         ))}
                       </ul>
                     </div>
-                    {r.needs.length > 0 && (
+                    {str(r.needs).length > 0 && (
                       <div className="cr-job__col">
                         <h4 className="cr-job__sub">What we’re after</h4>
                         <ul className="cr-job__list">
-                          {r.needs.map((n) => (
+                          {str(r.needs).map((n) => (
                             <li key={n}>{n}</li>
                           ))}
                         </ul>
@@ -238,12 +233,7 @@ export default function Careers() {
                     )}
                   </div>
 
-                  <a
-                    className="textlink cr-job__apply"
-                    href={`mailto:hello@madebyanjoe.com?subject=${encodeURIComponent(
-                      'Application — ' + r.title
-                    )}`}
-                  >
+                  <a className="textlink cr-job__apply" href={`mailto:${email}?subject=${encodeURIComponent('Application — ' + r.title)}`}>
                     Apply for this role →
                   </a>
                 </div>
@@ -260,13 +250,13 @@ export default function Careers() {
         </span>
         <div className="cr-apply__inner">
           <div className="sec-head reveal">
-            <span className="eyebrow">How to apply</span>
-            <h2>Tell us your story.</h2>
+            <span className="eyebrow">{applyEyebrow}</span>
+            <h2>{applyTitle}</h2>
           </div>
           <p className="lede cr-apply__lede reveal">
             We welcome interns and fresh graduates. Email your latest resume to{' '}
             <a className="textlink textlink--inline" href={APPLY}>
-              hello@madebyanjoe.com
+              {email}
             </a>{' '}
             with your full name and date of birth, your availability, and your
             salary expectations. Only shortlisted candidates will be contacted —
@@ -298,11 +288,11 @@ export default function Careers() {
       {/* ---------- CTA ---------- */}
       <section className="cta">
         <div className="container cta__inner reveal">
-          <h2>Don’t see your role?</h2>
-          <p className="lede">Tell us how you’d help — we’re always listening.</p>
+          <h2>{ctaTitle}</h2>
+          <p className="lede">{ctaLede}</p>
           <Magnetic>
             <a className="btn btn--light" href={APPLY}>
-              Email your resume
+              {ctaButton}
             </a>
           </Magnetic>
         </div>
