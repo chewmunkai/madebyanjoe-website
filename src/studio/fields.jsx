@@ -48,3 +48,42 @@ function MediaField({ value, onChange }) {
 export function imageField(label) {
   return { type: 'custom', label, render: ({ value, onChange }) => <MediaField value={value} onChange={onChange} /> }
 }
+
+/* A slider field — the literal "bar" an animation knob compiles into. Shows the
+   live value + unit so a non-technical editor can dial motion in by feel. */
+function RangeInput({ value, onChange, min, max, step, unit }) {
+  const v = value ?? min
+  return (
+    <div style={{ display: 'grid', gap: 4 }}>
+      <div style={{ display: 'flex', justifyContent: 'space-between', font: `400 12px ${FONT}`, color: '#666' }}>
+        <span>{min}{unit}</span>
+        <strong style={{ color: '#111' }}>{v}{unit}</strong>
+        <span>{max}{unit}</span>
+      </div>
+      <input
+        type="range"
+        min={min}
+        max={max}
+        step={step}
+        value={v}
+        onChange={(e) => onChange(Number(e.target.value))}
+        style={{ width: '100%' }}
+      />
+    </div>
+  )
+}
+
+export function rangeField({ label, min = 0, max = 100, step = 1, unit = '' }) {
+  return {
+    type: 'custom',
+    label,
+    render: ({ value, onChange }) => (
+      <RangeInput value={value} onChange={onChange} min={min} max={max} step={step} unit={unit} />
+    ),
+  }
+}
+
+/* An easing picker for animation knobs (a friendly dropdown of GSAP eases). */
+export function easeField(label, eases = ['power2.out', 'power3.out', 'power4.out', 'expo.out', 'back.out(1.4)', 'sine.inOut', 'circ.out', 'none']) {
+  return { type: 'select', label, options: eases.map((e) => ({ label: e, value: e })) }
+}

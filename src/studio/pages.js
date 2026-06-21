@@ -1,5 +1,4 @@
-import { config as homeConfig } from './homepage.config.jsx'
-import { SECTIONS as homeSections, defaultHomepage } from './homepage.js'
+import { home } from './homepage.js'
 import { config as aboutConfig } from './about.config.jsx'
 import About from '../pages/About.jsx'
 import Contact from '../pages/Contact.jsx'
@@ -21,7 +20,7 @@ import { shopConfig, productConfig } from './store-configs.jsx'
 const single = (type, props = {}) => ({ root: { props: {} }, content: [{ type, props: { id: type, ...props } }] })
 
 export const PAGES = {
-  home: { key: 'home', label: 'Homepage', slug: 'home', path: '/', config: homeConfig, sections: homeSections, defaultLayout: defaultHomepage },
+  home,
   about: { key: 'about', label: 'About', slug: 'about', path: '/about', config: aboutConfig, sections: { AboutPage: About }, defaultLayout: single('AboutPage') },
   contact: { key: 'contact', label: 'Contact', slug: 'contact', path: '/contact', config: contactConfig, sections: { ContactPage: Contact }, defaultLayout: single('ContactPage') },
   faq: { key: 'faq', label: 'FAQ', slug: 'faq', path: '/faq', config: faqConfig, sections: { FaqPage: FAQ }, defaultLayout: single('FaqPage') },

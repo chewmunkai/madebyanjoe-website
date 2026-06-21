@@ -4,7 +4,7 @@ import '@measured/puck/puck.css'
 import { PAGES, layoutOr } from './pages.js'
 import {
   getAdminToken, adminLogin, clearAdminToken,
-  getDraft, saveDraft, publishLayout,
+  getDraft, saveDraft, publishLayout, isEmbeddedStudio,
 } from '../lib/builderApi.js'
 
 const FONT = 'Manrope, system-ui, sans-serif'
@@ -18,7 +18,9 @@ function initialPageKey() {
    (Homepage / About), edit content + composition + media + animation, then Save draft
    (private) or Publish (live). Everything persists to the Medusa page_builder module. */
 export default function Studio() {
-  const [token, setToken] = useState(getAdminToken())
+  // Opened from the Medusa admin's Theme Editor → a ticket replaces admin login.
+  const embedded = isEmbeddedStudio()
+  const [token, setToken] = useState(embedded ? 'ticket' : getAdminToken())
   const [pageKey, setPageKey] = useState(initialPageKey)
   const [data, setData] = useState(null) // null = loading this page's draft
   const [note, setNote] = useState('')
@@ -32,8 +34,13 @@ export default function Studio() {
       .then((r) => { if (alive) setData(layoutOr(r.draft || r.published, page.defaultLayout)) })
       .catch((e) => {
         if (!alive) return
-        if (e.status === 401) { clearAdminToken(); setToken(null) }
-        else { setData(page.defaultLayout); setNote('Could not load the saved layout — starting from the current page.') }
+        if (e.status === 401 && !embedded) { clearAdminToken(); setToken(null) }
+        else {
+          setData(page.defaultLayout)
+          setNote(embedded
+            ? 'Editing session expired — reopen the Theme Editor from the admin.'
+            : 'Could not load the saved layout — starting from the current page.')
+        }
       })
     return () => { alive = false }
   }, [token, pageKey, page.slug, page.defaultLayout])
