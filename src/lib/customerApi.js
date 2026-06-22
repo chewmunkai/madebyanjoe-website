@@ -106,3 +106,27 @@ export async function getPoints() {
     return null
   }
 }
+
+/* Refer-a-friend: { code, share_path, referrals_total, referrals_rewarded, points_earned, config }.
+   Null if not signed in / the referral module isn't live yet. */
+export async function getReferral() {
+  const token = getCustomerToken()
+  if (!token) return null
+  try {
+    return await call('/store/referral/me', { token })
+  } catch {
+    return null
+  }
+}
+
+/* Affiliate dashboard: { code, link, status, commission_rate, pending, approved, paid, referrals, config }.
+   Null if not signed in / not an affiliate / the affiliate module isn't live yet. */
+export async function getAffiliate() {
+  const token = getCustomerToken()
+  if (!token) return null
+  try {
+    return await call('/store/affiliate/me', { token })
+  } catch {
+    return null
+  }
+}

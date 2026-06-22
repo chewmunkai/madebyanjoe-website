@@ -11,6 +11,8 @@ import Product from './pages/Product.jsx'
 import AboutPage from './pages/AboutPage.jsx'
 import Login from './pages/Login.jsx'
 import Account from './pages/Account.jsx'
+import PromoPage from './pages/PromoPage.jsx'
+import PromoBanner from './components/PromoBanner.jsx'
 import PageView from './studio/PageView.jsx'
 import { PAGES } from './studio/pages.js'
 import { usePublishedProps } from './studio/usePublishedProps.js'
@@ -71,6 +73,7 @@ export default function App() {
     <SmoothScroll>
       <Preloader />
       <Cursor />
+      <PromoBanner />
       <Nav {...chrome} />
       <main>
         <Routes>
@@ -86,8 +89,7 @@ export default function App() {
           <Route path="/terms" element={<PageView page={PAGES['legal-terms']} />} />
           <Route path="/login" element={<Login />} />
           <Route path="/account" element={<Account />} />
-          <Route path="/login" element={<Login />} />
-          <Route path="/account" element={<Account />} />
+          <Route path="/promo/:slug" element={<PromoPage />} />
         </Routes>
       </main>
       <Footer {...chrome} />

@@ -1,14 +1,16 @@
 import { useEffect, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
-import { getCustomer, getOrders, getPoints, logout, isLoggedIn } from '../lib/customerApi.js'
+import { getCustomer, getOrders, getPoints, getReferral, getAffiliate, logout, isLoggedIn } from '../lib/customerApi.js'
 
-/* Member account — profile + order history. Points + affiliate sections are stubbed
-   here and filled in by Wave 2 (loyalty) and Wave 3 (affiliate). Light styling for now. */
+/* Member account — profile, order history, points, refer-a-friend, affiliate dashboard.
+   Each data section degrades to null if its module isn't live, so the page never breaks. */
 export default function Account() {
   const navigate = useNavigate()
   const [customer, setCustomer] = useState(null)
   const [orders, setOrders] = useState([])
   const [points, setPoints] = useState(null)
+  const [referral, setReferral] = useState(null)
+  const [affiliate, setAffiliate] = useState(null)
   const [loading, setLoading] = useState(true)
 
   useEffect(() => {
@@ -18,9 +20,13 @@ export default function Account() {
       try {
         const c = await getCustomer()
         if (!c) { navigate('/login'); return }
-        const o = await getOrders().catch(() => [])
-        const pts = await getPoints().catch(() => null)
-        if (alive) { setCustomer(c); setOrders(o); setPoints(pts) }
+        const [o, pts, ref, aff] = await Promise.all([
+          getOrders().catch(() => []),
+          getPoints().catch(() => null),
+          getReferral().catch(() => null),
+          getAffiliate().catch(() => null),
+        ])
+        if (alive) { setCustomer(c); setOrders(o); setPoints(pts); setReferral(ref); setAffiliate(aff) }
       } finally {
         if (alive) setLoading(false)
       }
@@ -45,9 +51,13 @@ export default function Account() {
         <Card label="Points balance">
           {points ? `${points.balance} pts` : <span style={{ color: '#999' }}>0 pts</span>}
         </Card>
-        {/* Wave 3 fills this from the affiliate module */}
-        <Card label="Referral earnings"><span style={{ color: '#999' }}>Coming soon</span></Card>
+        <Card label="Referral points earned">
+          {referral ? `${referral.points_earned} pts` : <span style={{ color: '#999' }}>0 pts</span>}
+        </Card>
       </div>
+
+      {referral && <ReferCard referral={referral} />}
+      {affiliate && <AffiliateCard affiliate={affiliate} />}
 
       <h2 style={h2}>Order history</h2>
       {orders.length === 0 ? (
@@ -81,6 +91,68 @@ function Card({ label, children }) {
   )
 }
 
+function fullLink(path) {
+  try { return `${window.location.origin}${path}` } catch { return path }
+}
+
+function CopyLink({ link }) {
+  const [copied, setCopied] = useState(false)
+  function copy() {
+    try {
+      navigator.clipboard?.writeText(link)
+      setCopied(true); setTimeout(() => setCopied(false), 1500)
+    } catch { /* ignore */ }
+  }
+  return (
+    <div style={{ display: 'flex', gap: 8, alignItems: 'center', flexWrap: 'wrap', marginTop: 10 }}>
+      <code style={linkBox}>{link}</code>
+      <button onClick={copy} style={copyBtn}>{copied ? 'Copied ✓' : 'Copy'}</button>
+    </div>
+  )
+}
+
+/* Refer-a-friend: share the link; both you and your friend earn points on their first order. */
+function ReferCard({ referral }) {
+  const link = fullLink(referral.share_path)
+  const cfg = referral.config || {}
+  return (
+    <div style={panel}>
+      <h2 style={{ ...h2, marginTop: 0 }}>Refer a friend</h2>
+      <p style={{ color: '#555', margin: '0 0 4px', fontSize: 14 }}>
+        Share your link. When a friend places their first order, you both get{' '}
+        <strong>{cfg.friend_reward ?? 500} points</strong>.
+      </p>
+      <CopyLink link={link} />
+      <div style={statRow}>
+        <span>Friends referred: <strong>{referral.referrals_rewarded}</strong></span>
+        <span>Points earned: <strong>{referral.points_earned}</strong></span>
+      </div>
+    </div>
+  )
+}
+
+/* Affiliate dashboard: commission link + pending/approved/paid earnings. Only shown to
+   customers who are enrolled affiliates (the endpoint returns null otherwise). */
+function AffiliateCard({ affiliate }) {
+  const link = affiliate.link || fullLink(`/?ref=${affiliate.code}`)
+  const money = (v) => formatMoney(v ?? 0, affiliate.currency || 'myr')
+  return (
+    <div style={panel}>
+      <h2 style={{ ...h2, marginTop: 0 }}>Affiliate dashboard</h2>
+      <p style={{ color: '#555', margin: '0 0 4px', fontSize: 14 }}>
+        Earn <strong>{Math.round((affiliate.commission_rate ?? 0) * 100)}%</strong> commission on orders from your link.
+        Status: <strong style={{ textTransform: 'capitalize' }}>{affiliate.status || 'active'}</strong>.
+      </p>
+      <CopyLink link={link} />
+      <div style={statRow}>
+        <span>Pending: <strong>{money(affiliate.pending)}</strong></span>
+        <span>Approved: <strong>{money(affiliate.approved)}</strong></span>
+        <span>Paid: <strong>{money(affiliate.paid)}</strong></span>
+      </div>
+    </div>
+  )
+}
+
 function formatDate(s) { try { return new Date(s).toLocaleDateString() } catch { return '' } }
 function formatMoney(v, cc) {
   if (v == null) return ''
@@ -95,3 +167,7 @@ const grid = { display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(20
 const card = { border: '1px solid #eee', borderRadius: 12, padding: '16px 18px' }
 const orderRow = { display: 'flex', justifyContent: 'space-between', alignItems: 'center', border: '1px solid #eee', borderRadius: 12, padding: '14px 18px' }
 const linkBtn = { background: 'none', border: 'none', color: '#111', textDecoration: 'underline', cursor: 'pointer', fontSize: 14, fontFamily: 'inherit' }
+const panel = { border: '1px solid #eee', borderRadius: 14, padding: '20px 22px', marginTop: 28, background: '#fafafa' }
+const linkBox = { background: '#fff', border: '1px solid #e2e2e2', borderRadius: 8, padding: '8px 12px', fontSize: 13, wordBreak: 'break-all', flex: '1 1 240px' }
+const copyBtn = { background: '#111', color: '#fff', border: 'none', borderRadius: 8, padding: '8px 16px', cursor: 'pointer', fontSize: 14, fontFamily: 'inherit' }
+const statRow = { display: 'flex', gap: 20, flexWrap: 'wrap', marginTop: 14, color: '#444', fontSize: 14 }
