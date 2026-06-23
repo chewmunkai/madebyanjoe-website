@@ -1,15 +1,26 @@
 import { useEffect, useState } from 'react'
 import { getActiveCampaigns } from '../lib/promoApi.js'
 
-/* Scheduled promo banner — shows the first live banner-kind campaign as a large,
-   dismissible overlay covering ~70% of the screen (centered over a dimmed backdrop),
-   instead of a thin top bar. When the campaign has an image_url (the client's designed
-   creative), the image IS the banner — shown full / uncropped, up to 70vh tall and
-   ~900px wide, and clicking it follows the CTA. Otherwise a text card is shown as a
-   fallback. The backend owns the schedule (starts_at/ends_at/status); this just renders
-   what's live, SSR-safe, never inside the studio editor, and remembers dismissal per
-   campaign in localStorage.
-   Preview the layout without a live campaign: ?promo_preview=1 (image) or ?promo_preview=text. */
+/* Scheduled promo banner — a large, dismissible overlay covering a share of the screen
+   (centered over a dimmed backdrop), instead of a thin top bar. When the campaign has an
+   image_url (the client's designed creative) the image IS the banner — shown full /
+   uncropped; otherwise a text card is the fallback. Clicking follows the CTA.
+
+   Coverage is RESPONSIVE and per-campaign adjustable: campaign.banner_scale sets the
+   DESKTOP coverage %, and smaller viewports bump it up for usability. With no banner_scale
+   set, the responsive defaults below apply.
+   Preview: ?promo_preview=1 (image) / =text, and &scale=NN to try a coverage %. */
+const COVER = { desktop: 70, tablet: 82, mobile: 92 } // defaults when no per-campaign banner_scale
+const TABLET_MAX = 1024
+const MOBILE_MAX = 640
+
+function coverageFor(width, scale) {
+  const base = Number.isFinite(scale) && scale > 0 ? scale : null
+  if (width <= MOBILE_MAX) return { vh: base != null ? Math.min(98, base + 22) : COVER.mobile, maxW: '94vw' }
+  if (width <= TABLET_MAX) return { vh: base != null ? Math.min(96, base + 12) : COVER.tablet, maxW: '90vw' }
+  return { vh: base != null ? Math.min(92, base) : COVER.desktop, maxW: 'min(88vw, 920px)' }
+}
+
 function isEditingContext() {
   try {
     const embed = new URLSearchParams(window.location.search).get('embed') === '1'
@@ -20,20 +31,18 @@ function isEditingContext() {
 }
 
 const PREVIEW_IMG =
-  "data:image/svg+xml;utf8," +
+  'data:image/svg+xml;utf8,' +
   encodeURIComponent(
     `<svg xmlns='http://www.w3.org/2000/svg' width='1080' height='1350'><rect width='1080' height='1350' fill='%23221b12'/><text x='540' y='620' fill='%23ffffff' font-family='Georgia,serif' font-size='86' text-anchor='middle'>Banner image</text><text x='540' y='720' fill='rgba(255,255,255,0.6)' font-family='sans-serif' font-size='42' text-anchor='middle'>client artwork · 4:5 · 1080×1350</text></svg>`
   )
 
 function previewCampaign() {
   try {
-    const mode = new URLSearchParams(window.location.search).get('promo_preview')
-    if (mode === '1' || mode === 'image') {
-      return { id: 'preview', image_url: PREVIEW_IMG, cta_href: '/shop', message: 'Raya promotion' }
-    }
-    if (mode === 'text') {
-      return { id: 'preview', message: 'Raya — Everything Free', code: 'RAYA', cta_label: 'Shop the edit', cta_href: '/shop' }
-    }
+    const q = new URLSearchParams(window.location.search)
+    const mode = q.get('promo_preview')
+    const scale = q.get('scale') ? Number(q.get('scale')) : null
+    if (mode === '1' || mode === 'image') return { id: 'preview', image_url: PREVIEW_IMG, cta_href: '/shop', message: 'Raya promotion', banner_scale: scale }
+    if (mode === 'text') return { id: 'preview', message: 'Raya — Everything Free', code: 'RAYA', cta_label: 'Shop the edit', cta_href: '/shop', banner_scale: scale }
   } catch { /* ignore */ }
   return null
 }
@@ -41,6 +50,7 @@ function previewCampaign() {
 export default function PromoBanner() {
   const [campaign, setCampaign] = useState(null)
   const [dismissed, setDismissed] = useState(true)
+  const [dims, setDims] = useState({ vh: COVER.desktop, maxW: 'min(88vw, 920px)' })
 
   useEffect(() => {
     if (typeof window === 'undefined' || isEditingContext()) return
@@ -65,6 +75,16 @@ export default function PromoBanner() {
     return () => { alive = false }
   }, [])
 
+  // Responsive coverage — recompute on viewport change, honoring the campaign's banner_scale.
+  useEffect(() => {
+    if (!campaign || dismissed) return
+    const scale = Number(campaign.banner_scale)
+    const apply = () => setDims(coverageFor(window.innerWidth, scale))
+    apply()
+    window.addEventListener('resize', apply)
+    return () => window.removeEventListener('resize', apply)
+  }, [campaign, dismissed])
+
   useEffect(() => {
     if (!campaign || dismissed) return
     const onKey = (e) => { if (e.key === 'Escape') close() }
@@ -84,12 +104,12 @@ export default function PromoBanner() {
 
   return (
     <div style={overlay} role="dialog" aria-modal="true" aria-label="Promotion" onClick={close}>
-      <div style={hasImage ? imageFrame : card} onClick={(e) => e.stopPropagation()}>
+      <div style={hasImage ? imageFrame : { ...card, height: `${dims.vh}vh` }} onClick={(e) => e.stopPropagation()}>
         <button onClick={close} aria-label="Dismiss" style={hasImage ? closeBtnOnImage : closeBtn}>×</button>
 
         {hasImage ? (
           <a href={campaign.cta_href || '/shop'} style={imageLink} onClick={close} aria-label={campaign.message || campaign.name || 'Shop the promotion'}>
-            <img src={campaign.image_url} alt={campaign.message || campaign.name || 'Promotion'} style={image} />
+            <img src={campaign.image_url} alt={campaign.message || campaign.name || 'Promotion'} style={{ ...image, height: `${dims.vh}vh`, maxWidth: dims.maxW }} />
           </a>
         ) : (
           <>
@@ -119,16 +139,16 @@ const overlay = {
   fontFamily: 'Manrope, sans-serif',
 }
 
-// Image banner: the creative is shown full (never cropped), sized to ~70% of the screen.
+// Image banner: the creative is shown full (never cropped); height = responsive coverage.
 const imageFrame = { position: 'relative', display: 'inline-flex', borderRadius: 16, overflow: 'hidden', boxShadow: '0 40px 120px rgba(0,0,0,0.55)' }
 const imageLink = { display: 'block', lineHeight: 0 }
-const image = { display: 'block', height: '70vh', maxHeight: '860px', width: 'auto', maxWidth: 'min(92vw, 900px)', objectFit: 'contain' }
+const image = { display: 'block', width: 'auto', maxHeight: '94vh', objectFit: 'contain' }
 const closeBtnOnImage = { position: 'absolute', right: 10, top: 8, zIndex: 2, width: 36, height: 36, borderRadius: '50%', background: 'rgba(0,0,0,0.45)', border: 'none', color: '#fff', fontSize: 24, lineHeight: 1, cursor: 'pointer' }
 
 // Text fallback (no image set on the campaign).
 const card = {
   position: 'relative',
-  width: 'min(92vw, 760px)', height: '70vh', maxHeight: '760px',
+  width: 'min(92vw, 760px)', maxHeight: '94vh',
   display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', gap: 22,
   textAlign: 'center', padding: 'clamp(28px, 6vw, 72px)',
   background: 'linear-gradient(160deg, #16140f 0%, #2a2118 55%, #4a3a26 100%)',
