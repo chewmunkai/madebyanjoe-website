@@ -58,7 +58,11 @@ export default function Product() {
   const assurance = strs(s.assurance, DEFAULT_PRODUCT_SETTINGS.assurance)
   const accordion = Array.isArray(s.accordion) && s.accordion.length ? s.accordion : DEFAULT_PRODUCT_SETTINGS.accordion
 
-  const gallery = product ? getGallery(slug, product.img) : []
+  // Admin images drive the gallery when present; otherwise fall back to the static
+  // galleries.js (then the single product.img). So uploads in the admin show on the PDP.
+  const gallery = product
+    ? (product.images?.length ? product.images : getGallery(slug, product.img))
+    : []
   const go = (i) => {
     const n = gallery.length || 1
     setActive(((i % n) + n) % n)

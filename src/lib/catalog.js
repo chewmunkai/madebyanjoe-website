@@ -127,6 +127,10 @@ export function adaptProduct(p) {
     name: p.title,
     price: price ?? 0,
     img: productImage(p),
+    // Full gallery from the admin (thumbnail first, then the rest, deduped). The PDP
+    // uses this when present so admin uploads drive the gallery; falls back to the
+    // static galleries.js only for products with no admin images.
+    images: [...new Set([p?.thumbnail, ...((p?.images || []).map((i) => i.url))].filter(Boolean))],
     size: productSize(p, variant),
     type: productType(p),
     group: productGroup(p),
