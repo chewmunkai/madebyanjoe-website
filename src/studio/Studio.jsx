@@ -66,6 +66,7 @@ export default function Studio() {
         overrides={{
           headerActions: ({ children }) => (
             <>
+              <AutoSelectSingleBlock />
               <PageSwitcher current={pageKey} onSwitch={setPageKey} />
               <SaveDraftButton slug={page.slug} />
               {embedded && <PreviewDraftButton slug={page.slug} path={page.path} />}
@@ -77,6 +78,24 @@ export default function Studio() {
       {note && <Toast>{note}</Toast>}
     </div>
   )
+}
+
+/* Single-block pages (everything except the multi-section homepage) render as one
+   full-page block. Puck only shows a component's fields once it's SELECTED — but a
+   full-page block has no obvious "click me" affordance, so the page looked
+   un-editable. Auto-select the sole block on mount so its fields appear immediately,
+   matching how the homepage's sections feel. (Multi-block pages are left alone.) */
+function AutoSelectSingleBlock() {
+  const { appState, dispatch } = usePuck()
+  const count = appState?.data?.content?.length ?? 0
+  useEffect(() => {
+    if (count !== 1) return
+    const t = setTimeout(() => {
+      dispatch({ type: 'setUi', ui: { itemSelector: { index: 0, zone: 'root:default-zone' } } })
+    }, 50)
+    return () => clearTimeout(t)
+  }, [count, dispatch])
+  return null
 }
 
 function PageSwitcher({ current, onSwitch }) {
