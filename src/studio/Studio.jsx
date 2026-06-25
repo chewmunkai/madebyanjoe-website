@@ -67,6 +67,7 @@ export default function Studio() {
           headerActions: ({ children }) => (
             <>
               <AutoSelectSingleBlock />
+              <SyncCanvasScroll />
               <PageSwitcher current={pageKey} onSwitch={setPageKey} />
               <SaveDraftButton slug={page.slug} />
               {embedded && <PreviewDraftButton slug={page.slug} path={page.path} />}
@@ -86,15 +87,72 @@ export default function Studio() {
    un-editable. Auto-select the sole block on mount so its fields appear immediately,
    matching how the homepage's sections feel. (Multi-block pages are left alone.) */
 function AutoSelectSingleBlock() {
-  const { appState, dispatch } = usePuck()
-  const count = appState?.data?.content?.length ?? 0
+  const puck = usePuck()
+  const content = puck?.appState?.data?.content || []
+  const id = content.length === 1 ? content[0]?.props?.id : undefined
   useEffect(() => {
-    if (count !== 1) return
-    const t = setTimeout(() => {
-      dispatch({ type: 'setUi', ui: { itemSelector: { index: 0, zone: 'root:default-zone' } } })
-    }, 50)
-    return () => clearTimeout(t)
-  }, [count, dispatch])
+    if (!id) return
+    let done = false, tries = 0
+    const select = () => {
+      if (done) return
+      // Authoritative selector for this block (correct index+zone) once its zone
+      // has registered; retry while Puck mounts. Falls back to a plain index.
+      const sel = puck.getSelectorForId ? puck.getSelectorForId(id) : { index: 0 }
+      if (sel) { puck.dispatch({ type: 'setUi', ui: { itemSelector: sel } }); done = true }
+      else if (tries++ < 15) setTimeout(select, 120)
+    }
+    const t = setTimeout(select, 60)
+    return () => { done = true; clearTimeout(t) }
+  }, [id]) // eslint-disable-line react-hooks/exhaustive-deps
+  return null
+}
+
+/* These pages render the WHOLE page as one tall block, but the field panel lists every
+   section's fields in one long column. Editing a field far down the page (a timeline
+   milestone, a value card) updates the canvas correctly — but that section is off-screen
+   below the tall hero, so it LOOKS like nothing changed. When a field is focused, scroll
+   the canvas to the element holding that field's text and flash it, so the live edit is
+   always in view. Pure editor sugar — never affects the published page. */
+function SyncCanvasScroll() {
+  useEffect(() => {
+    const frameDoc = () => {
+      const f = document.querySelector('iframe#preview-frame') || document.querySelector('iframe')
+      try { return f && f.contentDocument } catch { return null }
+    }
+    // Tightest element in the canvas whose text contains the field value.
+    const locate = (doc, value) => {
+      const needle = (value || '').trim()
+      if (needle.length < 6) return null // skip short/ambiguous fields (already-visible hero bits)
+      let best = null
+      const walk = (node) => {
+        for (const el of node.children) {
+          if ((el.textContent || '').includes(needle)) { best = el; walk(el) }
+        }
+      }
+      walk(doc.body)
+      return best
+    }
+    let hl = null
+    const clearHl = () => { if (hl) { hl.style.outline = ''; hl.style.outlineOffset = ''; hl.style.transition = ''; hl = null } }
+    const onFocus = (e) => {
+      const t = e.target
+      if (!(t instanceof HTMLInputElement || t instanceof HTMLTextAreaElement)) return
+      const doc = frameDoc()
+      if (!doc) return
+      const el = locate(doc, t.value)
+      if (!el) return
+      el.scrollIntoView({ behavior: 'smooth', block: 'center' })
+      clearHl()
+      hl = el
+      el.style.transition = 'outline-color .5s ease'
+      el.style.outline = '2px solid rgba(189,120,140,.95)'
+      el.style.outlineOffset = '4px'
+      const target = el
+      setTimeout(() => { if (hl === target) target.style.outlineColor = 'transparent' }, 1000)
+    }
+    document.addEventListener('focusin', onFocus)
+    return () => { document.removeEventListener('focusin', onFocus); clearHl() }
+  }, [])
   return null
 }
 
