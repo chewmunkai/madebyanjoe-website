@@ -21,11 +21,13 @@ import { useAnalytics } from './lib/analytics.js'
 // Visual homepage editor — lazy so Puck never bloats the storefront bundle.
 const Studio = lazy(() => import('./studio/Studio.jsx'))
 
-/* Reveal-on-scroll for any .reveal element. Re-scans on route change. */
+/* Reveal-on-scroll for any .reveal element. Re-scans on route change AND watches for
+   elements that mount asynchronously — catalog-driven cards (PDP "Complete the ritual",
+   Shop grid) re-render once live data hydrates, AFTER a one-time scan would have run, so
+   they'd never be observed and would stay stuck at opacity:0. A MutationObserver re-runs
+   the scan whenever new nodes appear (io.observe on an already-observed node is a no-op). */
 function useScrollReveal(dep) {
   useEffect(() => {
-    const els = document.querySelectorAll('.reveal:not(.is-in)')
-    if (!els.length) return
     const io = new IntersectionObserver(
       (entries) => {
         entries.forEach((e) => {
@@ -37,8 +39,12 @@ function useScrollReveal(dep) {
       },
       { threshold: 0.12, rootMargin: '0px 0px -8% 0px' }
     )
-    els.forEach((el) => io.observe(el))
-    return () => io.disconnect()
+    const observeAll = () => document.querySelectorAll('.reveal:not(.is-in)').forEach((el) => io.observe(el))
+    observeAll()
+    let raf = 0
+    const mo = new MutationObserver(() => { cancelAnimationFrame(raf); raf = requestAnimationFrame(observeAll) })
+    mo.observe(document.body, { childList: true, subtree: true })
+    return () => { cancelAnimationFrame(raf); io.disconnect(); mo.disconnect() }
   }, [dep])
 }
 
