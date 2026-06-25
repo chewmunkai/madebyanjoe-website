@@ -67,6 +67,7 @@ export default function Studio() {
           headerActions: ({ children }) => (
             <>
               <AutoSelectSingleBlock />
+              <CanvasRevealStyle />
               <SyncCanvasScroll />
               <PageSwitcher current={pageKey} onSwitch={setPageKey} />
               <SaveDraftButton slug={page.slug} />
@@ -104,6 +105,34 @@ function AutoSelectSingleBlock() {
     const t = setTimeout(select, 60)
     return () => { done = true; clearTimeout(t) }
   }, [id]) // eslint-disable-line react-hooks/exhaustive-deps
+  return null
+}
+
+/* The canvas renders each page directly, WITHOUT the storefront's scroll-reveal observer
+   (that lives in App, outside the Puck iframe). So `.reveal` elements — most of every page
+   below the hero — keep their initial opacity:0 and the canvas looks blank/grey while
+   editing. Force them visible inside the editor only (mirrors the prefers-reduced-motion
+   rule in global.css); the published page is untouched. Re-injects after Puck rebuilds the
+   canvas iframe on a page switch. */
+function CanvasRevealStyle() {
+  useEffect(() => {
+    let stopped = false
+    const STYLE_ID = '__studio_reveal_visible'
+    const inject = () => {
+      if (stopped) return
+      const f = document.querySelector('iframe#preview-frame')
+      const doc = f && f.contentDocument
+      if (doc && doc.head && !doc.getElementById(STYLE_ID)) {
+        const s = doc.createElement('style')
+        s.id = STYLE_ID
+        s.textContent = '.reveal{opacity:1 !important;transform:none !important;}'
+        doc.head.appendChild(s)
+      }
+    }
+    inject()
+    const iv = setInterval(inject, 700)
+    return () => { stopped = true; clearInterval(iv) }
+  }, [])
   return null
 }
 
